@@ -12,7 +12,7 @@ const MENUS = {
         options: [
             { id: 'politicas_gen', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
             { id: 'politicas_comu', label: '🛍️ Módulos (alimentos)', type: 'leaf', apiKey: 'asistencia_social' },
-            { id: 'desarrollo_menu', label: '🤝 Acción Social' },
+            { id: 'desarrollo_menu', label: '🤝 Desarrollo Social' },
             { id: 'turismo', label: '🏖️ Turismo' },
             { id: 'deportes', label: '⚽ Deportes' },
             { id: 'salud', label: '🏥 Salud' },
@@ -24,7 +24,6 @@ const MENUS = {
             { id: 'cultura', label: '🎭 Cultura y Agenda', type: 'submenu' },
             { id: 'habitat', label: '🏡 Reg demanda Habitacional', type: 'submenu' },
             { id: 'contacto_op', label: '☎️ Hablar con Operador', type: 'leaf', apiKey: 'contacto_gral' },
-            // CORREGIDO: Ahora es tipo submenu para que abra las opciones de pago
             { id: 'pago_deuda', label: '🅿️ Pago: Auto, Agua, Inmueble', type: 'submenu' }
         ]
     },
@@ -50,7 +49,7 @@ const MENUS = {
         ]
     },
     desarrollo_menu: {
-        title: () => 'Acción Social y Comunitaria:', 
+        title: () => 'desarrollo Social y Comunitaria:', 
         options: [
             { id: 'asistencia', label: '🍎 Ayuda Alimentaria (CAM)', type: 'leaf', apiKey: 'asistencia_social' },
             { id: 'mediacion', label: '⚖️ Mediación Vecinal', type: 'leaf', apiKey: 'mediacion_info' },
