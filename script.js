@@ -8,10 +8,10 @@ let formData = { tipo: "", ubicacion: "", descripcion: "" };
 /* --- MENÚS --- */
 const MENUS = {
     main: { 
-        title: (name) => `¡Hola <b>${name}</b>! 👋 "¿Necesitás algo más? Escribí MENU y vemos las opciones disponibles."
-"Para volver a empezar, solo tenés que decirme HOLA."
-"¡Estoy para ayudarte! Escribí MENU si querés consultar por otra área.", 
-        
+        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy Eva la asistente virtual de Municipalidad de Chascomús. ¿En que pudedo ayudarte?, 
+        Podes usar el meno o escribrir palabras claves.
+        Aqui te dejo algunas, agua, foodtruck, casa;
+        o escribe menu para ver todo.`, 
         options: [
             { id: 'politicas_gen', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
             { id: 'politicas_comu', label: '🛍️ Módulos (alimentos)', type: 'leaf', apiKey: 'asistencia_social' },
@@ -27,6 +27,7 @@ const MENUS = {
             { id: 'cultura', label: '🎭 Cultura y Agenda', type: 'submenu' },
             { id: 'habitat', label: '🏡 Reg demanda Habitacional', type: 'submenu' },
             { id: 'contacto_op', label: '☎️ Hablar con Operador', type: 'leaf', apiKey: 'contacto_gral' },
+            // CORREGIDO: Ahora es tipo submenu para que abra las opciones de pago
             { id: 'pago_deuda', label: '🅿️ Pago: Auto, Agua, Inmueble', type: 'submenu' }
         ]
     },
@@ -52,7 +53,7 @@ const MENUS = {
         ]
     },
     desarrollo_menu: {
-        title: () => 'desarrollo Social y Comunitaria:', 
+        title: () => 'Desarrollo Social y Comunitaria:', 
         options: [
             { id: 'mediacion', label: '⚖️ Mediación Vecinal', type: 'leaf', apiKey: 'mediacion_info' },
             { id: 'uda', label: '📍 Puntos UDA', type: 'leaf', apiKey: 'uda_info' },
@@ -226,7 +227,7 @@ const RES = {
         🔗 <b>Linktree Inscripciones:</b><br>
         <a href="https://linktr.ee/visitasguiadas.turismoch" target="_blank">Ingresar al Linktree</a>
     </div>`,
-
+    
     'omic_info': `
     <div class="info-card">
         <strong>📢 OMIC (Defensa del Consumidor)</strong><br>
@@ -237,7 +238,7 @@ const RES = {
         ⏰ <b>Horario:</b> Lunes a Viernes de 8:00 a 13:00 hs.<br>
         📞 <b>Teléfonos:</b> 43-1287 / 42-5558
     </div>`,
-        
+
     'caps_wa': `
     <div class="info-card">
         <strong>📞 WhatsApp de los CAPS:</strong><br><br>
@@ -299,7 +300,7 @@ const RES = {
         • <b>Puyssegur:</b> Libres del Sur 946<br><br>
         💊 <a href="https://www.turnofarma.com/turnos/ar/ba/chascomus" target="_blank" class="wa-btn" style="background:#2ecc71 !important;">VER FARMACIAS DE TURNO</a>
     </div>`,
-        
+
     'zoo_rabia': `
     <div class="info-card" style="border-left: 5px solid #f1c40f;">
         <strong style="color:#d35400;">🐾 Quirófano Móvil (Castración)</strong><br><br>
@@ -311,24 +312,20 @@ const RES = {
         🏢 <b>Sede Zoonosis:</b> Mendoza 95.
     </div>`,
 
- 'vacunacion_info': `
-    <div class="info-card" style="line-height: 1.5; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
-        <strong style="font-size: 1.1em;">💉 Vacunación</strong><br><br>
-        
-        <b>🏥 Hospital San Vicente de Paul:</b><br>
+    'vacunacion_info': `
+    <div class="info-card">
+        <strong>💉 Vacunación</strong><br><br>
+        🏥 <b>Hospital San Vicente de Paul:</b><br>
         Vacunatorio central. Prioridad: Niños (6m a 2a), gestantes y puérperas.<br><br>
-        
-        <b>🏠 Puntos Barriales:</b><br>
-        CIC "Dr. Quintín" (B° 30 de Mayo) y centros de salud (CAPS).<br><br>
-        
-        <b>📋 Información Importante:</b><br>
-        • <b>Demanda espontánea:</b> No requiere orden médica.<br>
+        🏠 <b>Puntos Barriales:</b><br>
+        CIC "Dr. Quintín" (30 de Mayo) y otros CAPS.<br><br>
+        📋 <b>Info Importante:</b><br>
+        • <b>Demanda espontánea</b> (No requiere orden médica).<br>
         • <b>Requisitos:</b> Llevar DNI y Libreta de Vacunación.<br><br>
-        
-        <small><i>📱 Consultá las redes de "Secretaría de Salud Chascomús" para horarios actualizados.</i></small>
-    </div>`
-    
-  'info_habitat': `
+        📱 <i>Consultá las redes de "Secretaría de Salud Chascomús" para horarios actualizados.</i>
+    </div>`,
+
+    'info_habitat': `
     <div class="info-card">
         <strong>🔑 Info de Hábitat</strong><br>
         • Registro de Demanda (Mayores de 18).<br>
@@ -361,20 +358,16 @@ const RES = {
         🔗 Planes Habitacionales
         </a>
     </div>`,
-    
-        'mediacion_info': `<div class="info-card"><strong>⚖️ Mediación Comunitaria</strong><br>Resolución pacífica y gratuita de conflictos vecinales (ruidos, mascotas, edilicios).<br>📍 <b>Acercate a:</b> Moreno 259.</div>`,
-    
-        'uda_info': `<div class="info-card"><strong>📍 Puntos UDA (Atención en Barrios)</strong><br><i>Acercate a tu punto más cercano:</i><br><br>🔹 <b>UDA 1 (San Luis):</b> Chubut 755 (Mar/Vie 9-12).<br>🔹 <b>UDA 2 (San José Obrero):</b> F. Chapa 625 (Mar/Vie 9-12).<br>🔹 <b>UDA 3 (El Porteño):</b> Mansilla y Calle 3 (Vie 9-12).<br>🔹 <b>UDA 4 (30 de Mayo):</b> Bvd. 5 y Calle 2 (Vie 9-12).<br>🔹 <b>UDA 5 (B. Jardín):</b> J. Quintana e/ Misiones (Mar/Mié 9-12).<br>🔹 <b>UDA 6 (Gallo Blanco):</b> EE.UU. y Las Flores (Lun 9-12).<br>🔹 <b>UDA 7 (San Cayetano):</b> Comedor (Mar 9-12).<br>🔹 <b>UDA 8 (Políticas Com.):</b> Sarmiento 42 (Lun-Vie 8-12).<br>🔹 <b>UDA 9 (Iporá):</b> Perú y S. Cabral (Jue 9-12).<br><br>🚨 <b>Guardia 24hs:</b> <a href="https://wa.me/5492241559397">2241-559397</a></div>`,
-   
-        'pamuv': `<div class="info-card" style="border-left: 5px solid #c0392b;"><strong style="color: #c0392b;">🆘 PAMUV (Asistencia a la Víctima)</strong><br><br>Atención, contención y asesoramiento a personas víctimas de delitos o situaciones de violencia.<br><br>🛡️ <b>Plan Integral de Seguridad 2025-2027</b><br><br>🚨 <b>ATENCIÓN 24 HORAS:</b><br>Línea permanente para emergencias o consultas.<br><a href="https://wa.me/5492241514881" class="wa-btn" style="background-color: #c0392b !important;">📞 2241-514881 (WhatsApp)</a></div>`,
-   
-        'defensa_civil': `<div class="info-card" style="border-left: 5px solid #c0392b;">
-  <strong style="color: #c0392b;">🌪️ Defensa Civil</strong><br><br>
+
+    'mediacion_info': `<div class="info-card"><strong>⚖️ Mediación Comunitaria</strong><br>Resolución pacífica y gratuita de conflictos vecinales (ruidos, mascotas, edilicios).<br>📍 <b>Acercate a:</b> Moreno 259.</div>`,
+    'uda_info': `<div class="info-card"><strong>📍 Puntos UDA (Atención en Barrios)</strong><br><i>Acercate a tu punto más cercano:</i><br><br>🔹 <b>UDA 1 (San Luis):</b> Chubut 755 (Mar/Vie 9-12).<br>🔹 <b>UDA 2 (San José Obrero):</b> F. Chapa 625 (Mar/Vie 9-12).<br>🔹 <b>UDA 3 (El Porteño):</b> Mansilla y Calle 3 (Vie 9-12).<br>🔹 <b>UDA 4 (30 de Mayo):</b> Bvd. 5 y Calle 2 (Vie 9-12).<br>🔹 <b>UDA 5 (B. Jardín):</b> J. Quintana e/ Misiones (Mar/Mié 9-12).<br>🔹 <b>UDA 6 (Gallo Blanco):</b> EE.UU. y Las Flores (Lun 9-12).<br>🔹 <b>UDA 7 (San Cayetano):</b> Comedor (Mar 9-12).<br>🔹 <b>UDA 8 (Políticas Com.):</b> Sarmiento 42 (Lun-Vie 8-12).<br>🔹 <b>UDA 9 (Iporá):</b> Perú y S. Cabral (Jue 9-12).<br><br>🚨 <b>Guardia 24hs:</b> <a href="https://wa.me/5492241559397">2241-559397</a></div>`,
+    'pamuv': `<div class="info-card" style="border-left: 5px solid #c0392b;"><strong style="color: #c0392b;">🆘 PAMUV (Asistencia a la Víctima)</strong><br><br>Atención, contención y asesoramiento a personas víctimas de delitos o situaciones de violencia.<br><br>🛡️ <b>Plan Integral de Seguridad 2025-2027</b><br><br>🚨 <b>ATENCIÓN 24 HORAS:</b><br>Línea permanente para emergencias o consultas.<br><a href="https://wa.me/5492241514881" class="wa-btn" style="background-color: #c0392b !important;">📞 2241-514881 (WhatsApp)</a></div>`,
+    'defensa_civil': `<div class="info-card" style="border-left: 5px solid #c0392b;">
+    <strong style="color: #c0392b;">🌪️ Defensa Civil</strong><br><br>
     🚨 <b>LÍNEA DE EMERGENCIA:</b><br>
     Atención ante temporales, caída de árboles y riesgo en vía pública.<br>
     📞 <a href="tel:103" class="wa-btn" style="background-color: #c0392b !important; text-align:center; display:block;">LLAMAR AL 103</a><br>
     📧 <a href="mailto:defensa.civil@chascomus.gob.ar">Enviar Correo Electrónico</a></div>`,
-    
     'apps_seguridad': `
     <div class="info-card">
         <strong>📲 Aplicaciones de Seguridad y Tránsito</strong><br><br>
@@ -387,26 +380,18 @@ const RES = {
         Gestioná tu estacionamiento.<br>
         🤖 <a href="https://play.google.com/store/apps/details?id=ar.edu.unlp.sem.mobile" target="_blank" rel="noopener noreferrer">Descargar Android</a><br>
         🍎 <a href="https://apps.apple.com/ar/app/sem-mobile/id1387705895" target="_blank" rel="noopener noreferrer">Descargar iPhone</a></div>`,
-   
-        'turismo_info': `<div class="info-card"><strong>🏖️ Subsecretaría de Turismo</strong><br>📍 Av. Costanera España 25<br>📞 <a href="tel:02241615542">02241 61-5542</a><br>📧 <a href="mailto:turismo@chascomus.gob.ar">Enviar Email</a><br>🔗 <a href="https://linktr.ee/turismoch" target="_blank">Más info en Linktree</a></div>`,
-    
-      'deportes_info': `<div class="info-card"><strong>⚽ Dirección de Deportes</strong><br>📍 Av. Costanera España y Av. Lastra<br>📞 <a href="tel:02241424649">(02241) 42 4649</a></div>`,
-      'deportes_circuito': `<div class="info-card"><strong>🏃 Circuito de Calle</strong><br>Inscripciones, cronograma y resultados oficiales.<br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/circuitodecalle/" target="_blank">IR A LA WEB</a></div>`,
-  
-      'seg_academia': `<div class="info-card"><strong>🚗 Academia de Conductores</strong><br>Turnos para cursos y exámenes teóricos.<br>🔗 <a href="https://apps.chascomus.gob.ar/academia/" target="_blank">INGRESAR A LA WEB</a></div>`,
-   
-      'seg_medido': `<div class="info-card"><strong>🅿️ Estacionamiento Medido</strong><br>Gestioná tu estacionamiento desde el celular.<br><br>📲 <b>Descargar App:</b><br>🤖 <a href="https://play.google.com/store/apps/details?id=ar.edu.unlp.sem.mobile.chascomus" target="_blank">Android (Google Play)</a><br>🍎 <a href="https://apps.apple.com/ar/app/sem-mobile/id1387705895" target="_blank">iPhone (App Store)</a><br><br>💻 <a href="https://chascomus.gob.ar/estacionamientomedido/" target="_blank">Gestión vía Web</a></div>`,
-  
-     'lic_turno': `<b>📅 Turno Licencia:</b><br>🔗 <a href="https://apps.chascomus.gob.ar/academia/">SOLICITAR TURNO</a>`, 
-   
+    'turismo_info': `<div class="info-card"><strong>🏖️ Subsecretaría de Turismo</strong><br>📍 Av. Costanera España 25<br>📞 <a href="tel:02241615542">02241 61-5542</a><br>📧 <a href="mailto:turismo@chascomus.gob.ar">Enviar Email</a><br>🔗 <a href="https://linktr.ee/turismoch" target="_blank">Más info en Linktree</a></div>`,
+    'deportes_info': `<div class="info-card"><strong>⚽ Dirección de Deportes</strong><br>📍 Av. Costanera España y Av. Lastra<br>📞 <a href="tel:02241424649">(02241) 42 4649</a></div>`,
+    'deportes_circuito': `<div class="info-card"><strong>🏃 Circuito de Calle</strong><br>Inscripciones, cronograma y resultados oficiales.<br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/circuitodecalle/" target="_blank">IR A LA WEB</a></div>`,
+    'seg_academia': `<div class="info-card"><strong>🚗 Academia de Conductores</strong><br>Turnos para cursos y exámenes teóricos.<br>🔗 <a href="https://apps.chascomus.gob.ar/academia/" target="_blank">INGRESAR A LA WEB</a></div>`,
+    'seg_medido': `<div class="info-card"><strong>🅿️ Estacionamiento Medido</strong><br>Gestioná tu estacionamiento desde el celular.<br><br>📲 <b>Descargar App:</b><br>🤖 <a href="https://play.google.com/store/apps/details?id=ar.edu.unlp.sem.mobile.chascomus" target="_blank">Android (Google Play)</a><br>🍎 <a href="https://apps.apple.com/ar/app/sem-mobile/id1387705895" target="_blank">iPhone (App Store)</a><br><br>💻 <a href="https://chascomus.gob.ar/estacionamientomedido/" target="_blank">Gestión vía Web</a></div>`,
+    'lic_turno': `<b>📅 Turno Licencia:</b><br>🔗 <a href="https://apps.chascomus.gob.ar/academia/">SOLICITAR TURNO</a>`, 
     'seg_infracciones': `<b>⚖️ Infracciones:</b><br>🔗 <a href="https://chascomus.gob.ar/municipio/estaticas/consultaInfracciones">VER MIS MULTAS</a>`, 
-    
     'ojos': `👁️ <b>Ojos en Alerta:</b> <a href="https://wa.me/5492241557444">2241-557444</a>`,
-   
     'poli': `📞 <b>Policía:</b> 42-2222 | 🎥 <b>COM:</b> 43-1333`,
-    /* --- TARJETA NUEVA: MÓDULOS ALIMENTARIOS (Estilo destacado) --- */
     'politicas_gen': `<div class="info-card" style="border-left: 5px solid #9b59b6;"><strong style="color: #8e44ad; font-size: 1rem;">💜 Género y Diversidad</strong><br><br><div style="font-size: 0.85rem; margin-bottom: 12px;">🚨 <b>Guardia 24/7:</b> Orientación y acompañamiento en casos de violencia.<br>🧠 <b>Equipo Técnico:</b> Abogadas, psicólogas y trabajadoras sociales.<br>🏠 <b>Hogar de Tránsito:</b> Alojamiento temporal para mujeres en riesgo.<br>🗣️ <b>Varones:</b> Espacio de abordaje y deconstrucción de conductas violentas.<br>👮‍♀️ <b>Articulación:</b> Trabajo conjunto con Comisaría de la Mujer.</div><div style="background: #fdf2ff; padding: 10px; border-radius: 8px; font-size: 0.9rem;">📍 <b>Oficina:</b> Moreno 259 (Lun-Vie 9-14hs)<br>☎️ <b>Fijo Oficina:</b> <a href="tel:02241530448">2241-530448</a><br>🚓 <b>Comisaría Mujer:</b> <a href="tel:02241422653">42-2653</a></div><a href="https://wa.me/5492241559397" target="_blank" class="wa-btn" style="background-color: #8e44ad !important;">🚨 GUARDIA 24HS (WhatsApp)</a></div>`,
     
+    /* --- TARJETA NUEVA: MÓDULOS ALIMENTARIOS (Estilo destacado) --- */
     'asistencia_social': `
     <div class="info-card" style="border-left: 5px solid #e67e22;">
         <strong style="color: #d35400; font-size: 1rem;">🍎 Módulos Alimentarios (CAM)</strong><br><br>
@@ -435,18 +420,15 @@ const RES = {
     </div>`,
     
     'ninez': `<b>👶 Niñez:</b> Mendoza Nº 95. 📞 43-1146.`,
-
-        'poda': `🌿 <a href="https://apps.chascomus.gob.ar/podaresponsable/solicitud.php">Solicitud Poda</a>',  
-        'obras_basura': `♻️ <b>Recolección:</b><br>Lun a Sáb 20hs (Húmedos)<br>Jueves 14hs (Reciclables)`,
+    'poda': `🌿 <a href="https://apps.chascomus.gob.ar/podaresponsable/solicitud.php">Solicitud Poda</a>`,
+    'obras_basura': `♻️ <b>Recolección:</b><br>Lun a Sáb 20hs (Húmedos)<br>Jueves 14hs (Reciclables)`,
     
     'hac_tomasa': `<b>🤖 Hacienda Tomasa:</b><br>Portal de autogestión.<br>🔗 <a href="https://tomasa.chascomus.gob.ar/">INGRESAR</a>`, 
 
 
     'boleta': `<div class="info-card"><strong>📧 BOLETA DIGITAL</strong><br>🟢 WA: <a href="https://wa.me/5492241559739">2241-559739</a><br>📧 <a href="mailto:ingresospublicos@chascomus.gob.ar">Email</a></div>`,
-  
-        'agua': `<b>💧 Consumo de Agua:</b><br>🔗 <a href="https://apps.chascomus.gob.ar/caudalimetros/consulta.php">VER MI CONSUMO</a>`, 
-   
-            'deuda': `<b>🔍 Consulta de Deuda:</b><br>🔗 <a href="https://chascomus.gob.ar/municipio/estaticas/consultaDeudas">CONSULTAR AQUÍ</a>`,
+    'agua': `<b>💧 Consumo de Agua:</b><br>🔗 <a href="https://apps.chascomus.gob.ar/caudalimetros/consulta.php">VER MI CONSUMO</a>`, 
+    'deuda': `<b>🔍 Consulta de Deuda:</b><br>🔗 <a href="https://chascomus.gob.ar/municipio/estaticas/consultaDeudas">CONSULTAR AQUÍ</a>`,
     
     'hab_gral': `
     <div class="info-card">
@@ -461,7 +443,7 @@ const RES = {
         📍 <b>Presencial:</b> Maipú 415 (Producción).<br><br>
         🚀 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionComercial.php" target="_blank" class="wa-btn">INICIAR TRÁMITE ONLINE</a>
     </div>`,
- 
+
     'hab_eventos': `
     <div class="info-card">
         <strong>🎉 Eventos y Salones de Fiesta</strong><br>
@@ -473,7 +455,7 @@ const RES = {
         📧 tecnica_dolores@hotmail.com<br>
         📞 (02245) 44-6107<br><br>
         📝 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionEventoPrivado2.0.php" target="_blank">IR AL FORMULARIO</a>
-    </div>`
+    </div>`,
 
     'hab_espacio': `
     <div class="info-card">
@@ -487,7 +469,7 @@ const RES = {
         • Domicilio en Chascomús.<br><br>
         📝 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionCarro.php" target="_blank">SOLICITAR PERMISO</a>
     </div>`,
- 
+
   'hab_reba': `
     <div class="info-card">
         <strong>🍷 Registro de Alcohol (REBA)</strong><br><br>
@@ -499,7 +481,7 @@ const RES = {
         Solicitalo a <a href="mailto:habilitaciones@chascomus.gob.ar">habilitaciones@chascomus.gob.ar</a><br><br>
         🏦 <b>Pago:</b> Recibirás una boleta para abonar en Banco Provincia.
     </div>`,
-
+    
     'h_turnos': `<strong>📅 Turnos Hospital:</strong><br>WhatsApp: <a href="https://wa.me/5492241466977">2241-466977</a>`,
     'h_info': `📍 <b>Hospital Municipal:</b> Av. Alfonsín e Yrigoyen.<br>🚨 Guardia 24 hs.`,
     
@@ -578,7 +560,7 @@ const RES = {
         👇 <i>Sacá turno por WhatsApp:</i>
         <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn">📅 SOLICITAR TURNO</a>
     </div>`,
-  
+    
     'prod_empleo': `
     <div class="info-card">
         <strong>👷 Oficina de Empleo</strong><br><br>
@@ -601,7 +583,7 @@ const RES = {
         Fomento al consumo de productos locales.<br><br>
         📧 <b>Consultas:</b> <a href="mailto:produccion@chascomus.gob.ar">produccion@chascomus.gob.ar</a>
     </div>`,
-        
+
     'prod_contacto': `
     <div class="info-card">
         <strong>🏭 Dirección de Producción</strong><br><br>
@@ -623,7 +605,6 @@ const RES = {
     
     📍 <b>Mesa de Entradas:</b><br>
     Cr. Cramer 270.</div>`
-
 };
 
 /* --- LÓGICA DE INTERFAZ Y NAVEGACIÓN --- */
@@ -843,14 +824,7 @@ function processInput() {
         
         setTimeout(() => {
             // 1. Saludo
-            addMessage(`¡Mucho gusto, <b>${userName}</b>! 👋 ¡Hola! Soy EVA, tu asistente virtual de la Municipalidad de Chascomús. 🏛️
-
-Estoy aquí para ayudarte a resolver tus dudas de forma rápida. ¿Qué necesitás consultar hoy?
-Salud 🏥
-Seguridad 🚔
-Habitat 🏡
-Trámites y Turnos 📅
-Elegi una opcion o una palabra clave.');
+            addMessage(`¡Mucho gusto, <b>${userName}</b>! Soy Eva, tu asistente virtual. 🤖`, 'bot');
             
             // 2. Definimos los botones de "Acceso Rápido"
             const atajos = [
@@ -1007,6 +981,9 @@ console.log("%cEste código es propiedad intelectual de la Municipalidad de Chas
             document.body.innerHTML = '<h2 style="text-align:center;margin-top:50px;">⛔ Error de Integridad: Se ha modificado el código fuente original.</h2>';
         }
     }
+    window.addEventListener('load', _secure);
+    setInterval(_secure, 2000);
+})();
     window.addEventListener('load', _secure);
     setInterval(_secure, 2000);
 })();
