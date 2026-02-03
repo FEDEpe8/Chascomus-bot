@@ -814,8 +814,9 @@ function processInput() {
         setTimeout(() => {
             // 1. Saludo
             addMessage(`¡Mucho gusto, <b>${userName}</b>! 👋 Soy Eva la asistente virtual de Municipalidad de Chascomús. ¿En que puedo ayudarte?
-        Puedes escribir palabras clave "casa, agua, foodtruck, caps.
-       O simplemente la palabra "MENU" par ver todo  🤖`, 'bot');
+        Puedes escribir fracesque tenganpalabras clave "casa, agua, foodtruck, caps.
+        te doy un ej; "Como habilito mi local", "puedo ver mi consumo de agua". etc;
+        O simplemente la palabra "MENU" par ver todo  🤖`, 'bot');
             
             // 2. Definimos los botones de "Acceso Rápido"
             const atajos = [
