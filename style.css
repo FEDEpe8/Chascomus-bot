@@ -32,7 +32,7 @@ header { background: var(--primary); color: white; padding: 12px 15px; display: 
     display: flex; 
     flex-direction: column; 
     gap: 12px; 
-    padding-bottom: 100px; 
+    padding-bottom: 90px; 
     scroll-behavior: smooth; 
 }
 
