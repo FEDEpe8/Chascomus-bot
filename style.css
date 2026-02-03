@@ -33,8 +33,8 @@ header { background: var(--primary); color: white; padding: 12px 15px; display: 
     flex-direction: column; 
     gap: 12px; 
     
-    /* 🔥 CLAVE: Esto empuja el contenido hacia arriba para que la barra no lo tape */
-    padding-bottom: 90px; 
+    /* 🔥 CORRECCIÓN CLAVE: Aumentado a 150px para asegurar que se vea el último botón en celulares */
+    padding-bottom: 150px; 
     
     scroll-behavior: smooth; 
     /* Mejora para el scroll en móviles */
