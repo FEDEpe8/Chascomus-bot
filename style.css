@@ -1,5 +1,5 @@
 /* ============================================
-   MUNIBOT CHASCOMÚS - ESTILOS MODERNIZADOS
+   MUNIBOT CHASCOMÚS - ESTILO CORREGIDO (LAYOUT FLEX)
    ============================================ */
 
 /* Variables CSS */
@@ -25,7 +25,6 @@
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --header-height: 60px;
-    --input-height: 70px;
 }
 
 /* Reset y base */
@@ -39,17 +38,21 @@ html {
     font-size: 16px;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    /* FIX: Altura fija para evitar scroll de la página entera */
+    height: 100%;
+    overflow: hidden; 
 }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background-color: var(--color-bg);
     color: var(--color-text);
+    /* FIX: Usamos 100dvh para móviles y flex column */
     height: 100vh;
-    height: 100dvh;
+    height: 100dvh; 
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: hidden; /* El body NO scrollea, solo el chat */
     line-height: 1.5;
 }
 
@@ -66,7 +69,8 @@ body {
     justify-content: space-between;
     box-shadow: var(--shadow-md);
     z-index: 100;
-    flex-shrink: 0;
+    /* FIX: Evita que el header se aplaste */
+    flex-shrink: 0; 
 }
 
 .header-brand {
@@ -137,11 +141,13 @@ body {
    CHAT CONTAINER
    ============================================ */
 .chat-container {
-    flex: 1;
-    overflow-y: auto;
+    /* FIX: Ocupa todo el espacio disponible entre header y footer */
+    flex: 1; 
+    overflow-y: auto; /* Solo esto hace scroll */
     overflow-x: hidden;
     padding: 16px;
-    padding-bottom: calc(var(--input-height) + 100px);
+    /* FIX: Padding reducido, ya no necesitamos compensar el footer fixed */
+    padding-bottom: 20px; 
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -208,17 +214,6 @@ body {
     align-self: flex-end;
     border-bottom-right-radius: 4px;
     margin-left: auto;
-}
-
-.message-time {
-    font-size: 0.7rem;
-    opacity: 0.6;
-    margin-top: 4px;
-    display: block;
-}
-
-.message.user .message-time {
-    color: rgba(255,255,255,0.8);
 }
 
 /* Links en mensajes */
@@ -289,17 +284,6 @@ body {
     color: white;
 }
 
-.option-button.primary {
-    background: var(--color-accent);
-    border-color: var(--color-accent);
-    color: var(--color-text);
-}
-
-.option-button.primary:hover {
-    background: var(--color-accent-hover);
-    border-color: var(--color-accent-hover);
-}
-
 /* ============================================
    TARJETAS DE INFORMACIÓN
    ============================================ */
@@ -318,15 +302,6 @@ body {
     font-size: 1.1rem;
     display: block;
     margin-bottom: 8px;
-}
-
-.info-card.emergency {
-    background: linear-gradient(135deg, #ffebee 0%, #fce4ec 100%);
-    border-left-color: #c62828;
-}
-
-.info-card.emergency strong {
-    color: #c62828;
 }
 
 .wa-btn {
@@ -391,16 +366,16 @@ body {
 }
 
 /* ============================================
-   INPUT AREA
+   INPUT AREA (CAMBIO PRINCIPAL)
    ============================================ */
 .input-area {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    /* FIX: Quitamos Fixed, ahora es parte del flujo Flex */
+    position: relative; 
+    flex-shrink: 0; /* No se achica si falta espacio */
     background: var(--color-surface);
     border-top: 1px solid var(--color-border);
     padding: 12px 16px;
+    /* Ajuste para iPhone barra inferior */
     padding-bottom: calc(12px + var(--safe-bottom));
     z-index: 100;
     box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
@@ -465,12 +440,6 @@ body {
     transform: scale(0.95);
 }
 
-.btn-send:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-}
-
 /* ============================================
    NAV CONTROLS (Volver/Inicio)
    ============================================ */
@@ -479,7 +448,8 @@ body {
     gap: 8px;
     margin-top: 8px;
     padding-left: 4px;
-    padding-bottom: 16px;
+    /* FIX: Padding reducido */
+    padding-bottom: 10px; 
     position: relative;
     z-index: 200;
 }
@@ -673,18 +643,6 @@ body {
     display: none !important;
 }
 
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-}
-
 /* ============================================
    RESPONSIVE
    ============================================ */
@@ -714,37 +672,6 @@ body {
     }
 }
 
-/* Dark mode support (opcional) */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --color-bg: #121212;
-        --color-surface: #1e1e1e;
-        --color-text: #ffffff;
-        --color-text-secondary: #b0b0b0;
-        --color-border: #333333;
-        --color-bot-msg: #2d2d2d;
-    }
-    
-    .info-card {
-        background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
-    }
-    
-    #userInput {
-        background: #2d2d2d;
-        color: white;
-    }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-/* Print styles */
 @media print {
     .input-area, .header-actions, .options-container {
         display: none !important;
