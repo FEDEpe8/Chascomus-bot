@@ -1,4 +1,4 @@
-const CACHE_NAME = 'muni-chascomus-v61';
+const CACHE_NAME = 'muni-chascomus-v62';
 const assets = [
   './',
   './index.html',
