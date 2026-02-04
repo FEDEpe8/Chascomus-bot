@@ -1028,13 +1028,15 @@ function processInput() {
         'denuncia':   { id: 'omic', label: '🏦 Denuncias Omic' },
         'consumidor': { id: 'omic', label: '🏦 Denuncias Omic' },
         'barrio':     { id: 'vecinales', label: '🏘️ Vecinales' },
-        'empleo':     { id: 'produccion_menu', label: '👷 Producción y Empleo' },
-        'curriculum': { id: 'produccion_menu', label: '👷 Producción y Empleo' },
-        'cv':         { id: 'produccion_menu', label: '👷 Inscripción/ActualizarCV' },
-        'diario':      { type: 'leaf', apiKey: 'diario_oficial', label: '📰 Diario Oficial' },
-        'discapacidad': { id: 'discapacidad', label: '♿ Discapacidad' }
+        'trabajo':    { id: 'produccion', label: '👷 Producción y Empleo' },        
+        'curriculum': { id: 'produccion', label: '👷 Producción y Empleo' },
+        'cv':         { id: 'produccion', label: '👷 Producción y Empleo' },
+        'boletin':     { id: 'sibon', label: '📰 Boletín Oficial' },
+        'oficial':     { id: 'sibon', label: '📰 Boletín Oficial' },
+        'diario':     { id: 'el_digital', label: '📰 Diario Digital' },
+        'digital':    { id: 'el_digital', label: '📰 Diario Digital' }
+        
     };
-    
     // El bot revisa si alguna palabra clave está en lo que escribió el usuario
     for (let palabra in diccionario) {
         if (texto.includes(palabra)) { 
