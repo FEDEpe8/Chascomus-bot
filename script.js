@@ -8,7 +8,7 @@ let formData = { tipo: "", ubicacion: "", descripcion: "" };
 /* --- MENÚS --- */  
 const MENUS = {
     main: { 
-        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy Eva la asistente virtual de la Municipalidad . ¿Empecemos la recorrida?`, 
+        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy Eva la asistente virtual de la Municipalidad. ¿Empecemos la recorrida?`, 
         options: [
             { id: 'politicas_gen', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
             { id: 'politicas_comu', label: '🛍️ Módulos (alimentos)', type: 'leaf', apiKey: 'asistencia_social' },
@@ -733,12 +733,15 @@ window.onclick = function(event) {
 }
 
 function toggleInput(show) { 
-    document.getElementById('inputBar').classList.toggle('show', show);
-    if(show) setTimeout(() => document.getElementById('userInput').focus(), 100);
+    const inputBar = document.getElementById('inputBar');
+    if (inputBar) {
+        inputBar.classList.toggle('hidden', !show);
+        if(show) setTimeout(() => document.getElementById('userInput').focus(), 100);
+    }
 }
 
 function addMessage(text, side = 'bot', options = null) {
-    const container = document.getElementById('chatMessages');
+    const container = document.getElementById('chatContainer');
     const row = document.createElement('div');
     row.style.width = '100%';
     row.style.display = 'flex';
@@ -816,7 +819,6 @@ function handleAction(opt) {
 }
 
 function showMenu(key) {
-    //toggleInput(false); 
     const menu = MENUS[key];
     const title = typeof menu.title === 'function' ? menu.title(userName) : menu.title;
     
@@ -827,7 +829,7 @@ function showMenu(key) {
 }
 
 function showNavControls() {
-    const container = document.getElementById('chatMessages');
+    const container = document.getElementById('chatContainer');
     const div = document.createElement('div');
     div.className = 'nav-controls';
     
@@ -837,7 +839,6 @@ function showNavControls() {
     `;
     container.appendChild(div);
     
-    // Pequeño delay para asegurar que el navegador renderizó el botón antes de scrollear
     setTimeout(() => {
         container.scrollTop = container.scrollHeight;
     }, 150);
@@ -871,7 +872,6 @@ function finalizeForm() {
     toggleInput(false);
     const tel147 = "5492241559397"; 
     
-    // CORREGIDO: Usamos encodeURIComponent para asegurar que el link funcione en todos los dispositivos
     const msg = `🏛️ *RECLAMO 147* 🏛️\n👤 *Vecino:* ${userName}\n🏷️ *Tipo:* ${formData.tipo}\n📍 *Ubicación:* ${formData.ubicacion}\n📝 *Desc:* ${formData.descripcion}`;
     const url = `https://wa.me/${tel147}?text=${encodeURIComponent(msg)}`;
     
@@ -892,7 +892,6 @@ function processInput() {
     const val = input.value.trim();
     if(!val) return;
 
-    // Normalizamos el texto (todo a minúsculas) para que entienda "Hola", "hola" o "HOLA"
     const texto = val.toLowerCase();
 
     /* --- 🔒 COMANDO SECRETO DE AUTOR --- */
@@ -927,27 +926,23 @@ function processInput() {
         input.value = "";
         
         setTimeout(() => {
-            // 1. Saludo
             addMessage(`¡Mucho gusto, <b>${userName}</b>! 👋 Soy Eva la asistente virtual de Municipalidad de Chascomús. ¿En que puedo ayudarte?
-        Puedes escribir fracesque tenganpalabras clave "casa, agua, foodtruck, caps.
-        te doy un ej; "Como habilito mi local", "puedo ver mi consumo de agua". etc;
-        O simplemente la palabra "MENU" par ver todo  🤖`, 'bot');
+        Puedes escribir frases que tengan palabras clave como "casa, agua, foodtruck, caps".
+        Te doy un ej; "Como habilito mi local", "puedo ver mi consumo de agua", etc.
+        O simplemente la palabra "MENU" para ver todo 🤖`, 'bot');
             
-            // 2. Definimos los botones de "Acceso Rápido"
             const atajos = [
                 { id: 'ag_actual', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_actual' },
                 { id: 'f_lista', label: '💊 Farmacias de Turno', type: 'leaf', apiKey: 'farmacias_lista' },
                 { id: 'h_tur', label: '📅 Turnos Hospital', type: 'leaf', apiKey: 'h_turnos' },
-                { id: 'nav_home', label: '☰ VER MENÚ COMPLETO' } // Este lleva al menú principal
+                { id: 'nav_home', label: '☰ VER MENÚ COMPLETO' }
             ];
 
-            // 3. Enviamos el mensaje CON los botones
             addMessage(`Acá tenés algunos accesos rápidos para empezar, o podés escribir <b>"Menú"</b> para ver todo:`, 'bot', atajos);
         }, 600);
         return;
     }
 
-    // Mostramos lo que escribió el usuario
     addMessage(val, 'user');
     input.value = "";
 
@@ -969,7 +964,7 @@ function processInput() {
     if (['ayuda', 'menu', 'menú', 'inicio', 'botones', 'opciones', "me ayudas", "ayudame"].some(palabra => texto.includes(palabra))) {
         setTimeout(() => {
             addMessage("¡Entendido! Acá tenés el menú principal:", 'bot');
-            resetToMain(); // <--- ESTO MUESTRA LOS BOTONES
+            resetToMain();
         }, 600);
         return;
     }
@@ -981,11 +976,9 @@ function processInput() {
     }
 
     /* --- 5. BUSCADOR INTELIGENTE (SUPER CEREBRO 🧠) --- */
-    // Acá definimos qué palabra activa qué botón.
     
     const diccionario = {
-        // PALABRA CLAVE      // QUÉ BOTÓN ACTIVA
-       'farmacia':   { type: 'leaf', apiKey: 'farmacias_lista', label: '💊 Farmacias' },
+        'farmacia':   { type: 'leaf', apiKey: 'farmacias_lista', label: '💊 Farmacias' },
         'agenda':     { type: 'leaf', apiKey: 'agenda_actual', label: '🎭 Agenda Cultural' },
         'cultural':   { type: 'leaf', apiKey: 'agenda_actual', label: '🎭 Agenda Cultural' },
         'teatro':     { type: 'leaf', apiKey: 'agenda_actual', label: '🎭 Agenda Cultural' },
@@ -1035,21 +1028,20 @@ function processInput() {
         'oficial':     { id: 'sibon', label: '📰 Boletín Oficial' },
         'diario':     { id: 'el_digital', label: '📰 Diario Digital' },
         'digital':    { id: 'el_digital', label: '📰 Diario Digital' }
-        
     };
-    // El bot revisa si alguna palabra clave está en lo que escribió el usuario
+    
     for (let palabra in diccionario) {
         if (texto.includes(palabra)) { 
             const accion = diccionario[palabra];
             setTimeout(() => {
                 addMessage(`¡Encontré esto sobre <b>"${palabra.toUpperCase()}"</b>! 👇`, 'bot');
-                handleAction(accion); // <--- ESTO SIMULA EL CLIC AUTOMÁTICO
+                handleAction(accion);
             }, 600);
-            return; // Cortamos acá para que no siga buscando
+            return;
         }
     }
     
-    /* --- RESPUESTA POR DEFECTO (Si no entendió nada) --- */
+    /* --- RESPUESTA POR DEFECTO --- */
     setTimeout(() => addMessage("No entendí tu mensaje. 🤔<br>Por favor, <b>utilizá los botones del menú</b> para navegar o escribí 'Ayuda' para volver al inicio.", 'bot'), 600);
 }
 
@@ -1065,6 +1057,7 @@ function clearSession() {
     }
 }
 
+// Event listeners
 document.getElementById('sendButton').onclick = processInput;
 document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') processInput(); };
 
@@ -1077,28 +1070,22 @@ window.onload = () => {
     }
 };
 
+// Service Worker Registration
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
+    window.addEventListener('load', () => { 
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('SW registrado:', reg))
+            .catch(err => console.log('SW error:', err));
+    });
 }
 
-/* --- 🔒 MENSAJE EN CONSOLA --- */
-console.log("%c⛔ DETENTE", "color: red; font-size: 40px; font-weight: bold;");
-console.log("%cEste código es propiedad intelectual de la Municipalidad de Chascomús y fue desarrollado por Federico Perez Speroni.", "font-size: 16px; color: #004a7c;");
+// Objeto app para funciones globales
+const app = {
+    toggleInfo: toggleInfo,
+    clearSession: clearSession
+};
 
-/* --- 🔒 SISTEMA DE BLINDAJE DE AUTORÍA (AUTO-REPARACIÓN) --- */
-(function() {
-    const _0x1 = "Q3JlYWRvIHBvcjogPGI+RmVkZXJpY28gZGUgU2lzdGVtYXM8L2I+PGJyPnBhcmEgbGEgTXVuaWNpcGFsaWRhZCBkZSBDaGFzY29tw7pz";
-    function _secure() {
-        const _el = document.getElementById('authorCredit');
-        const _txt = atob(_0x1); 
-        if (_el) {
-            if (_el.innerHTML !== _txt) { _el.innerHTML = _txt; }
-        } else {
-            // ADVERTENCIA: SI EL DIV 'authorCredit' NO EXISTE EN EL HTML, ESTO BORRARÁ LA PÁGINA.
-            document.body.innerHTML = '<h2 style="text-align:center;margin-top:50px;">⛔ Error de Integridad: Se ha modificado el código fuente original.</h2>';
-        }
-    }
-    window.addEventListener('load', _secure);
-    setInterval(_secure, 2000);
-})();
+/* --- Mensaje en consola --- */
+console.log("%c⛔ DETENTE", "color: red; font-size: 40px; font-weight: bold;");
+console.log("%cEste código es propiedad intelectual de la Municipalidad de Chascomús.", "font-size: 16px; color: #004a7c;");
 
