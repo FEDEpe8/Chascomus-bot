@@ -797,8 +797,14 @@ function getFraseAleatoria() {
 }
 
 function handleAction(opt) {
+    // --- NUEVO: REGISTRO DE CLICK ---
+    registrarEvento("Click Botón", opt.label || opt.id);
+    // --------------------------------
+
     if (opt.id === 'nav_home') return resetToMain();
-    if (opt.id === 'nav_back') {
+    // ... resto del código ...
+}
+{
         if (currentPath.length > 1) {
             currentPath.pop();
             showMenu(currentPath[currentPath.length - 1]);
@@ -929,7 +935,14 @@ function processInput() {
     const input = document.getElementById('userInput');
     const val = input.value.trim();
     if(!val) return;
+    
+    // --- NUEVO: REGISTRO DE TEXTO ---
+    registrarEvento("Consulta Escrita", val);
+    // --------------------------------
 
+    const texto = val.toLowerCase();
+    // ... resto del código ...
+}
     const texto = val.toLowerCase();
 
     /* --- 🔒 COMANDO SECRETO DE AUTOR --- */
@@ -1122,7 +1135,28 @@ const app = {
     toggleInfo: toggleInfo,
     clearSession: clearSession
 };
+/* --- ESTADÍSTICAS --- */
+// Pega aquí la URL que copiaste del Apps Script
+const STATS_URL = "https://script.google.com/macros/s/TUS_LETRAS_RARAS_AQUI/exec";
 
+function registrarEvento(accion, detalle) {
+    if (!STATS_URL) return;
+
+    const datos = {
+        usuario: userName || "Anónimo",
+        accion: accion,
+        detalle: detalle
+    };
+
+    // Usamos 'no-cors' para enviar datos sin esperar respuesta (fire and forget)
+    // Esto es más rápido y evita errores de bloqueo en el navegador.
+    fetch(STATS_URL, {
+        method: "POST",
+        mode: "no-cors", 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+    });
+}
 /* --- Mensaje en consola --- */
 console.log("%c⛔ DETENTE", "color: red; font-size: 40px; font-weight: bold;");
 console.log("%cEste código es propiedad intelectual de la Municipalidad de Chascomús.", "font-size: 16px; color: #004a7c;");
