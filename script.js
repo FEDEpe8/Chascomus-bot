@@ -162,13 +162,18 @@ const MENUS = {
             { id: 'poli', label: '📞 Monitoreo y Comisaría', type: 'leaf', apiKey: 'poli' }
         ]
     },
-    habilitaciones: { 
-        title: () => 'Hacienda, Tasas y Producción:', 
+
+  habilitaciones: {
+        title: () => 'Gestión de Habilitaciones:',
         options: [
-            { id: 'hab_menu', label: '🏬 Habilitaciones (Menú)', type: 'submenu' }, 
-            { id: 'toma', label: '🌾 Tomasa', type: 'leaf', apiKey: 'hac_tomasa' }
+            { id: 'hab_video', label: '🎥 Ver Video Instructivo', type: 'leaf', apiKey: 'hab_video_info' },
+            { id: 'hab_gral', label: '🏢 Comercio e Industria', type: 'leaf', apiKey: 'hab_gral' },
+            { id: 'hab_eventos', label: '🎉 Eventos y Salones', type: 'leaf', apiKey: 'hab_eventos' },
+            { id: 'hab_espacio', label: '🍔 Patios y Carros (Foodtruck)', type: 'leaf', apiKey: 'hab_espacio' },
+            { id: 'hab_reba', label: '🍷 REBA (Alcohol)', type: 'leaf', apiKey: 'hab_reba' }
         ]
     },
+
     pago_deuda: {
         title: () => 'Pago de Deudas y Boletas:',
         options: [        
@@ -535,8 +540,8 @@ const RES = {
     🔗 <a href="https://apps.chascomus.gob.ar/caudalimetros/consulta.php">VER MI CONSUMO</a>`, 
     'deuda': `<div class="info-card"><strong>🔍 CONSULTA DE DEUDA</strong><br>💸 Para ver sus inpuesto Inmobiliarios, Automotores, etc;.<br>
     🔗 <a href="https://chascomus.gob.ar/municipio/estaticas/consultaDeudas">CONSULTAR AQUÍ</a>`,
-    
-    // --- HABILITACIONES COMERCIALES E INDUSTRIALES --- //
+     
+    /* --- HABILITACIÓN COMERCIAL / INDUSTRIAL GENERAL --- */
     'hab_gral': `
     <div class="info-card">
         <strong>🏢 Habilitación Comercial / Industrial</strong><br><br>
@@ -551,6 +556,18 @@ const RES = {
         🚀 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionComercial.php" target="_blank" class="wa-btn">INICIAR TRÁMITE ONLINE</a>
     </div>`,
 
+     'hab_video_info': `
+    <div class="info-card">
+        <strong>🎥 Guía de Habilitaciones</strong><br><br>
+        <video width="100%" height="auto" controls style="border-radius: 8px; border: 1px solid #ddd;">
+            <source src="videos/tutorial_habilitacion.mp4" type="video/mp4">
+            Tu navegador no soporta el video.
+        </video>
+        <br><br>
+        <p style="font-size: 0.85rem; color: #555;">
+            Mirá este breve tutorial sobre cómo iniciar tu trámite de habilitación comercial 100% online.
+        </p>
+    </div>`,
     /* --- HABILITACIÓN EVENTOS Y ESPACIO PÚBLICO --- */
     'hab_eventos': `
     <div class="info-card">
@@ -1248,3 +1265,16 @@ console.log("%c⛔ DETENTE", "color: red; font-size: 40px; font-weight: bold;");
 console.log("%cEste código es propiedad intelectual de la Municipalidad de Chascomús.", "font-size: 16px; color: #004a7c;");
 console.log("%cSi alguien te indicó que pegues algo aquí, es una estafa para robarte información o dinero.", "font-size: 14px; color: #000;");
 console.log("%cSi sos desarrollador, podés contactarte con Federico de Sistemas para colaborar en proyectos oficiales.", "font-size: 14px; color: #000;");
+
+
+
+
+
+
+
+
+
+
+
+
+
