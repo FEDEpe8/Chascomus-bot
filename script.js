@@ -38,7 +38,7 @@ function registrarEvento(accion, detalle) {
 const MENUS = {
     // MENÚ PRINCIPAL: Solo atajos rápidos
  main: { 
-        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy V.I.C. Acá tenés los accesos más rápidos de hoy:`, 
+        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy MuniBot Acá tenés los accesos más rápidos de hoy:`, 
         options: [
             { id: 'oea_shortcut', label: '👀 Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
             { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_actual' },
@@ -881,7 +881,7 @@ function handleAction(opt) {
         registrarEvento("Registro", "Perfil Completo"); // Registra el fin del registro
         showTyping();
         setTimeout(() => {
-            addMessage(`¡Gracias <b>${userName}</b>! Ya tengo tus datos. ¿En qué te ayudo hoy?`, 'bot');
+            addMessage(`¡Gracias <b>${userName}</b>! Ahora con tus datos. ¿En qué te ayudo hoy?`, 'bot');
             resetToMain();
         }, 1000);
         return;
@@ -1046,7 +1046,7 @@ function processInput() {
     const input = document.getElementById('userInput'); const val = input.value.trim();
     if(!val || isBotThinking) return;
     if (isAwaitingForm) { addMessage(val, 'user'); input.value = ""; processFormStep(val); return; }
-    if (!userName) { userName = val; localStorage.setItem('muni_user_name', val); input.value = ""; showTyping(); setTimeout(() => addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 ¿De qué <b>barrio</b> sos?`, 'bot'), 800); return; }
+    if (!userName) { userName = val; localStorage.setItem('muni_user_name', val); input.value = ""; showTyping(); setTimeout(() => addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 ¿Me indicas tu <b>barrio</b> para mejorar la atencion?`, 'bot'), 800); return; }
     if (!userNeighborhood) { 
         userNeighborhood = val; localStorage.setItem('muni_user_neighborhood', val); input.value = ""; showTyping();
         const edades = [{label:'-20', type:'age_select'}, {label:'20-40', type:'age_select'}, {label:'40-60', type:'age_select'}, {label:'+60', type:'age_select'}];
