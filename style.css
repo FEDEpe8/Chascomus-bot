@@ -119,50 +119,65 @@ body {
 .option-button.back { border-color: var(--text-muted); color: var(--text-muted); }
 
 /* --- INPUT AREA --- */
+/* --- INPUT AREA (CORREGIDO PARA TU HTML ACTUAL) --- */
 .input-area {
     background: var(--bg-card);
     padding: 10px 16px;
     padding-bottom: max(10px, var(--safe-bottom));
     border-top: 1px solid #e5e7eb;
-    .input-area {
-    background: var(--bg-card);
-    padding: 10px 16px;
-    padding-bottom: max(10px, var(--safe-bottom));
-    border-top: 1px solid #e5e7eb;
-    flex-shrink: 0; /* AÑADE ESTA LÍNEA */
+    width: 100%;
 }
-    background: #f3f4f6;
-    padding: 6px;
+
+/* AQUÍ ESTÁ EL TRUCO: El flex debe ir en el wrapper */
+.input-wrapper {
+    display: flex;             /* Activa el modo flexible */
+    align-items: center;       /* Centra verticalmente */
+    justify-content: space-between; 
+    gap: 8px;                  /* Espacio entre input y botón */
+    
+    /* Estilo visual de la "cápsula" */
+    background: #f3f4f6; 
     border-radius: 30px;
-    align-items: center;
+    padding: 6px 6px 6px 20px; /* Padding ajustado */
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+    background: #ffffff;
+    border-color: #d1d5db;
+    box-shadow: 0 0 0 3px rgba(0, 74, 124, 0.1);
 }
 
 #userInput {
-    flex: 1;
-    border: none;
+    flex: 1; /* Ocupa todo el espacio sobrante */
     background: transparent;
-    padding: 10px 15px;
-    font-size: 1rem;
+    border: none;
     outline: none;
+    font-size: 1rem;
     color: var(--text-main);
+    padding: 8px 0;
+    /* Eliminamos el orden manual, el HTML ya lo tiene bien: Input -> Botón */
 }
 
 .btn-send {
+    /* El botón no necesita 'order' si en el HTML está después del input */
     background: var(--primary);
     color: white;
     border: none;
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: 0.2s;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Evita que se aplaste */
 }
+
 .btn-send:hover { background: var(--primary-light); transform: scale(1.05); }
-.btn-send:active { transform: scale(0.9); }
+.btn-send:active { transform: scale(0.95); }
 
 /* --- INFO CARDS --- */
 .info-card {
