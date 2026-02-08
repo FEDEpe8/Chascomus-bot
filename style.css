@@ -118,39 +118,36 @@ body {
 .option-button:active { transform: scale(0.96); background: var(--primary); color: white; }
 .option-button.back { border-color: var(--text-muted); color: var(--text-muted); }
 
-/* --- INPUT AREA CORREGIDO --- */
+/* --- INPUT AREA --- */
 .input-area {
     background: var(--bg-card);
     padding: 10px 16px;
     padding-bottom: max(10px, var(--safe-bottom));
     border-top: 1px solid #e5e7eb;
-    
-    /* ACTIVAMOS FLEXBOX PARA ORDENAR */
-    display: flex; 
+    .input-area {
+    background: var(--bg-card);
+    padding: 10px 16px;
+    padding-bottom: max(10px, var(--safe-bottom));
+    border-top: 1px solid #e5e7eb;
+    flex-shrink: 0; /* AÑADE ESTA LÍNEA */
+}
+    background: #f3f4f6;
+    padding: 6px;
+    border-radius: 30px;
     align-items: center;
-    gap: 10px; /* Espacio entre input y botón */
-    
-    /* Estilo tipo "cápsula" si es lo que buscabas con el background gris */
-    /* Si prefieres que el fondo gris sea solo del input, quita esto */
-    /* background: #f3f4f6; border-radius: 30px; */ 
 }
 
-/* Forzamos que el input sea el #1 (Izquierda) */
 #userInput {
     flex: 1;
-    order: 1; /* <--- ESTO LO PONE PRIMERO */
     border: none;
-    background: #f3f4f6; /* Fondo gris solo al input */
-    padding: 12px 20px;
-    border-radius: 30px; /* Redondeado tipo cápsula */
+    background: transparent;
+    padding: 10px 15px;
     font-size: 1rem;
     outline: none;
     color: var(--text-main);
 }
 
-/* Forzamos que el botón sea el #2 (Derecha) */
 .btn-send {
-    order: 2; /* <--- ESTO LO PONE SEGUNDO */
     background: var(--primary);
     color: white;
     border: none;
@@ -163,8 +160,9 @@ body {
     cursor: pointer;
     transition: 0.2s;
     flex-shrink: 0;
-    margin-left: 5px; /* Un poco de margen extra */
 }
+.btn-send:hover { background: var(--primary-light); transform: scale(1.05); }
+.btn-send:active { transform: scale(0.9); }
 
 /* --- INFO CARDS --- */
 .info-card {
