@@ -1,4 +1,4 @@
-const CACHE_NAME = 'muni-chascomus-v64';
+const CACHE_NAME = 'muni-chascomus-v65';
 const assets = [ './', './index.html', './style.css', './script.js', './manifest.json', './logo.png' ];
 
 self.addEventListener('install', e => {
