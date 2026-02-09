@@ -1,5 +1,5 @@
 /* ============================================================
-   MUNICIPALIDAD DE CHASCOMÚS - CHATBOT SCRIPT (FULL DATA)
+   MUNICIPALIDAD DE CHASCOMÚS - CHATBOT SCRIPT (SELECTOR BARRIOS)
    ============================================================ */
 
 /* --- 1. CONFIGURACIÓN, ESTADO Y BARRIOS --- */
@@ -13,82 +13,17 @@ let currentFormStep = 0;
 let formData = { tipo: "", ubicacion: "", descripcion: "" };
 let isBotThinking = false; 
 
-// Lista oficial completa de Barrios de Chascomús
+// Lista oficial completa (Orden Alfabético para facilitar búsqueda)
 const BARRIOS_CHASCOMUS = [
-    "Centro", 
-    "El Porteño", 
-    "San Cayetano", 
-    "Gallo Blanco", 
-    "La Noria", 
-    "Iporá", 
-    "Fátima", 
-    "Lomas Altas", 
-    "Parque Girado", 
-    "El Algarrobo", 
-    "30 de Mayo", 
-    "Barrio Jardín", 
-    "Escribano", 
-    "Comandante Espora", 
-    "Acceso Norte", 
-    "San José Obrero", 
-    "San Luis", 
-    "Las Violetas",
-    "Los Sauces",
-    "El hueco",
-    "139 viviendas",
-    "La liverata",
-    "Puerto Chascomús",
-    "Comi pini"
-    
+    "30 de Mayo", "Acceso Norte", "Barrio Jardín", "Centro", 
+    "Comandante Giribone", "El Algarrobo", "El Porteño", "Escribano", 
+    "Fátima", "Gallo Blanco", "Iporá", "La Noria", "Las Violetas", 
+    "Lomas Altas", "Los Sauces", "Parque Girado", "San Cayetano", 
+    "San José Obrero", "San Luis"
 ];
 
-const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo", "pelotuda", "tonto", "tonta", "idiota", "tarado", "tarada", "gil", "gila", "bobo", "boba", "chupala", "forro", "forra", "inutil", "trolo", "trola"];
-
-/* --- FUNCIONES DE VALIDACIÓN INTELIGENTE --- */
-
-// Normaliza texto: quita tildes, pasa a minúsculas y limpia espacios
-function normalizar(texto) {
-    return texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-}
-
-function esTextoValido(texto) {
-    const t = normalizar(texto);
-    if (t.length < 4) return { v: false, m: "❌ Muy corto. Usá al menos 4 letras." };
-    if (/^\d+$/.test(t)) return { v: false, m: "❌ No uses solo números." };
-    // Evita repetición excesiva de caracteres (ej: "holaaaaa")
-    if (/([a-z])\1{2,}/.test(t)) return { v: false, m: "❌ Escribilo correctamente." };
-    
-    const palabras = t.split(/\s+/);
-    for (let p of palabras) {
-        if (PALABRAS_OFENSIVAS.includes(p)) return { v: false, m: "⚠️ Por favor, usá lenguaje adecuado." };
-    }
-    return { v: true };
-}
-
-function esBarrioOficial(inputUsuario) {
-    const inputNorm = normalizar(inputUsuario); // Lo que escribió el usuario (ej: "ipora")
-
-    // Buscamos en la lista oficial
-    const coincidencia = BARRIOS_CHASCOMUS.find(barrioReal => {
-        const barrioNorm = normalizar(barrioReal); // El barrio de la lista (ej: "ipora")
-        
-        // 1. Coincidencia exacta (ej: "ipora" == "ipora")
-        if (inputNorm === barrioNorm) return true;
-
-        // 2. Coincidencia parcial (ej: si escribe "jardin" encuentra "Barrio Jardín")
-        // Solo si la entrada es sustancial (>4 letras) para evitar falsos positivos
-        if (barrioNorm.includes(inputNorm) && inputNorm.length > 4) return true;
-
-        return false;
-    });
-
-    if (coincidencia) return { v: true, nombre: coincidencia };
-    
-    return { v: false, m: "📍 No encontré ese barrio en la lista oficial. ¿Podrías revisar cómo lo escribiste? (Ej: Centro, Iporá, La Noria)." };
-}
-
 /* --- 2. ESTADÍSTICAS --- */
-const STATS_URL = "https://script.google.com/macros/s/AKfycbz75AJwpuz_n6gwyl3K-0quqABmwR-DPrbrmcspHAaVORBRZcfrk0voQfmuH692kImi/exec";
+const STATS_URL = "https://script.google.com/macros/s/AKfycbxxF9ubtFqDwev5hVY5WOdlfxgFVI7p1Avo4lbke7CvvCd4e7P2o8liXdPQO3emZgP-sg/exec";
 
 function registrarEvento(accion, detalle) {
     if (!STATS_URL || STATS_URL.includes("TUS_LETRAS_RARAS")) return;
@@ -108,11 +43,13 @@ function registrarEvento(accion, detalle) {
     }).catch(console.error);
 }
 
-/* --- 3. MENÚS (DATA ORIGINAL PRESERVADA + INTEGRACIÓN ATAJOS) --- */  
+/* --- 3. MENÚS Y FLUJO --- */
+// ... (Tus menús MAIN, FULL_MENU, etc. van aquí IGUAL que antes. 
+//      Solo copio el inicio para referencia, mantené todo tu bloque MENUS igual) ...     3. MENÚS (DATA ORIGINAL PRESERVADA + INTEGRACIÓN ATAJOS) --- */  
 const MENUS = {
     // MENÚ PRINCIPAL: Solo atajos rápidos
  main: { 
-        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy MuniBot Acá tenés los accesos más rápidos de hoy:`, 
+        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy MuniChas el asistente virtual. Acá tenés los accesos más rápidos de hoy:`, 
         options: [
             { id: 'oea_shortcut', label: '👀 Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
             { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_actual' },
@@ -933,8 +870,9 @@ const RES = {
     Cr. Cramer 270.</div>`
 };
 
+
 /* --- 5. MOTOR DE CHAT --- */
-const FRASES_RESPUESTA = ["¡Excelente selección! ⭐", "¡Perfecto! 👍", "¡Genial! Te ayudo con eso 😊", "¡Buena opción! 🔍", "¡Excelente elección! 🎯", "Sigamos adelante 👇🏼"];
+const FRASES_RESPUESTA = ["¡Excelente selección! ⭐", "¡Perfecto! 👍", "¡Genial! Te ayudo con eso 😊", "¡Buena opción! 🔍", "¡Excelente elección! 🎯"];
 function getFraseAleatoria() { return FRASES_RESPUESTA[Math.floor(Math.random() * FRASES_RESPUESTA.length)]; }
 
 function scrollToBottom() {
@@ -980,6 +918,20 @@ function addMessage(content, side = 'bot', options = null) {
 }
 
 function handleAction(opt) {
+    // Acción para desplegar la lista de barrios
+    if (opt.id === 'ver_lista_barrios') {
+        showTyping();
+        // Generamos la lista larga solo cuando el usuario la pide
+        const opcionesBarrios = BARRIOS_CHASCOMUS.map(b => ({ 
+            label: b, 
+            type: 'barrio_select' 
+        }));
+        setTimeout(() => {
+            addMessage("📍 Por favor, elegí tu barrio de la lista oficial:", "bot", opcionesBarrios);
+        }, 600);
+        return;
+    }
+    
     if (isBotThinking) return; 
     
     if (opt.id === 'back') { 
@@ -992,11 +944,23 @@ function handleAction(opt) {
 
     addMessage(opt.label, 'user');
 
+    // REGISTRO DE BARRIO (Nuevo Handler)
+    if (opt.type === 'barrio_select') {
+        userNeighborhood = opt.label;
+        localStorage.setItem('muni_user_neighborhood', userNeighborhood);
+        registrarEvento("Registro", "Barrio: " + userNeighborhood);
+        showTyping();
+        
+        const edades = [{label:'-20', type:'age_select'}, {label:'20-40', type:'age_select'}, {label:'40-60', type:'age_select'}, {label:'+60', type:'age_select'}];
+        setTimeout(() => addMessage(`¡Excelente! <b>${userName}</b> de <b>${userNeighborhood}</b>. ¿Cuál es tu edad?`, 'bot', edades), 800);
+        return;
+    }
+
     // REGISTRO DE EDAD
     if (opt.type === 'age_select') {
         userAge = opt.label; 
         localStorage.setItem('muni_user_age', userAge);
-        registrarEvento("Registro", "Perfil Completo - Edad: " + userAge); // REGISTRA EDAD
+        registrarEvento("Registro", "Perfil Completo - Edad: " + userAge);
         showTyping();
         setTimeout(() => {
             addMessage(`¡Gracias <b>${userName}</b>! Ahora con tus datos. ¿En qué te ayudo hoy?`, 'bot');
@@ -1005,7 +969,6 @@ function handleAction(opt) {
         return;
     }
 
-    // REGISTRO DE CLICKS (Solo si no es volver ni registro)
     registrarEvento("Click", opt.label || opt.id);
 
     if (opt.type === 'form_147') return startReclamoForm();
@@ -1066,7 +1029,6 @@ function finalizeForm() {
 }
 
 /* --- 7. BUSCADOR INTELIGENTE Y PROCESAMIENTO --- */
-
 function ejecutarBusquedaInteligente(texto) {
    const diccionario = {
         'farmacia':   { type: 'leaf', apiKey: 'farmacias_lista', label: '💊 Farmacias' },
@@ -1170,56 +1132,28 @@ function processInput() {
 
     // REGISTRO DE NOMBRE
     if (!userName) { 
-        const check = esTextoValido(val);
-        if (!check.v) {
-            addMessage(val, 'user'); input.value = ""; showTyping();
-            setTimeout(() => addMessage(check.m, 'bot'), 600);
-            return;
-        }
+        if (val.length < 3) return;
         userName = val; 
         localStorage.setItem('muni_user_name', val); 
-        registrarEvento("Registro", "Nombre: " + val); // REGISTRA NOMBRE
+        registrarEvento("Registro", "Nombre: " + val); 
         addMessage(val, 'user'); input.value = ""; showTyping(); 
         
-        setTimeout(() => addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 ¿Me indicarias tu <b>barrio</b> para mejorar la experiencia?`, 'bot'), 800); 
+        // FIX: Se envía solo un botón puente para los barrios
+        setTimeout(() => {
+            addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 Para continuar, necesitamos saber tu zona:`, 'bot', [
+                { id: 'ver_lista_barrios', label: '🏙️ Seleccionar mi Barrio' }
+            ]);
+        }, 800); 
         return; 
     }
 
-    // REGISTRO DE BARRIO (CON VALIDACIÓN INTELIGENTE)
     if (!userNeighborhood) { 
-        // 1. Validar lenguaje (anti-insultos)
-        const checkTexto = esTextoValido(val);
-        if (!checkTexto.v) {
-            addMessage(val, 'user'); input.value = ""; showTyping();
-            setTimeout(() => addMessage(checkTexto.m, 'bot'), 600);
-            return;
-        }
-
-        // 2. Validar barrio oficial (ignora tildes y mayúsculas)
-        const checkBarrio = esBarrioOficial(val);
-        if (!checkBarrio.v) {
-            addMessage(val, 'user'); input.value = ""; showTyping();
-            setTimeout(() => addMessage(checkBarrio.m, 'bot'), 600);
-            return;
-        }
-
-        // ÉXITO
-        userNeighborhood = checkBarrio.nombre; // Usamos el nombre bien escrito de la lista
-        localStorage.setItem('muni_user_neighborhood', userNeighborhood); 
-        registrarEvento("Registro", "Barrio: " + userNeighborhood); // REGISTRA BARRIO
-        
         addMessage(val, 'user'); input.value = ""; showTyping();
-        
-        const edades = [{label:'-20', type:'age_select'}, {label:'20-40', type:'age_select'}, {label:'40-60', type:'age_select'}, {label:'+60', type:'age_select'}];
-        setTimeout(() => addMessage(`¡Excelente! <b>${userName}</b> de <b>${userNeighborhood}</b>. ¿Cuál es tu edad?`, 'bot', edades), 800);
+        setTimeout(() => addMessage("⚠️ Por favor, seleccioná tu barrio tocando el botón de arriba.", 'bot'), 600);
         return;
     }
 
-    // BUSCADOR NORMAL
-    addMessage(val, 'user'); 
-    registrarEvento("Búsqueda", val); // REGISTRA BÚSQUEDA
-    input.value = ""; 
-    ejecutarBusquedaInteligente(val.toLowerCase());
+    addMessage(val, 'user'); registrarEvento("Búsqueda", val); input.value = ""; ejecutarBusquedaInteligente(val.toLowerCase());
 }
 
 /* --- 8. CARGA --- */
@@ -1229,5 +1163,5 @@ function toggleInput(show) { document.getElementById('inputBar').style.display =
 function toggleInfo() { document.getElementById('infoModal').classList.toggle('show'); }
 function clearSession() { if(confirm("¿Borrar datos?")) { localStorage.clear(); location.reload(); } }
 
-window.onload = () => { if (!userName) { showTyping(); setTimeout(() => addMessage("👋 Bienvenido. Para empezar, ¿Cuál es tu <b>nombre</b>?", 'bot'), 600); } else resetToMain(); };
+window.onload = () => { if (!userName) { showTyping(); setTimeout(() => addMessage("👋 Bienvenido a <b>MuniChas</b>. Para empezar, ¿cuál es tu <b>nombre</b>?", 'bot'), 600); } else resetToMain(); };
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
