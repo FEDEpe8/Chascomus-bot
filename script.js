@@ -7,6 +7,46 @@ let userName = localStorage.getItem('muni_user_name') || "";
 let userNeighborhood = localStorage.getItem('muni_user_neighborhood') || "";
 let userAge = localStorage.getItem('muni_user_age') || "";
 
+/* --- 1. CONFIGURACIÓN, FILTRO Y BARRIOS --- */
+
+// Lista oficial sugerida basada en los CAPS y puntos UDA de tu bot
+const BARRIOS_CHASCOMUS = [
+    "30 de Mayo", "Barrio Jardín", "San Luis", "El Porteño", "Gallo Blanco", 
+    "Iporá", "La Noria", "San Cayetano", "San José Obrero", "Centro", 
+    "Acceso Norte", "Escribano", "Fatima", "Kloosterman", "Los Sauces"
+];
+
+const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo", "pelotuda", "tonto", "tonta", "idiota", "tarado", "tarada", "gil", "gila", "bobo", "boba", "chupala", "forro", "forra", "inutil", "trolo", "trola"];
+
+/* --- VALIDACIÓN DE TEXTO --- */
+function esTextoValido(texto) {
+    const t = texto.toLowerCase().trim();
+    if (t.length < 3) return { v: false, m: "❌ Muy corto. Usá al menos 3 letras." };
+    if (/^\d+$/.test(t)) return { v: false, m: "❌ No uses solo números." };
+    if (/([a-z])\1{2,}/.test(t)) return { v: false, m: "❌ Escribilo correctamente." };
+    
+    const palabras = t.split(/\s+/);
+    for (let p of palabras) {
+        if (PALABRAS_OFENSIVAS.includes(p)) return { v: false, m: "⚠️ Por favor, usá lenguaje adecuado." };
+    }
+    return { v: true };
+}
+
+/* --- VALIDACIÓN DE BARRIO --- */
+function esBarrioChascomus(texto) {
+    const t = texto.toLowerCase().trim();
+    // Buscamos si el texto ingresado coincide con alguno de la lista oficial
+    const coincidencia = BARRIOS_CHASCOMUS.find(b => b.toLowerCase() === t);
+    if (coincidencia) return { v: true, nombreCorrecto: coincidencia };
+    
+    return { 
+        v: false, 
+        m: "📍 El barrio no parece ser de la lista oficial. ¿Podrías escribirlo de nuevo?" 
+    };
+}
+
+/* --- 1. CONFIGURACIÓN Y ESTADO --- */
+
 let currentPath = ['main'];
 let isAwaitingForm = false;
 let currentFormStep = 0;
@@ -1042,18 +1082,68 @@ function ejecutarBusquedaInteligente(texto) {
     }, 800);
 }
 
+/* --- 7. BUSCADOR INTELIGENTE Y PROCESAMIENTO --- */
+
+/* --- 7. PROCESAMIENTO DE ENTRADA --- */
 function processInput() {
-    const input = document.getElementById('userInput'); const val = input.value.trim();
-    if(!val || isBotThinking) return;
-    if (isAwaitingForm) { addMessage(val, 'user'); input.value = ""; processFormStep(val); return; }
-    if (!userName) { userName = val; localStorage.setItem('muni_user_name', val); input.value = ""; showTyping(); setTimeout(() => addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 ¿Me indicas tu <b>barrio</b> para mejorar la atencion?`, 'bot'), 800); return; }
+    const input = document.getElementById('userInput'); 
+    const val = input.value.trim();
+    if (!val || isBotThinking) return;
+
+    if (isAwaitingForm) { 
+        addMessage(val, 'user'); input.value = ""; processFormStep(val); return; 
+    }
+
+    // REGISTRO DE NOMBRE
+    if (!userName) { 
+        const check = esTextoValido(val);
+        if (!check.v) {
+            addMessage(val, 'user'); input.value = ""; showTyping();
+            setTimeout(() => addMessage(check.m, 'bot'), 600);
+            return;
+        }
+        userName = val; 
+        localStorage.setItem('muni_user_name', val); 
+        addMessage(val, 'user'); input.value = ""; showTyping(); 
+        
+        // --- TU MENSAJE PERSONALIZADO AQUÍ ---
+        setTimeout(() => addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 ¿Me indicarias tu <b>barrio</b> para mejorar la experiencia?`, 'bot'), 800); 
+        return; 
+    }
+
+    // REGISTRO DE BARRIO (CON LISTA OFICIAL)
     if (!userNeighborhood) { 
-        userNeighborhood = val; localStorage.setItem('muni_user_neighborhood', val); input.value = ""; showTyping();
+        // Primero validamos lenguaje y formato
+        const checkTexto = esTextoValido(val);
+        if (!checkTexto.v) {
+            addMessage(val, 'user'); input.value = ""; showTyping();
+            setTimeout(() => addMessage(checkTexto.m, 'bot'), 600);
+            return;
+        }
+
+        // Segundo validamos que sea de Chascomús
+        const checkBarrio = esBarrioChascomus(val);
+        if (!checkBarrio.v) {
+            addMessage(val, 'user'); input.value = ""; showTyping();
+            setTimeout(() => addMessage(checkBarrio.m, 'bot'), 600);
+            return;
+        }
+
+        // Si pasó todo:
+        userNeighborhood = checkBarrio.nombreCorrecto; 
+        localStorage.setItem('muni_user_neighborhood', userNeighborhood); 
+        addMessage(val, 'user'); input.value = ""; showTyping();
+        
         const edades = [{label:'-20', type:'age_select'}, {label:'20-40', type:'age_select'}, {label:'40-60', type:'age_select'}, {label:'+60', type:'age_select'}];
-        setTimeout(() => addMessage(`¡Genial! <b>${userName}</b>, ¿cuál es tu rango de edad?`, 'bot', edades), 800);
+        setTimeout(() => addMessage(`¡Excelente! <b>${userName}</b> de <b>${userNeighborhood}</b>. ¿Cuál es tu edad?`, 'bot', edades), 800);
         return;
     }
-    addMessage(val, 'user'); registrarEvento("Escribió", val); input.value = ""; ejecutarBusquedaInteligente(val.toLowerCase());
+
+    // BUSCADOR NORMAL
+    addMessage(val, 'user'); 
+    registrarEvento("Escribió", val); 
+    input.value = ""; 
+    ejecutarBusquedaInteligente(val.toLowerCase());
 }
 
 /* --- 8. CARGA --- */
@@ -1065,6 +1155,7 @@ function clearSession() { if(confirm("¿Borrar datos?")) { localStorage.clear();
 
 window.onload = () => { if (!userName) { showTyping(); setTimeout(() => addMessage("👋 Bienvenido. Para empezar, ¿cual es tu <b>nombre</b>?", 'bot'), 600); } else resetToMain(); };
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+
 
 
 
