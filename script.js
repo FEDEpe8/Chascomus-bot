@@ -102,21 +102,7 @@ function registrarEvento(accion, detalle) {
     }).catch(console.error);
 }
 
-/* --- 3. MENÚS --- */  
-const MENUS = {
-    // MENÚ PRINCIPAL: Solo atajos rápidos
-    main: { 
-        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy MuniBot. Acá tenés los accesos más rápidos de hoy:`, 
-        options: [
-            { id: 'oea_shortcut', label: '👀 Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
-            { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_actual' },
-            { id: 'f_shortcut', label: '💊 Farmacias de Turno', type: 'leaf', apiKey: 'farmacias_lista' },
-            { id: 'h_shortcut', label: '📅 Turnos Hospital', type: 'leaf', apiKey: 'h_turnos' },
-            { id: 'full_menu', label: '☰ VER MENÚ COMPLETO' }
-        ]
-    },
-
-   /* --- 3. MENÚS (DATA ORIGINAL PRESERVADA + INTEGRACIÓN ATAJOS) --- */  
+/* --- 3. MENÚS (DATA ORIGINAL PRESERVADA + INTEGRACIÓN ATAJOS) --- */  
 const MENUS = {
     // MENÚ PRINCIPAL: Solo atajos rápidos
  main: { 
@@ -895,6 +881,7 @@ const RES = {
     📍 <b>Mesa de Entradas:</b><br>
     Cr. Cramer 270.</div>`
 };
+
 /* --- 5. MOTOR DE CHAT --- */
 const FRASES_RESPUESTA = ["¡Excelente selección! ⭐", "¡Perfecto! 👍", "¡Genial! Te ayudo con eso 😊", "¡Buena opción! 🔍", "¡Excelente elección! 🎯"];
 function getFraseAleatoria() { return FRASES_RESPUESTA[Math.floor(Math.random() * FRASES_RESPUESTA.length)]; }
@@ -1193,4 +1180,3 @@ function clearSession() { if(confirm("¿Borrar datos?")) { localStorage.clear();
 
 window.onload = () => { if (!userName) { showTyping(); setTimeout(() => addMessage("👋 Bienvenido. Para empezar, ¿cual es tu <b>nombre</b>?", 'bot'), 600); } else resetToMain(); };
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
-
