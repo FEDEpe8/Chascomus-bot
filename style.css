@@ -9,6 +9,8 @@
     --bg-card: #ffffff;
     --text-main: #1f2937;
     --header-height: 60px;
+    --shadow-soft: 0 8px 20px rgba(0, 74, 124, 0.06);
+    --radius-bubble: 22px; /* Burbujas más circulares */
 }
 
 /* BLOQUEO TOTAL DE SCROLL EXTERNO */
@@ -145,6 +147,56 @@ body {
     padding-bottom: 5px; /* Para que el último botón no quede al ras */
 }
 
+/* --- TARJETAS DE INFORMACIÓN MODERNAS --- */
+.info-card {
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 20px; /* Más redondeado */
+    border-left: 6px solid var(--accent); /* Borde más grueso y notable */
+    margin-top: 10px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+                0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Sombra multinivel */
+    border-top: 1px solid rgba(0,0,0,0.03);
+    border-right: 1px solid rgba(0,0,0,0.03);
+    transition: transform 0.2s ease;
+}
+
+/* Efecto sutil al tocar (en móviles se nota mucho) */
+.info-card:active {
+    transform: scale(0.98);
+}
+
+.info-card strong {
+    display: block;
+    color: var(--primary);
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+}
+
+/* --- BOTÓN DE WHATSAPP / ACCIÓN MODERNO --- */
+.wa-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%) !important; /* Degradado */
+    color: white !important;
+    text-align: center;
+    padding: 12px 20px;
+    border-radius: 14px;
+    margin-top: 12px;
+    border: none;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    transition: all 0.2s ease;
+}
+
+.wa-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 6px rgba(37, 211, 102, 0.2);
+}
 /* Burbujas y otros estilos */
 .message { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; }
 .message.bot { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
@@ -152,4 +204,3 @@ body {
 .options-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
 .option-button { background: white; border: 1px solid var(--primary); color: var(--primary); padding: 10px 15px; border-radius: 20px; font-size: 0.9rem; flex: 1 1 auto; }
 .wa-btn { display: block; background: #25D366; color: white !important; text-align: center; padding: 10px; border-radius: 8px; margin-top: 10px; text-decoration: none; font-weight: bold;}
-
