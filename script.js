@@ -33,9 +33,12 @@ const BARRIOS_CHASCOMUS = [
     "San José Obrero", 
     "San Luis", 
     "Las Violetas",
-    "Los Sauces"
-    "El hueco"
-    "139 viviendas"
+    "Los Sauces",
+    "El hueco",
+    "139 viviendas",
+    "La liverata",
+    "Puerto Chascomús",
+    
 ];
 
 const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo", "pelotuda", "tonto", "tonta", "idiota", "tarado", "tarada", "gil", "gila", "bobo", "boba", "chupala", "forro", "forra", "inutil", "trolo", "trola"];
