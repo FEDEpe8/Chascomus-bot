@@ -23,7 +23,7 @@ const BARRIOS_CHASCOMUS = [
 ];
 
 /* --- 2. ESTADÍSTICAS --- */
-const STATS_URL = "https://script.google.com/macros/s/AKfycbxxF9ubtFqDwev5hVY5WOdlfxgFVI7p1Avo4lbke7CvvCd4e7P2o8liXdPQO3emZgP-sg/exec";
+const STATS_URL = "https://script.google.com/macros/s/AKfycby5nTXeud9ZQpnJQ_yJlumF4g1XoWlksV3f_8u7iCU-BrwawsVVvLOmKYAhAcOx0GOf/exec";
 
 function registrarEvento(accion, detalle) {
     if (!STATS_URL || STATS_URL.includes("TUS_LETRAS_RARAS")) return;
