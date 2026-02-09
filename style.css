@@ -137,6 +137,14 @@ body {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
+.options-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    padding-bottom: 5px; /* Para que el último botón no quede al ras */
+}
+
 /* Burbujas y otros estilos */
 .message { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; }
 .message.bot { background: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
@@ -144,3 +152,4 @@ body {
 .options-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
 .option-button { background: white; border: 1px solid var(--primary); color: var(--primary); padding: 10px 15px; border-radius: 20px; font-size: 0.9rem; flex: 1 1 auto; }
 .wa-btn { display: block; background: #25D366; color: white !important; text-align: center; padding: 10px; border-radius: 8px; margin-top: 10px; text-decoration: none; font-weight: bold;}
+
