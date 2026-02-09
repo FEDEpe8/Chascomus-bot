@@ -34,6 +34,8 @@ const BARRIOS_CHASCOMUS = [
     "San Luis", 
     "Las Violetas",
     "Los Sauces"
+    "El hueco"
+    "139 viviendas"
 ];
 
 const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo", "pelotuda", "tonto", "tonta", "idiota", "tarado", "tarada", "gil", "gila", "bobo", "boba", "chupala", "forro", "forra", "inutil", "trolo", "trola"];
@@ -82,7 +84,7 @@ function esBarrioOficial(inputUsuario) {
 }
 
 /* --- 2. ESTADÍSTICAS --- */
-const STATS_URL = "https://script.google.com/macros/s/AKfycbxxF9ubtFqDwev5hVY5WOdlfxgFVI7p1Avo4lbke7CvvCd4e7P2o8liXdPQO3emZgP-sg/exec";
+const STATS_URL = "https://script.google.com/macros/s/AKfycbz75AJwpuz_n6gwyl3K-0quqABmwR-DPrbrmcspHAaVORBRZcfrk0voQfmuH692kImi/exec";
 
 function registrarEvento(accion, detalle) {
     if (!STATS_URL || STATS_URL.includes("TUS_LETRAS_RARAS")) return;
