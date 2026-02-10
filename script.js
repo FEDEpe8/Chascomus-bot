@@ -207,7 +207,8 @@ const MENUS = {
     },
     pago_deuda: {
         title: () => 'Pago de Deudas y Boletas:',
-        options: [        
+        options: [   
+            { id: 'deuda_video', label: '🎥 Ver Video Instructivo', type: 'leaf', apiKey: 'deuda_video_info' },     
             { id: 'deuda', label: '🔍 Ver Deuda / Pagar', type: 'leaf', apiKey: 'deuda' },
             { id: 'agua', label: '💧 Agua', type: 'leaf', apiKey: 'agua' },
             { id: 'boleta', label: '📧 Boleta Digital', type: 'leaf', apiKey: 'boleta' }
@@ -609,6 +610,19 @@ const RES = {
     // --- TRÁMITES Y SERVICIOS MUNICIPALES --- //
 
     'hac_tomasa': `<div class="info-card"><strong>🌾 TOMASA:</b><br>ℹ️ Portal de autogestión.<br>🔗 <a href="https://tomasa.chascomus.gob.ar/">INGRESAR</a>`,
+
+    'deuda_video_info': `
+    <div class="info-card">
+        <strong>🎥 La muni Invierte</strong><br><br>
+        <video width="100%" height="auto" controls style="border-radius: 8px; border: 1px solid #ddd;">
+            <source src="videos/tasas.mp4" type="video/mp4">
+            Tu navegador no soporta el video.
+        </video>
+        <br><br>
+        <p style="font-size: 0.85rem; color: #555;">
+            Mirá este breve tutorial sobre cómo iniciar tu trámite de habilitación comercial 100% online.
+        </p>
+    </div>`,
     'boleta': `<div class="info-card"><strong>📧 BOLETA DIGITAL</strong><br>🟢 <i>Para inscribirse comomunicarce por estas vias</a><br> 
     📲: <a href="https://wa.me/5492241557616">2241-557616</a><br>📧 <a href="mailto:ingresospublicos@chascomus.gob.ar">Email</a></div>`,
     'agua': `<div class="info-card"><strong>💧 CONSUMO DE AGUA</strong><br> ℹ️ Para conocer y pagar su consumo ingrese a este Link</b><br>
@@ -631,19 +645,6 @@ const RES = {
         🚀 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionComercial.php" target="_blank" class="wa-btn">INICIAR TRÁMITE ONLINE</a>
     </div>`,
 // Respuesta original de Hábitat con información detallada sobre el trámite de habilitación comercial, 
-// requisitos específicos para diferentes rubros y enlace directo a un video tutorial para facilitar el proceso a los vecinos
-     'hab_video_info': `
-    <div class="info-card">
-        <strong>🎥 Guía de Habilitaciones</strong><br><br>
-        <video width="100%" height="auto" controls style="border-radius: 8px; border: 1px solid #ddd;">
-            <source src="videos/tutorial_habilitacion.mp4" type="video/mp4">
-            Tu navegador no soporta el video.
-        </video>
-        <br><br>
-        <p style="font-size: 0.85rem; color: #555;">
-            Mirá este breve tutorial sobre cómo iniciar tu trámite de habilitación comercial 100% online.
-        </p>
-    </div>`,
     /* --- HABILITACIÓN EVENTOS Y ESPACIO PÚBLICO --- */
     'hab_eventos': `
     <div class="info-card">
