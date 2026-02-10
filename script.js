@@ -55,6 +55,7 @@ const MENUS = {
             { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_actual' },
             { id: 'f_shortcut', label: '💊 Farmacias de Turno', type: 'leaf', apiKey: 'farmacias_lista' },
             { id: 'h_shortcut', label: '📅 Turnos Hospital', type: 'leaf', apiKey: 'h_turnos' },
+            { id: 'politicas_gen_shortcut', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
             { id: 'full_menu', label: '☰ VER MENÚ COMPLETO' }
         ]
     },
@@ -323,8 +324,9 @@ const RES = {
 
         🏛️🌅 <b>INSCRIPCIONES Y LINKS:</b><br>
         Solicitá los formularios de inscripción para actividades:<br><br>
-        📲 <b>WhatsApp Turismo:</b><br>
-        <a href="https://wa.me/5492241603414" style="color:#25D366; font-weight:bold; text-decoration:none;">💬 2241-603414 (Clic aquí)</a><br><br>
+        <a href="https://wa.me/5492241603414" target="_blank" class="wa-btn" style="background-color: #efe8e3ff !important;">
+        📲 Por cualquier info (WhatsApp)
+        </a><br><br>
         🔗 <b>Linktree Inscripciones:</b><br>
         <a href="https://linktr.ee/visitasguiadas.turismoch" target="_blank">Ingresar al Linktree</a>
     </div>`,
@@ -478,8 +480,9 @@ const RES = {
         Protección de derechos del ciudadano.<br><br>
         📍 <b>Dirección:</b> Arenales y Julian quintana).<br>
         ⏰ <b>Horario:</b> Lunes a Lunes 24hs.<br>
-        <a href="https://wa.me/5492241557444">2241-557444</a><br><br>
-       
+        <a href="https://wa.me/5492241557444" target="_blank" class="wa-btn" style="background-color: #efe8e3ff !important;">
+        📲 Por cualquier info (WhatsApp)
+        </a>
     </div>`,
 
     // Respuestas Seguridad y Trámites
@@ -558,7 +561,17 @@ const RES = {
     'deportes_circuito': `<div class="info-card"><strong>🏃 Circuito de Calle</strong><br>Inscripciones, cronograma y resultados oficiales.<br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/circuitodecalle/" target="_blank">IR A LA WEB</a></div>`,
   
 
-    'politicas_gen': `<div class="info-card" style="border-left: 5px solid #9b59b6;"><strong style="color: #8e44ad; font-size: 1rem;">💜 Género y Diversidad</strong><br><br><div style="font-size: 0.85rem; margin-bottom: 12px;">🚨 <b>Guardia 24/7:</b> Orientación y acompañamiento en casos de violencia.<br>🧠 <b>Equipo Técnico:</b> Abogadas, psicólogas y trabajadoras sociales.<br>🏠 <b>Hogar de Tránsito:</b> Alojamiento temporal para mujeres en riesgo.<br>🗣️ <b>Varones:</b> Espacio de abordaje y deconstrucción de conductas violentas.<br>👮‍♀️ <b>Articulación:</b> Trabajo conjunto con Comisaría de la Mujer.</div><div style="background: #fdf2ff; padding: 10px; border-radius: 8px; font-size: 0.9rem;">📍 <b>Oficina:</b> Moreno 259 (Lun-Vie 9-14hs)<br>☎️ <b>Fijo Oficina:</b> <a href="tel:02241530448">2241-530448</a><br>🚓 <b>Comisaría Mujer:</b> <a href="tel:02241422653">42-2653</a></div><a href="https://wa.me/5492241559397" target="_blank" class="wa-btn" style="background-color: #8e44ad !important;">🚨 GUARDIA 24HS (WhatsApp)</a></div>`,
+    'politicas_gen': `<div class="info-card" style="border-left: 5px solid #9b59b6;"><strong style="color: #8e44ad; font-size: 1rem;">
+    💜 Género y Diversidad</strong><br><br><div style="font-size: 0.85rem; margin-bottom: 12px;">
+    🚨 <b>Guardia 24/7:</b> Orientación y acompañamiento en casos de violencia.<br>
+    🧠 <b>Equipo Técnico:</b> Abogadas, psicólogas y trabajadoras sociales.<br>
+    🏠 <b>Hogar de Tránsito:</b> Alojamiento temporal para mujeres en riesgo.<br>
+    🗣️ <b>Varones:</b> Espacio de abordaje y deconstrucción de conductas violentas.<br>
+    👮‍♀️ <b>Articulación:</b> Trabajo conjunto con Comisaría de la Mujer.</div><div style="background: #fdf2ff; padding: 10px; border-radius: 8px; font-size: 0.9rem;">
+    📍 <b>Oficina:</b> Moreno 259 (Lun-Vie 9-14hs)<br>
+    ☎️ <b>Fijo Oficina:</b> <a href="tel:02241530448">2241-530448</a><br>
+    🚓 <b>Comisaría Mujer:</b> <a href="tel:02241422653">42-2653</a></div><a href="https://wa.me/5492241559397" target="_blank" class="wa-btn" style="background-color: #8e44ad !important;">
+    🚨 GUARDIA 24HS (WhatsApp)</a></div>`,
     
     /* --- TARJETA NUEVA: MÓDULOS ALIMENTARIOS (Estilo destacado) --- */
     'asistencia_social': `
@@ -573,7 +586,7 @@ const RES = {
             • Certificado médico (si corresponde a dieta celíaca).
         </div>
 
-        <div style="background: #fff3e0; padding: 10px; border-radius: 8px; font-size: 0.9rem; border: 1px solid #ffe0b2;">
+        <div style="background: #edb482ff; padding: 10px; border-radius: 8px; font-size: 0.9rem; border: 1px solid #ffe0b2;">
             📍 <b>Lugar de Retiro:</b><br>
             Depósito de calle Juárez (casi esquina Mazzini).<br><br>
             ⏰ <b>Horario:</b><br>
@@ -675,10 +688,12 @@ const RES = {
     /* --- RESPUESTAS HOSPITAL MUNICIPAL --- */
     'h_turnos': `
     <div class="info-card">
-        <strong>📅 Turnos Hospital</strong><br>WhatsApp: <a href="https://wa.me/5492241466977">📲 2241-466977</a>`,
-    'h_info':  `
-    <div class="info-card">
-        <strong>📍 <b>Hospital Municipal:</b> Av. Alfonsín e Yrigoyen.<br>🚨 Guardia 24 hs.`,
+        <strong>📍 <b>Hospital Municipal:</b> Av. Alfonsín e Yrigoyen.<br>🚨 Guardia 24 hs.</strong><br>
+        <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn" style="background-color: #efe8e3ff !important;">
+            📲 Consultar por turnos (WhatsApp)
+        </a>
+    </div>`, 
+    
     
     /* --- ESPECIALIDADES HOSPITAL (NUEVO ORDEN: Especialidad -> Día) --- */
     'info_pediatria': `
