@@ -6,12 +6,11 @@
 let userName = localStorage.getItem('muni_user_name') || "";
 let userNeighborhood = localStorage.getItem('muni_user_neighborhood') || "";
 let userAge = localStorage.getItem('muni_user_age') || "";
-
 let currentPath = ['main'];
 let isAwaitingForm = false;
-let currentFormStep = 0;
+let isBotThinking = false;
 let formData = { tipo: "", ubicacion: "", descripcion: "" };
-let isBotThinking = false; 
+
 
 // Lista oficial completa (Orden Alfabético para facilitar búsqueda)
 const BARRIOS_CHASCOMUS = [
@@ -44,12 +43,11 @@ function registrarEvento(accion, detalle) {
 }
 
 /* --- 3. MENÚS Y FLUJO --- */
-// ... (Tus menús MAIN, FULL_MENU, etc. van aquí IGUAL que antes. 
-//      Solo copio el inicio para referencia, mantené todo tu bloque MENUS igual) ...     3. MENÚS (DATA ORIGINAL PRESERVADA + INTEGRACIÓN ATAJOS) --- */  
+
 const MENUS = {
     // MENÚ PRINCIPAL: Solo atajos rápidos
  main: { 
-        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy MuniChas el asistente virtual. Acá tenés los accesos más rápidos de hoy:`, 
+        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy MuniBot el asistente virtual. Acá tenés los accesos más rápidos de hoy:`, 
         options: [
             { id: 'oea_shortcut', label: '👀 Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
             { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_actual' },
@@ -892,15 +890,16 @@ const FRASES_RESPUESTA = ["¡Excelente selección! ⭐", "¡Perfecto! 👍", "¡
 function getFraseAleatoria() { return FRASES_RESPUESTA[Math.floor(Math.random() * FRASES_RESPUESTA.length)]; }
 
 function scrollToBottom() {
-    const container = document.getElementById('chatMessages'); 
-    setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 100);
+    const container = document.getElementById('chatMessages');
+    setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 50);
 }
 
 function showTyping() {
     isBotThinking = true;
     const container = document.getElementById('chatMessages');
     const typing = document.createElement('div');
-    typing.id = 'typingIndicator'; typing.className = 'typing-indicator';
+    typing.id = 'typingIndicator';
+    typing.className = 'typing-indicator nuevo-mensaje';
     typing.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
     container.appendChild(typing);
     scrollToBottom();
@@ -915,12 +914,22 @@ function removeTyping() {
 function addMessage(content, side = 'bot', options = null) {
     if (side === 'bot') removeTyping();
     const container = document.getElementById('chatMessages');
-    const row = document.createElement('div'); row.className = 'message-wrapper';
-    const div = document.createElement('div'); div.className = `message ${side}`;
+    const row = document.createElement('div'); 
+    row.className = 'message-wrapper';
+    row.style.display = 'flex';
+    row.style.flexDirection = 'column';
+
+    const div = document.createElement('div');
+    // Se añade 'nuevo-mensaje' para que el CSS dispare la animación
+    div.className = `message ${side} nuevo-mensaje`; 
+    
     if (side === 'user') div.textContent = content; else div.innerHTML = content;
+    
     row.appendChild(div);
+
     if (options) {
-        const optDiv = document.createElement('div'); optDiv.className = 'options-container';
+        const optDiv = document.createElement('div');
+        optDiv.className = 'options-container';
         options.forEach(opt => {
             const btn = document.createElement('button');
             btn.className = `option-button ${opt.id === 'back' ? 'back' : ''}`;
@@ -930,9 +939,79 @@ function addMessage(content, side = 'bot', options = null) {
         });
         row.appendChild(optDiv);
     }
-    container.appendChild(row); scrollToBottom();
+
+    container.appendChild(row);
+    scrollToBottom();
 }
 
+function handleAction(opt) {
+    if (isBotThinking) return;
+    if (opt.id === 'back') { 
+        if (currentPath.length > 1) currentPath.pop(); 
+        showMenu(currentPath[currentPath.length - 1]); 
+        return; 
+    }
+    if (opt.link) { window.open(opt.link, '_blank'); return; }
+
+    addMessage(opt.label, 'user');
+
+    if (opt.type === 'barrio_select') {
+        userNeighborhood = opt.label;
+        localStorage.setItem('muni_user_neighborhood', userNeighborhood);
+        showTyping();
+        setTimeout(() => {
+            addMessage(`¡Excelente! ¿Cuál es tu edad?`, 'bot', [
+                {label:'-20', type:'age_select'}, {label:'20-40', type:'age_select'}, 
+                {label:'40-60', type:'age_select'}, {label:'+60', type:'age_select'}
+            ]);
+        }, 1200);
+        return;
+    }
+
+    showTyping();
+    // Tiempo de espera aumentado para simular escritura real
+    setTimeout(() => {
+        if (opt.type === 'leaf' || opt.apiKey) {
+            addMessage(RES[opt.apiKey] || "Información no disponible.", 'bot');
+            showNavControls();
+        } else if (MENUS[opt.id]) {
+            currentPath.push(opt.id);
+            showMenu(opt.id);
+        }
+    }, 1500); 
+}
+
+function showMenu(key) {
+    removeTyping();
+    const menu = MENUS[key];
+    const title = typeof menu.title === 'function' ? menu.title(userName) : menu.title;
+    let opts = [...menu.options];
+    if (currentPath.length > 1) opts.push({ id: 'back', label: '⬅️ Volver' });
+    addMessage(title, 'bot', opts);
+}
+
+function resetToMain() { 
+    currentPath = ['main']; 
+    showTyping(); 
+    setTimeout(() => showMenu('main'), 1000); 
+}
+
+/* --- INICIO --- */
+document.getElementById('sendButton').onclick = processInput;
+document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') processInput(); };
+
+window.onload = () => { 
+    if (!userName) { 
+        showTyping(); 
+        setTimeout(() => addMessage("👋 Bienvenido a <b>MuniBot</b>. ¿Cuál es tu <b>nombre</b>?", 'bot'), 1200); 
+    } else {
+        resetToMain();
+    }
+};
+
+function toggleInfo() { document.getElementById('infoModal').classList.toggle('show'); }
+function clearSession() { if(confirm("¿Borrar datos?")) { localStorage.clear(); location.reload(); } }
+    
 function handleAction(opt) {
     // Acción para desplegar la lista de barrios
     if (opt.id === 'ver_lista_barrios') {
@@ -995,7 +1074,8 @@ function handleAction(opt) {
         setTimeout(() => {
             addMessage(`${frase}<br>${RES[opt.apiKey] || "Información no disponible."}`, 'bot');
             showNavControls(); 
-        }, 800);
+        }, 2000); // <-- Cambialo de 800 a 2000 para que se vea el "Escribiendo..."
+    
     } else if (MENUS[opt.id]) {
         currentPath.push(opt.id);
         setTimeout(() => { addMessage(frase, 'bot'); showMenu(opt.id); }, 600);
@@ -1179,5 +1259,5 @@ function toggleInput(show) { document.getElementById('inputBar').style.display =
 function toggleInfo() { document.getElementById('infoModal').classList.toggle('show'); }
 function clearSession() { if(confirm("¿Borrar datos?")) { localStorage.clear(); location.reload(); } }
 
-window.onload = () => { if (!userName) { showTyping(); setTimeout(() => addMessage("👋 Bienvenido a <b>MuniChas</b>. Para empezar, ¿cuál es tu <b>nombre</b>?", 'bot'), 600); } else resetToMain(); };
+window.onload = () => { if (!userName) { showTyping(); setTimeout(() => addMessage("👋 Bienvenido a <b>MuniBot</b>. Para empezar, ¿cuál es tu <b>nombre</b>?", 'bot'), 600); } else resetToMain(); };
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
