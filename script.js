@@ -11,7 +11,15 @@ let isAwaitingForm = false;
 let isBotThinking = false;
 let formData = { tipo: "", ubicacion: "", descripcion: "" };
 
+const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo", "pelotuda", "tonto", "tonta", "idiota", "tarado", "tarada", "gil", "gila", "bobo", "boba", "chupala", "forro", "forra", "inutil", "trolo", "trola"];
 
+function validarTexto(t) {
+    const palabras = t.split(/\s+/);
+    for (let p of palabras) {
+        if (PALABRAS_OFENSIVAS.includes(p)) return { v: false, m: "⚠️ Por favor, usá lenguaje adecuado." };
+    }
+    return { v: true };
+}
 // Lista oficial completa (Orden Alfabético para facilitar búsqueda)
 const BARRIOS_CHASCOMUS = [
     "30 de Mayo", "Acceso Norte", "Barrio Jardín", "Centro", 
@@ -20,7 +28,6 @@ const BARRIOS_CHASCOMUS = [
     "Lomas Altas", "Los Sauces", "Parque Girado", "San Cayetano", 
     "San José Obrero", "San Luis", "139 Viviendas", "Cooperativa", "Comi Pini"
 ];
-
 /* --- 2. ESTADÍSTICAS --- */
 const STATS_URL = "https://script.google.com/macros/s/AKfycby5nTXeud9ZQpnJQ_yJlumF4g1XoWlksV3f_8u7iCU-BrwawsVVvLOmKYAhAcOx0GOf/exec";
 
@@ -1218,11 +1225,33 @@ function ejecutarBusquedaInteligente(texto) {
     }, 800);
 }
 
+f/* --- INTEGRACIÓN DE FILTRO DE PALABRAS --- */
 function processInput() {
     const input = document.getElementById('userInput'); 
     const val = input.value.trim();
+    
+    // Si está vacío o el bot está pensando, no hacemos nada
     if (!val || isBotThinking) return;
 
+    // 1. PRIMERO: VALIDAMOS SI HAY INSULTOS
+    // Convertimos a minúsculas para comparar mejor
+    const validacion = validarTexto(val.toLowerCase()); 
+    
+    if (!validacion.v) {
+        // Si hay insulto: Mostramos el mensaje del usuario
+        addMessage(val, 'user'); 
+        input.value = ""; 
+        showTyping();
+        
+        // El bot responde retándolo y CORTA la ejecución (return)
+        setTimeout(() => {
+            addMessage(validacion.m, 'bot');
+        }, 600);
+        return; // <--- ESTO ES CLAVE: Detiene todo aquí.
+    }
+
+    // 2. Si pasa el filtro, sigue la lógica normal...
+    
     if (isAwaitingForm) { 
         addMessage(val, 'user'); input.value = ""; processFormStep(val); return; 
     }
@@ -1235,7 +1264,6 @@ function processInput() {
         registrarEvento("Registro", "Nombre: " + val); 
         addMessage(val, 'user'); input.value = ""; showTyping(); 
         
-        // FIX: Se envía solo un botón puente para los barrios
         setTimeout(() => {
             addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 Para continuar, necesitamos saber tu barrio para mejorar la atención:`, 'bot', [
                 { id: 'ver_lista_barrios', label: '🏙️ Seleccionar mi Barrio' }
@@ -1250,7 +1278,11 @@ function processInput() {
         return;
     }
 
-    addMessage(val, 'user'); registrarEvento("Búsqueda", val); input.value = ""; ejecutarBusquedaInteligente(val.toLowerCase());
+    // Búsqueda normal
+    addMessage(val, 'user'); 
+    registrarEvento("Búsqueda", val); 
+    input.value = ""; 
+    ejecutarBusquedaInteligente(val.toLowerCase());
 }
 
 /* --- 8. CARGA --- */
