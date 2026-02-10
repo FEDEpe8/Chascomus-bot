@@ -1201,7 +1201,8 @@ function ejecutarBusquedaInteligente(texto) {
         'boletin':    { id: 'sibon', label: '📰 Boletín Oficial' },
         'oficial':    { id: 'sibon', label: '📰 Boletín Oficial' },
         'diario':     { id: 'el_digital', label: '📰 Diario Digital' },
-        'digital':    { id: 'el_digital', label: '📰 Diario Digital' }
+        'digital':    { id: 'el_digital', label: '📰 Diario Digital' },
+        'tasas':       { type: 'leaf', apiKey: 'deuda', label: '💰 Pagos de Tasas' }
 
     };
     showTyping();
