@@ -19,7 +19,7 @@ const BARRIOS_CHASCOMUS = [
     "Comandante Giribone", "El Algarrobo", "El Porteño", "Escribano", 
     "Fátima", "Gallo Blanco", "Iporá", "La Noria", "Las Violetas", 
     "Lomas Altas", "Los Sauces", "Parque Girado", "San Cayetano", 
-    "San José Obrero", "San Luis"
+    "San José Obrero", "San Luis", "139 Viviendas", "Cooperativa", "Comi Pini"
 ];
 
 /* --- 2. ESTADÍSTICAS --- */
@@ -1155,7 +1155,7 @@ function processInput() {
         
         // FIX: Se envía solo un botón puente para los barrios
         setTimeout(() => {
-            addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 Para continuar, necesitamos saber tu zona:`, 'bot', [
+            addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 Para continuar, necesitamos saber tu barrio para mejorar la atención:`, 'bot', [
                 { id: 'ver_lista_barrios', label: '🏙️ Seleccionar mi Barrio' }
             ]);
         }, 800); 
