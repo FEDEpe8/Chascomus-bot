@@ -2,63 +2,50 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>MuniChas - Asistente Virtual de la Municipalidad de Chascomús</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MuniBot - Chascomús</title>
     <meta name="theme-color" content="#004a7c">
-    <meta name="description" content="Asistente virtual de la Municipalidad de Chascomús">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="app-header">
     <div class="header-brand">
-        <img src="logo.png" class="header-logo" alt="Logo Muni" onerror="this.style.display='none'">
+        <img src="logo.png" class="header-logo" alt="Logo" onerror="this.style.display='none'">
         <div class="header-text">
-            <span class="header-title">MuniChas</span>
+            <span class="header-title">MuniBot</span>
             <span class="header-subtitle">🟢 En línea</span>
         </div>
     </div>
     <div class="header-actions">
-        <button class="btn-icon" onclick="toggleInfo()" aria-label="Información">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        </button>
-        <button class="btn-icon" onclick="clearSession()" aria-label="Reiniciar">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-        </button>
+        <button class="btn-icon" onclick="toggleInfo()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></button>
+        <button class="btn-icon" onclick="clearSession()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg></button>
     </div>
 </header>
 
-<main id="chatMessages" class="chat-container">
-    </main>
+<main id="chatMessages" class="chat-container"></main>
 
 <footer id="inputBar" class="input-area">
     <div class="input-wrapper">
         <input type="text" id="userInput" placeholder="Escribe un mensaje..." autocomplete="off">
-        <button id="sendButton" class="btn-send" aria-label="Enviar">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        <button id="sendButton" class="btn-send">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
         </button>
     </div>
 </footer>
 
 <div id="infoModal" class="modal">
     <div class="modal-content">
-        <button class="modal-close" onclick="toggleInfo()">×</button>
-        <div class="modal-header">
-            <h3 class="modal-title">Sobre MuniChas</h3>
-        </div>
-        <div class="modal-body">
-            <p>Asistente Virtual Oficial de la Municipalidad de Chascomús.</p>
-            <p>Este servicio utiliza respuestas automáticas y botones interactivos para orientar al vecino.</p>
-            <div class="modal-credit" id="authorCredit"></div>
-        </div>
-        <div class="modal-footer">
-            <p class="copyright">© Creado por Federico Perez Speroni 2026 Municipalidad de Chascomús</p>
-        </div>
+        <h3>Sobre MuniBot</h3>
+        <p>Asistente Virtual Oficial de la Municipalidad de Chascomús. Donde podes encontrat informacion, links y más.</p>
+        <p>© Federico perez Speroni 2026 Municipalidad de Chascomús</p>
+        <button class="option-button" onclick="toggleInfo()">Cerrar</button>
     </div>
 </div>
 
+<script src="script.js"></script>
+</body>
+</html>
 <script src="script.js"></script>
 </body>
 </html>
