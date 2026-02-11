@@ -385,8 +385,7 @@ const RES = {
            <b>Utilizar como ultima opcion:</b><br>
         📞 <b>Teléfono (Línea 147):</b><br>
         Lun a Vie de 8 a 15 horas.<br><br>
-        📋 <b>Datos necesarios:</b><br>
-        Nombre, DNI, Teléfono, Dirección del problema y adjuntar foto o archivo.
+       
     </div>`,
 
      // --- OBRAS PÚBLICAS Y ATENCIÓN AL VECINO --- //
