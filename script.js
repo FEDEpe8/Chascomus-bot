@@ -617,7 +617,7 @@ const RES = {
 
     'deuda_video_info': `
     <div class="info-card">
-        <strong>🎥 La muni Invierte</strong><br><br>
+        <strong>🎥 Como ver Deudas</strong><br><br>
         <video width="100%" height="auto" controls style="border-radius: 8px; border: 1px solid #ddd;">
             <source src="videos/tasas.mp4" type="video/mp4">
             Tu navegador no soporta el video.
