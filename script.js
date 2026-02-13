@@ -640,10 +640,10 @@ const RES = {
         ☎️ <b>Para comunicarte</b><br>
         📲 <a href="https://wa.me/5492241557616">2241-557616</a><br>
         📧 <a href="mailto:ingresospublicos@chascomus.gob.ar">ingresospublicos@chascomus.gob.ar</a><br><br>
-        Seleccione tipo de cuenta 🏠<b>INMUEBLE</b> para deudas de Servicios Sanitarios y Alumbrado Público Empresas (ALPEM).<br>
-        Seleccione tipo de cuenta 🏢<b>COMERCIO</b> para deudas de Seguridad e Higiene.<br>
-        Seleccione tipo de cuenta 🚗<b>VEHÍCULOS</b> para deudas relacionadas con Impuesto Automotor o Patentes de Rodados Menores.<br>
-        Seleccione tipo de cuenta 👤<b>CONTRIBUYENTE</b> para deudas de Marcas y señales (Guías) y 16 Viviendas.<br>
+        Seleccione tipo de cuenta <b>INMUEBLE</b>🏠 para deudas de Servicios Sanitarios y Alumbrado Público Empresas (ALPEM).<br>
+        Seleccione tipo de cuenta <b>COMERCIO</b>🏢 para deudas de Seguridad e Higiene.<br>
+        Seleccione tipo de cuenta <b>VEHÍCULOS</b>🚗 para deudas relacionadas con Impuesto Automotor o Patentes de Rodados Menores.<br>
+        Seleccione tipo de cuenta <b>CONTRIBUYENTE</b>👤 para deudas de Marcas y señales (Guías) y 16 Viviendas.<br>
         Seleccione <b>PERÍODOS ADEUDADOS</b> para listar los períodos impagos de tasas.<br>
         Seleccione <b>CUOTAS DE CONVENIO</b> para listar las cuotas de convenio de pago vigentes.<br><br>
         🔗 <a href="https://deuda.chascomus.gob.ar/consulta.php">CONSULTAR AQUÍ</a>
