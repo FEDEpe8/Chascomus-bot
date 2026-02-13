@@ -216,7 +216,8 @@ const MENUS = {
             { id: 'deuda_video', label: '🎥 Ver Video Instructivo', type: 'leaf', apiKey: 'deuda_video_info' },     
             { id: 'deuda', label: '🔍 Ver Deuda / Pagar', type: 'leaf', apiKey: 'deuda' },
             { id: 'agua', label: '💧 Agua', type: 'leaf', apiKey: 'agua' },
-            { id: 'boleta', label: '📧 Boleta Digital', type: 'leaf', apiKey: 'boleta' }
+            { id: 'boleta', label: '📧 Boleta Digital', type: 'leaf', apiKey: 'boleta' },
+            { id: 'consulta_tributaria', label: '💸 Consulta Tributaria', type: 'leaf', apiKey: 'consulta_tributaria' }
         ]
     },
     omic: { 
@@ -617,9 +618,9 @@ const RES = {
 
     'deuda_video_info': `
     <div class="info-card">
-        <strong>🎥 Como ver Deudas</strong><br><br>
+        <strong>🎥 La muni Invierte</strong><br><br>
         <video width="100%" height="auto" controls style="border-radius: 8px; border: 1px solid #ddd;">
-            <source src="videos/tasas.mp4" type="video/mp4">
+            <source src="videos/" type="video/mp4">
             Tu navegador no soporta el video.
         </video>
         <br><br>
@@ -631,8 +632,29 @@ const RES = {
     📲: <a href="https://wa.me/5492241557616">2241-557616</a><br>📧 <a href="mailto:ingresospublicos@chascomus.gob.ar">Email</a></div>`,
     'agua': `<div class="info-card"><strong>💧 CONSUMO DE AGUA</strong><br> ℹ️ Para conocer y pagar su consumo ingrese a este Link</b><br>
     🔗 <a href="https://apps.chascomus.gob.ar/caudalimetros/consulta.php">VER MI CONSUMO</a>`, 
-    'deuda': `<div class="info-card"><strong>🔍 CONSULTA DE DEUDA</strong><br>💸 Para ver sus inpuesto Inmobiliarios, Automotores, etc;.<br>
-    🔗 <a href="https://chascomus.gob.ar/municipio/estaticas/consultaDeudas">CONSULTAR AQUÍ</a>`,
+
+    'consulta_tributaria': `
+    <div class="info-card">
+        <strong>💸 CONSULTA TRIBUTARIA</strong><br><br>
+        Ingresos Públicos.<br><br>
+        ☎️ <b>Para comunicarte</b><br>
+        📲 <a href="https://wa.me/5492241557616">2241-557616</a><br>
+        📧 <a href="mailto:ingresospublicos@chascomus.gob.ar">ingresospublicos@chascomus.gob.ar</a><br><br>
+        Seleccione tipo de cuenta 🏠<b>INMUEBLE</b> para deudas de Servicios Sanitarios y Alumbrado Público Empresas (ALPEM).<br>
+        Seleccione tipo de cuenta 🏢<b>COMERCIO</b> para deudas de Seguridad e Higiene.<br>
+        Seleccione tipo de cuenta 🚗<b>VEHÍCULOS</b> para deudas relacionadas con Impuesto Automotor o Patentes de Rodados Menores.<br>
+        Seleccione tipo de cuenta 👤<b>CONTRIBUYENTE</b> para deudas de Marcas y señales (Guías) y 16 Viviendas.<br>
+        Seleccione <b>PERÍODOS ADEUDADOS</b> para listar los períodos impagos de tasas.<br>
+        Seleccione <b>CUOTAS DE CONVENIO</b> para listar las cuotas de convenio de pago vigentes.<br><br>
+        🔗 <a href="https://deuda.chascomus.gob.ar/consulta.php">CONSULTAR AQUÍ</a>
+    </div>`,
+
+      
+    'deuda': `<div class="info-card"><strong>🔍 CONSULTA DEUDA</strong><br>💸 Para ver sus inpuesto.<br>
+    🏠<b>INMOBILIARIO</b><br>
+    👤<b>CONTRIBUYENTE</b><br>
+    ⚰️<b>CEMENTERIO</b><br>
+    🔗 <a href="https://pagos.chascomus.gob.ar/#destino=imponible">CONSULTAR AQUÍ</a>`,
      
     /* --- HABILITACIÓN COMERCIAL / INDUSTRIAL GENERAL --- */
     'hab_gral': `
