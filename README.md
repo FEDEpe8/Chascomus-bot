@@ -58,7 +58,7 @@ Cada vez que se modifique información en el `index.html` (ej: cambiar un teléf
 
 ## 👨‍💻 Créditos
 
-Desarrollado por **Federico de Sistemas** para la **Municipalidad de Chascomús**.
+Desarrollado por **Federico Perez Speroni** para la **Municipalidad de Chascomús**.
 
 ---
 *Última actualización: Enero 2026*
