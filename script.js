@@ -76,7 +76,7 @@ function registrarEvento(accion, detalle) {
 const MENUS = {
     // MENÚ PRINCIPAL: Solo atajos rápidos
  main: { 
-        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy el asistente virtual. Acá tenés los accesos más rápidos de hoy:`, 
+        title: (name) => `¡<b>${name}</b>! 👋 Soy el asistente virtual. Acá tenés los accesos más rápidos de hoy:`, 
         options: [
             { id: 'oea_shortcut', label: '👀 Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
             { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_actual' },
