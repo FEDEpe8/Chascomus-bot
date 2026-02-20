@@ -1308,7 +1308,7 @@ function processInput() {
         addMessage(val, 'user'); input.value = ""; showTyping(); 
         
         setTimeout(() => {
-            addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 Para continuar, necesitamos saber tu barrio para mejorar la atenció, puedes elegirlo o escribirlo:`, 'bot', [
+            addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 Para continuar, necesitamos saber tu barrio para mejorar la atención; puedes elegirlo o escribirlo:`, 'bot', [
                 { id: 'ver_lista_barrios', label: '🏙️ Seleccionar mi Barrio' }
             ]);
         }, 800); 
