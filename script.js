@@ -28,6 +28,28 @@ const BARRIOS_CHASCOMUS = [
     "Lomas Altas", "Los Sauces", "Parque Girado", "San Cayetano", 
     "San José Obrero", "San Luis", "139 Viviendas", "Cooperativa", "Comi Pini"
 ];
+
+function normalizarTexto(texto) {
+    return texto
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+}
+
+function buscarBarrioValido(input) {
+    const inputNormalizado = normalizarTexto(input);
+    return BARRIOS_CHASCOMUS.find(barrio => normalizarTexto(barrio) === inputNormalizado) || null;
+}
+
+function buscarBarriosSimilares(input) {
+    const inputNormalizado = normalizarTexto(input);
+    if (!inputNormalizado || inputNormalizado.length < 2) return [];
+
+    return BARRIOS_CHASCOMUS
+        .filter(barrio => normalizarTexto(barrio).includes(inputNormalizado))
+        .slice(0, 6);
+}
 /* --- 2. ESTADÍSTICAS --- */
 const STATS_URL = "https://script.google.com/macros/s/AKfycby5nTXeud9ZQpnJQ_yJlumF4g1XoWlksV3f_8u7iCU-BrwawsVVvLOmKYAhAcOx0GOf/exec";
 
@@ -54,7 +76,7 @@ function registrarEvento(accion, detalle) {
 const MENUS = {
     // MENÚ PRINCIPAL: Solo atajos rápidos
  main: { 
-        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy MuniBot el asistente virtual. Acá tenés los accesos más rápidos de hoy:`, 
+        title: (name) => `¡Hola <b>${name}</b>! 👋 Soy el asistente virtual. Acá tenés los accesos más rápidos de hoy:`, 
         options: [
             { id: 'oea_shortcut', label: '👀 Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
             { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_actual' },
@@ -640,10 +662,10 @@ const RES = {
         ☎️ <b>Para comunicarte</b><br>
         📲 <a href="https://wa.me/5492241557616">2241-557616</a><br>
         📧 <a href="mailto:ingresospublicos@chascomus.gob.ar">ingresospublicos@chascomus.gob.ar</a><br><br>
-        Seleccione tipo de cuenta <b>INMUEBLE</b>🏠 para deudas de Servicios Sanitarios y Alumbrado Público Empresas (ALPEM).<br>
-        Seleccione tipo de cuenta <b>COMERCIO</b>🏢 para deudas de Seguridad e Higiene.<br>
-        Seleccione tipo de cuenta <b>VEHÍCULOS</b>🚗 para deudas relacionadas con Impuesto Automotor o Patentes de Rodados Menores.<br>
-        Seleccione tipo de cuenta <b>CONTRIBUYENTE</b>👤 para deudas de Marcas y señales (Guías) y 16 Viviendas.<br>
+        Seleccione tipo de cuenta 🏠<b>INMUEBLE</b> para deudas de Servicios Sanitarios y Alumbrado Público Empresas (ALPEM).<br>
+        Seleccione tipo de cuenta 🏢<b>COMERCIO</b> para deudas de Seguridad e Higiene.<br>
+        Seleccione tipo de cuenta 🚗<b>VEHÍCULOS</b> para deudas relacionadas con Impuesto Automotor o Patentes de Rodados Menores.<br>
+        Seleccione tipo de cuenta 👤<b>CONTRIBUYENTE</b> para deudas de Marcas y señales (Guías) y 16 Viviendas.<br>
         Seleccione <b>PERÍODOS ADEUDADOS</b> para listar los períodos impagos de tasas.<br>
         Seleccione <b>CUOTAS DE CONVENIO</b> para listar las cuotas de convenio de pago vigentes.<br><br>
         🔗 <a href="https://deuda.chascomus.gob.ar/consulta.php">CONSULTAR AQUÍ</a>
@@ -1286,7 +1308,7 @@ function processInput() {
         addMessage(val, 'user'); input.value = ""; showTyping(); 
         
         setTimeout(() => {
-            addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 Para continuar, necesitamos saber tu barrio para mejorar la atención:`, 'bot', [
+            addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 Para continuar, necesitamos saber tu barrio para mejorar la atenció, puedes elegirlo o escribirlo:`, 'bot', [
                 { id: 'ver_lista_barrios', label: '🏙️ Seleccionar mi Barrio' }
             ]);
         }, 800); 
@@ -1294,8 +1316,43 @@ function processInput() {
     }
 
     if (!userNeighborhood) { 
-        addMessage(val, 'user'); input.value = ""; showTyping();
-        setTimeout(() => addMessage("⚠️ Por favor, seleccioná tu barrio tocando el botón de arriba.", 'bot'), 600);
+        const barrioIngresado = buscarBarrioValido(val);
+        const barriosSimilares = buscarBarriosSimilares(val);
+        addMessage(val, 'user');
+        input.value = "";
+
+        if (barrioIngresado) {
+            userNeighborhood = barrioIngresado;
+            localStorage.setItem('muni_user_neighborhood', userNeighborhood);
+            registrarEvento("Registro", "Barrio: " + userNeighborhood);
+            showTyping();
+
+            const edades = [
+                { label: '-20', type: 'age_select' },
+                { label: '20-40', type: 'age_select' },
+                { label: '40-60', type: 'age_select' },
+                { label: '+60', type: 'age_select' }
+            ];
+
+            setTimeout(() => addMessage(`¡Excelente! <b>${userName}</b> de <b>${userNeighborhood}</b>. ¿Cuál es tu edad?`, 'bot', edades), 800);
+            return;
+        }
+
+        if (barriosSimilares.length > 0) {
+            const opcionesSugeridas = barriosSimilares.map(barrio => ({
+                label: barrio,
+                type: 'barrio_select'
+            }));
+
+            opcionesSugeridas.push({ id: 'ver_lista_barrios', label: '🏙️ Ver lista completa' });
+
+            showTyping();
+            setTimeout(() => addMessage("No lo encontré exacto. ¿Quisiste decir alguno de estos barrios?", 'bot', opcionesSugeridas), 600);
+            return;
+        }
+
+        showTyping();
+        setTimeout(() => addMessage("⚠️ No encontré ese barrio. Escribilo de nuevo o tocá 'Seleccionar mi Barrio'.", 'bot'), 600);
         return;
     }
 
