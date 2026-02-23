@@ -901,10 +901,9 @@ function registrarEvento(categoria, accion_detalle) {
         accion: categoria,
         detalle: accion_detalle
     };
-    
-    // Solo mostramos en consola para verificar que el bot "sigue" el flujo
     console.log("Evento registrado:", datos);
-}
+} 
+// ¡Asegurate de que NO haya ninguna llave '}' extra después de esta línea!
 function showTyping() {
     isBotThinking = true;
     const container = document.getElementById('chatMessages');
