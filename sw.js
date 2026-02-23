@@ -1,4 +1,4 @@
-const CACHE_NAME = 'munibot-cache-v41';
+const CACHE_NAME = 'munibot-cache-v42';
 const assets = [
   './',           // La raíz del sitio
   './index.php',  // El archivo principal
