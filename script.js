@@ -1065,19 +1065,26 @@ const PALABRAS_CLAVE = {
     'multa': { id: 'seg_infracciones', label: '⚖️ Mis Infracciones', type: 'leaf', apiKey: 'seg_infracciones' },
     'infraccion': { id: 'seg_infracciones', label: '⚖️ Mis Infracciones', type: 'leaf', apiKey: 'seg_infracciones' },
     'academia': { id: 'seg_academia', label: '🚗 Academia Conductores', type: 'leaf', apiKey: 'seg_academia' },
-    'conducir': { id: 'seg_academia', label: '🚗 Academia Conductores', type: 'leaf', apiKey: 'seg_academia' }
+    'conducir': { id: 'seg_academia', label: '🚗 Academia Conductores', type: 'leaf', apiKey: 'seg_academia' },
+    'carnaval': { id: 'ag_actual', label: '🎉 Carnaval Infantil', type: 'leaf', apiKey: 'agenda_actual' },
+    'evento': { id: 'cultura', label: '🎭 Agenda de Eventos' },
+    'doctor': { id: 'hospital_menu', label: '🏥 Especialidades Médicas' },
+    'medico': { id: 'hospital_menu', label: '🏥 Especialidades Médicas' },
+    'cementerio': { id: 'deuda', label: '⚰️ Tasas de Cementerio', type: 'leaf', apiKey: 'deuda' },
+    'ecopunto': { id: 'obras_basura', label: '♻️ Ecopuntos', type: 'leaf', apiKey: 'obras_basura' }
 };
 
 function buscarOpcionProfunda(texto) {
-    const t = normalizar(texto);
+    let t = normalizar(texto);
     
-    const clavesOrdenadas = Object.keys(PALABRAS_CLAVE).sort((a, b) => b.length - a.length);
-    for (let i = 0; i < clavesOrdenadas.length; i++) {
-        const k = clavesOrdenadas[i];
-        if (t === k || (t.includes(k) && k.length >= 4)) {
-            return PALABRAS_CLAVE[k];
-        }
+    // Si el vecino escribe en plural (ej: "turnos"), probamos también en singular
+    if (t.endsWith('s') && t.length > 4) {
+        let singular = t.slice(0, -1);
+        if (PALABRAS_CLAVE[singular]) return PALABRAS_CLAVE[singular];
     }
+
+    // ... resto de tu lógica actual de búsqueda ...
+}
 
     const palabrasBuscadas = t.split(' ').filter(p => p.length > 3);
     for (let menuId in MENUS) {
