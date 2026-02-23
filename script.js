@@ -1,7 +1,7 @@
 /* --- PWA: REGISTRO DEL SERVICE WORKER --- */
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
+        navigator.serviceWorker.register('./sw.js')
             .then(reg => console.log('✅ PWA: Service Worker registrado listos para instalar'))
             .catch(err => console.error('❌ PWA: Error al registrar', err));
     });
