@@ -1199,20 +1199,21 @@ function processInput() {
     ejecutarBusquedaInteligente(val); 
 }
 
-/* --- REFINANDO LA BIENVENIDA --- */
+/* --- INICIALIZACIÓN OPTIMIZADA --- */
 window.onload = () => {
+    // Si no hay nombre, saludamos casi instantáneamente (200ms)
     if (!userName) {
         showTyping();
-        setTimeout(() => addMessage("👋 ¡Hola! Soy <b>MuniBot</b>, el asistente virtual de la Municipalidad de Chascomús. ¿Cómo te llamás?", "bot"), 1000);
+        setTimeout(() => {
+            addMessage("👋 ¡Hola! Soy <b>MuniBot</b>, el asistente virtual de la Municipalidad de Chascomús. ¿Cómo te llamás?", "bot");
+        }, 200); 
     } else {
-        // En lugar de ir directo al menú, saludamos por el nombre guardado
+        // Si ya te conoce, el saludo de bienvenida
         showTyping();
         setTimeout(() => {
-            addMessage(`¡Hola de nuevo, <b>${userName}</b>! 👋 Qué bueno tenerte otra vez por acá.`, 'bot');
-            setTimeout(() => {
-                resetToMain(); // Recién acá mostramos el menú principal
-            }, 1200);
-        }, 800);
+            addMessage(`¡Hola de nuevo, <b>${userName}</b>! 👋 ¿En qué puedo ayudarte hoy?`, 'bot');
+            setTimeout(() => resetToMain(), 800);
+        }, 500);
     }
 };
 document.getElementById('sendButton').onclick = processInput; 
