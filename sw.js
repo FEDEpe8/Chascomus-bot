@@ -6,10 +6,10 @@ const urlsToCache = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
-  // Si querés que las imágenes de la mascota también carguen sin internet, agregalas acá sin las barras '//':
-  // './img-bot-normal.png',
-  // './img-bot-pensando.png',
-  // './img-bot-hablando.png'
+ 
+   './img-bot-normal.png',
+   './img-bot-pensando.png',
+   './img-bot-hablando.png'
 ];
 
 // Instalar el Service Worker y guardar en caché los archivos
