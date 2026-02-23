@@ -1,82 +1,133 @@
-/* ============================================================
-   MUNICIPALIDAD DE CHASCOMÚS - CHATBOT SCRIPT (SELECTOR BARRIOS)
-   ============================================================ */
+/* --- PWA: REGISTRO DEL SERVICE WORKER --- */
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+            .then(reg => console.log('✅ PWA: Service Worker registrado listos para instalar'))
+            .catch(err => console.error('❌ PWA: Error al registrar', err));
+    });
+}
 
-/* --- 1. CONFIGURACIÓN, ESTADO Y BARRIOS --- */
-let userName = localStorage.getItem('muni_user_name') || "";
-let userNeighborhood = localStorage.getItem('muni_user_neighborhood') || "";
-let userAge = localStorage.getItem('muni_user_age') || "";
-let currentPath = ['main'];
-let isAwaitingForm = false;
-let isBotThinking = false;
-let formData = { tipo: "", ubicacion: "", descripcion: "" };
+//* --- ACCESIBILIDAD: RECONOCIMIENTO Y SÍNTESIS DE VOZ --- */
+let vozActivada = false;
 
-const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo", "pelotuda", "tonto", "tonta", "idiota", "tarado", "tarada", "gil", "gila", "bobo", "boba", "chupala", "forro", "forra", "inutil", "trolo", "trola"];
-
-function validarTexto(t) {
-    const palabras = t.split(/\s+/);
-    for (let p of palabras) {
-        if (PALABRAS_OFENSIVAS.includes(p)) return { v: false, m: "⚠️ Por favor, usá lenguaje adecuado." };
+function toggleVoz() {
+    vozActivada = !vozActivada;
+    document.getElementById('voiceToggle').innerText = vozActivada ? '🔊' : '🔇';
+    if (vozActivada) {
+        hablar("Voz de MuniBot activada.");
+    } else {
+        window.speechSynthesis.cancel();
     }
-    return { v: true };
-}
-// Lista oficial completa (Orden Alfabético para facilitar búsqueda)
-const BARRIOS_CHASCOMUS = [
-    "30 de Mayo", "Acceso Norte", "Barrio Jardín", "Centro", 
-    "Comandante Giribone", "El Algarrobo", "El Porteño", "Escribano", 
-    "Fátima", "Gallo Blanco", "Iporá", "La Noria", "Las Violetas", 
-    "Lomas Altas", "Los Sauces", "Parque Girado", "San Cayetano", 
-    "San José Obrero", "San Luis", "139 Viviendas", "Cooperativa", "Comi Pini"
-];
-
-function normalizarTexto(texto) {
-    return texto
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .trim();
 }
 
-function buscarBarrioValido(input) {
-    const inputNormalizado = normalizarTexto(input);
-    return BARRIOS_CHASCOMUS.find(barrio => normalizarTexto(barrio) === inputNormalizado) || null;
+function hablar(textoHtml) {
+    if (!vozActivada) return;
+    // Extraemos solo el texto limpio sin código HTML para que no lea etiquetas raras
+    let div = document.createElement("div");
+    div.innerHTML = textoHtml;
+    let textoLimpio = div.textContent || div.innerText || "";
+    
+    // Filtramos emojis comunes para que la voz robótica no los lea literal
+    textoLimpio = textoLimpio.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+
+    const mensaje = new SpeechSynthesisUtterance(textoLimpio);
+    mensaje.lang = 'es-AR'; // Acento argentino
+    mensaje.rate = 1.0; 
+    window.speechSynthesis.speak(mensaje);
 }
 
-function buscarBarriosSimilares(input) {
-    const inputNormalizado = normalizarTexto(input);
-    if (!inputNormalizado || inputNormalizado.length < 2) return [];
+// Configuración del Micrófono (Speech to Text)
+const micBtn = document.getElementById('micButton');
+const inputArea = document.getElementById('userInput');
+const ReconocimientoVoz = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    return BARRIOS_CHASCOMUS
-        .filter(barrio => normalizarTexto(barrio).includes(inputNormalizado))
-        .slice(0, 6);
-}
-/* --- 2. ESTADÍSTICAS --- */
-const STATS_URL = "https://script.google.com/macros/s/AKfycby5nTXeud9ZQpnJQ_yJlumF4g1XoWlksV3f_8u7iCU-BrwawsVVvLOmKYAhAcOx0GOf/exec";
-
-function registrarEvento(accion, detalle) {
-    if (!STATS_URL || STATS_URL.includes("TUS_LETRAS_RARAS")) return;
-    const datos = {
-        fecha: new Date().toLocaleString(),
-        usuario: userName || "Anónimo",
-        barrio: userNeighborhood || "No especificado",
-        edad: userAge || "No especificado",
-        accion: accion,
-        detalle: detalle
+if (ReconocimientoVoz) {
+    const reconocimiento = new ReconocimientoVoz();
+    reconocimiento.lang = 'es-AR';
+    reconocimiento.interimResults = false;
+    
+    micBtn.onclick = () => {
+        reconocimiento.start();
+        micBtn.classList.add('recording');
+        inputArea.placeholder = "Escuchando... 👂";
     };
-    fetch(STATS_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datos)
-    }).catch(console.error);
+    
+   // Agregamos una variable de control fuera de la función
+let procesandoVoz = false; 
+
+reconocimiento.onresult = (evento) => {
+    const transcripcion = evento.results[0][0].transcript;
+    inputArea.value = transcripcion;
+    
+    // Si ya estamos procesando un audio, frenamos acá y evitamos el duplicado
+    if (procesandoVoz) return; 
+    
+    // Activamos el "escudo"
+    procesandoVoz = true; 
+    
+    // Enviamos el mensaje automáticamente
+    processInput(); 
+    
+    // Desactivamos el "escudo" después de 1.5 segundos 
+    // (tiempo suficiente para ignorar el bug del navegador móvil)
+    setTimeout(() => {
+        procesandoVoz = false;
+    }, 1500);
+};
+    
+    reconocimiento.onend = () => {
+        micBtn.classList.remove('recording');
+        inputArea.placeholder = "Escribí un mensaje...";
+    };
+    
+    reconocimiento.onerror = (evento) => {
+        console.error("Error en micrófono: ", evento.error);
+        micBtn.classList.remove('recording');
+        inputArea.placeholder = "Escribí un mensaje...";
+    };
+} else {
+    micBtn.style.display = 'none'; // Ocultamos el botón si el navegador no es compatible
 }
 
-/* --- 3. MENÚS Y FLUJO --- */
 
+/* --- FUNCIONES DEL MODAL DE INFO --- */
+function showInfo() { document.getElementById('infoModal').style.display = 'flex'; }
+function closeInfo() { document.getElementById('infoModal').style.display = 'none'; }
+window.onclick = function(event) {
+    const modal = document.getElementById('infoModal');
+    if (event.target === modal) { modal.style.display = "none"; }
+}
+
+/* --- 1. CONFIGURACIÓN Y ESTADO --- */
+let userName = localStorage.getItem('muni_user_name') || ""; 
+let userNeighborhood = localStorage.getItem('muni_user_neighborhood') || ""; 
+let userAge = localStorage.getItem('muni_user_age') || ""; 
+let currentPath = ['main']; 
+let isBotThinking = false; 
+
+/* --- CONFIGURACIÓN DE LA MASCOTA ANIMADA --- */
+const IMG_BOT_NORMAL = 'img-bot-normal.png';   
+const IMG_BOT_PENSANDO = 'img-bot-pensando.png'; 
+const IMG_BOT_HABLANDO = 'img-bot-hablando.png'; 
+const IMG_BOT_FESTEJO = 'img-bot-festejo.png'; 
+const IMG_BOT_SENALANDO = 'img-bot-senalando.png'; 
+const IMG_BOT_MIRANDO = 'img-bot-mirando.png'; 
+
+const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga",
+ "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo",
+  "pelotuda", "idiota", "tarado", "tarada"]; 
+
+const BARRIOS = ["30 de Mayo", "Acceso Norte", "Barrio Jardín",
+ "Centro", "Comandante Giribone", "El Algarrobo", "El Porteño",
+  "Escribano", "Fátima", "Gallo Blanco", "Iporá", "La Noria", 
+  "Las Violetas", "Lomas Altas", "Los Sauces", "Parque Girado",
+   "San Cayetano", "San José Obrero", "San Luis", "139 Viviendas",
+    "Cooperativa", "Comi Pini"]; 
+
+/* --- 2. RESPUESTAS Y MENÚS --- */
 const MENUS = {
-    // MENÚ PRINCIPAL: Solo atajos rápidos
- main: { 
-        title: (name) => `¡<b>${name}</b>! 👋 Soy el asistente virtual. Acá tenés los accesos más rápidos de hoy:`, 
+    main: { 
+        title: (name) => `¡<b>${name}</b>! 👋 Soy el asistente virtual. Acá te dejo los accesos más rápidos de hoy:`, 
         options: [
             { id: 'oea_shortcut', label: '👀 Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
             { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_actual' },
@@ -86,9 +137,7 @@ const MENUS = {
             { id: 'full_menu', label: '☰ VER MENÚ COMPLETO' }
         ]
     },
-
-    // MENÚ COMPLETO: Todas las opciones originales del main
-    full_menu: {
+ full_menu: {
         title: () => '📱 Menú Completo de Servicios Municipales:',
         options: [
             { id: 'politicas_gen', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
@@ -111,28 +160,24 @@ const MENUS = {
             { id: 'contacto_op', label: '☎️ Hablar con Operador', type: 'leaf', apiKey: 'contacto_gral' }
         ]
     },
-// submenues originales con atajos integrados
     ojos_en_alerta: {
         title: () => '👁️ Ojos en Alerta:',
         options: [
             { id: 'oea_link', label: '🔗 Contacto WhatsApp', link: 'https://wa.me/5492241557444' },
         ]
     },
-
     cultura: {
         title: () => '🎭 Agenda Cultural:',
         options: [
             { id: 'ag_actual', label: '📅 Agenda del Mes (FEBRERO)', type: 'leaf', apiKey: 'agenda_actual' },
         ]
     },
-
      el_digital: {
         title: () => '📰 Diario digital:',
         options: [
             { id: 'digital_link', label: '🔗 Ir al Diario Digital', link: 'https://www.eldigitalchascomus.com.ar/' }
         ]
     },
-
     sibon: {
         title: () => '📰 Boletín Oficial de Chascomús:',
         options: [
@@ -211,9 +256,9 @@ const MENUS = {
     seguridad: { 
         title: () => 'Seguridad y Trámites:', 
         options: [
-            { id: 'seg_video', label: '🎥 Ver Video alcohol al volante', type: 'leaf', apiKey: 'alcohol_info' },
+            { id: 'seg_video_a', label: '🎥 Ver Video alcohol al volante', type: 'leaf', apiKey: 'alcohol_info' },
             { id: 'pamuv', label: '🆘 Asistencia Víctima (PAMUV)', type: 'leaf', apiKey: 'pamuv' },
-            { id: 'seg_video', label: '🎥 Ver Video Instructivo Basapp ', type: 'leaf', apiKey: 'Basapp_info' },
+            { id: 'seg_video_b', label: '🎥 Ver Video Instructivo Basapp ', type: 'leaf', apiKey: 'Basapp_info' },
             { id: 'apps_seg', label: '📲 Descargar Apps (Basapp y SEM)', type: 'leaf', apiKey: 'apps_seguridad' }, 
             { id: 'def_civil', label: '🌪️ Defensa Civil (103)', type: 'leaf', apiKey: 'defensa_civil' },
             { id: 'lic_tramite', label: '🪪 Licencia (Carnet)', type: 'leaf', apiKey: 'lic_turno' },
@@ -244,16 +289,7 @@ const MENUS = {
     },
     omic: { 
         title: () => 'OMIC - Defensa del Consumidor:', 
-        options: [ { id: 'omic', label: '📢 OMIC (Defensa Consumidor)', type: 'leaf', apiKey: 'omic_info' } ]
-    },
-    hab_menu: {
-        title: () => 'Gestión de Habilitaciones:',
-        options: [
-            { id: 'hab_gral', label: '🏢 Comercio e Industria', type: 'leaf', apiKey: 'hab_gral' },
-            { id: 'hab_eventos', label: '🎉 Eventos y Salones', type: 'leaf', apiKey: 'hab_eventos' },
-            { id: 'hab_espacio', label: '🍔 Patios y Carros (Foodtruck)', type: 'leaf', apiKey: 'hab_espacio' },
-            { id: 'hab_reba', label: '🍷 REBA (Alcohol)', type: 'leaf', apiKey: 'hab_reba' }
-        ]
+        options: [ { id: 'omic_info', label: '📢 OMIC (Defensa Consumidor)', type: 'leaf', apiKey: 'omic_info' } ]
     },
     produccion: {
         title: () => '🏭 Producción y Empleo:',
@@ -302,7 +338,7 @@ const MENUS = {
     }
 };
 
-/* --- 4. RESPUESTAS (BASE DE DATOS HTML ORIGINAL) --- */
+/* --- 4. RESPUESTAS --- */
 const RES = {
     'agenda_actual': `
     <div class="info-card">
@@ -359,7 +395,6 @@ const RES = {
         🔗 <b>Linktree Inscripciones:</b><br>
         <a href="https://linktr.ee/visitasguiadas.turismoch" target="_blank">Ingresar al Linktree</a>
     </div>`,
-    // Respuesta original de OMIC
     'omic_info': `
     <div class="info-card">
         <strong>📢 OMIC (Defensa del Consumidor)</strong><br>
@@ -370,7 +405,6 @@ const RES = {
         ⏰ <b>Horario:</b> Lunes a Viernes de 8:00 a 13:00 hs.<br>
         📞 <b>Teléfonos:</b> 43-1287 / 42-5558
     </div>`,
-// Respuesta original de WhatsApp de los CAPS
     'caps_wa': `
     <div class="info-card">
         <strong>📞 WhatsApp de los CAPS:</strong><br><br>
@@ -383,8 +417,6 @@ const RES = {
         🟢 <b>La Noria:</b> <a href="https://wa.me/5492241604872">2241-604872</a><br>
         🟢 <b>San Cayetano:</b> <a href="https://wa.me/5492241511430">2241-511430</a>
     </div>`,
-
-    // Respuesta original de los CAPS con mapas integrados
     'caps_mapas': `
     <div class="info-card">
         <strong>📍 Ubicaciones CAPS (Toque para ver mapa):</strong><br><br>
@@ -397,7 +429,6 @@ const RES = {
         • <a href="https://www.google.com/maps/search/?api=1&query=CAPS+La+Noria+Chascomus" target="_blank">La Noria</a> (Grito de Dolores)<br>
         • <a href="https://www.google.com/maps/search/?api=1&query=CAPS+San+Cayetano+Chascomus" target="_blank">San Cayetano</a> (Gabino Ezeiza)
     </div>`,
-// Respuesta del 147 con información completa y detallada, integrando atajos rápidos a la web y WhatsApp
     'link_147': `
     <div class="info-card">
         <strong>📝 ATENCIÓN AL VECINO 147</strong><br><br>
@@ -408,16 +439,9 @@ const RES = {
            <b>Utilizar como ultima opcion:</b><br>
         📞 <b>Teléfono (Línea 147):</b><br>
         Lun a Vie de 8 a 15 horas.<br><br>
-       
     </div>`,
-
-     // --- OBRAS PÚBLICAS Y ATENCIÓN AL VECINO --- //
-
     'poda': `<div class="info-card"><strong>🌿 Ingresa en este link 👇🏼</strong><br>🔗 <a href="https://apps.chascomus.gob.ar/podaresponsable/solicitud.php">🌳 Solicitud Poda</a></div>`,
     'obras_basura': `<div class="info-card"><strong>♻️ Recolección de residuos</strong><br>Lun a Sáb 20hs (Húmedos)</strong><br>Jueves 14hs (Reciclables)`,
-    
-
-// Respuesta original de las farmacias con botón integrado a TurnoFarma
     'farmacias_lista': `
     <div class="info-card">
         <strong>📍 Farmacias en Chascomús:</strong><br><br>
@@ -439,7 +463,6 @@ const RES = {
         • <b>Puyssegur:</b> Libres del Sur 946<br><br>
         💊 <a href="https://www.turnofarma.com/turnos/ar/ba/chascomus" target="_blank" class="wa-btn" style="background:#2ecc71 !important;">VER FARMACIAS DE TURNO</a>
     </div>`,
-// Respuesta original del quirófano móvil con información detallada y requisitos para los vecinos
     'zoo_rabia': `
     <div class="info-card" style="border-left: 5px solid #f1c40f;">
         <strong style="color:#d35400;">🐾 Quirófano Móvil (Castración)</strong><br><br>
@@ -450,7 +473,6 @@ const RES = {
         🐕 <b>Requisito:</b> Llevar la mascota con collar, correa y/o transportadora.<br><br>
         🏢 <b>Sede Zoonosis:</b> Mendoza 95.
     </div>`,
-// Respuesta original del vacunatorio con información completa sobre los puntos de vacunación, requisitos y contacto para consultas
     'vacunacion_info': `
     <div class="info-card">
         <strong>💉 Vacunación</strong><br><br>
@@ -463,7 +485,6 @@ const RES = {
         • <b>Requisitos:</b> Llevar DNI y Libreta de Vacunación.<br><br>
         📱 <i>Consultá las redes de "Secretaría de Salud Chascomús" para horarios actualizados.</i>
     </div>`,
-// Respuesta original de Hábitat con información detallada sobre trámites, contacto y planes habitacionales
     'info_habitat': `
     <div class="info-card">
         <strong>🔑 Info de Hábitat</strong><br>
@@ -472,7 +493,6 @@ const RES = {
         • Gestión de Tierras y Catastro.<br><br>
         👇 <b>Seleccioná una opción:</b>
     </div>`,
-    // Respuesta original de Hábitat con información detallada sobre la dirección, contacto y opciones de consulta rápida a través de WhatsApp y Google Maps
     'habitat_info': `
     <div class="info-card">
         <strong>📍 Dirección y contacto</strong><br>
@@ -484,8 +504,6 @@ const RES = {
             📍 Dorrego y Bolivar (Ex IOMA)
         </a>
        </div>`,
-       // Respuesta original de Hábitat con información detallada sobre los planes habitacionales, 
-       // trámites disponibles y enlaces rápidos a la web de vivienda social
     'habitat_planes': `
     <div class="info-card">
         <strong>🏘️ Planes Habitacionales</strong><br>
@@ -498,8 +516,6 @@ const RES = {
         🔗 Planes Habitacionales
         </a>
     </div>`,
-    // Respuesta original de Ojos en Alerta con información detallada sobre el programa, tipos de denuncias que se pueden realizar,
-    // dirección, horario y contacto directo a través de WhatsApp
      'ojos_en_alerta': `
     <div class="info-card">
         <strong>👀 OJOS(En alerta)</strong><br>
@@ -512,9 +528,6 @@ const RES = {
         📲 Por cualquier info (WhatsApp)
         </a>
     </div>`,
-
-    // Respuestas Seguridad y Trámites
-   
     'pamuv': `<div class="info-card" style="border-left: 5px solid #c0392b;"><strong style="color: #c0392b;">🆘 PAMUV (Asistencia a la Víctima)</strong><br><br>Atención, contención y asesoramiento a personas víctimas de delitos o situaciones de violencia.<br><br>🛡️ <b>Plan Integral de Seguridad 2025-2027</b><br><br>🚨 <b>ATENCIÓN 24 HORAS:</b><br>Línea permanente para emergencias o consultas.<br><a href="https://wa.me/5492241514881" class="wa-btn" style="background-color: #c0392b !important;">📞 2241-514881 (WhatsApp)</a></div>`,
     'defensa_civil': `<div class="info-card" style="border-left: 5px solid #c0392b;">
     <strong style="color: #c0392b;">🌪️ Defensa Civil</strong><br><br>
@@ -522,9 +535,6 @@ const RES = {
     Atención ante temporales, caída de árboles y riesgo en vía pública.<br>
     📞 <a href="tel:103" class="wa-btn" style="background-color: #c0392b !important; text-align:center; display:block;">LLAMAR AL 103</a><br>
     📧 <a href="mailto:defensa.civil@chascomus.gob.ar">Enviar Correo Electrónico</a></div>`,
-    
-    // Respuesta original de las aplicaciones de seguridad con información detallada sobre cada app, 
-    // sus funciones principales y enlaces directos para descargar en Android e iPhone
     'Basapp_info': `
     <div class="info-card">
         <strong>🎥 Guía de Basapp</strong><br><br>
@@ -537,7 +547,6 @@ const RES = {
             Mirá este breve tutorial sobre cómo usar la app Basapp.
         </p>
     </div>`,
-
     'apps_seguridad': `
     <div class="info-card">
         <strong>📲 Aplicaciones de Seguridad y Tránsito</strong><br><br>
@@ -550,9 +559,6 @@ const RES = {
         Gestioná tu estacionamiento.<br>
         🤖 <a href="https://play.google.com/store/apps/details?id=ar.edu.unlp.sem.mobile" target="_blank" rel="noopener noreferrer">Descargar Android</a><br>
         🍎 <a href="https://apps.apple.com/ar/app/sem-mobile/id1387705895" target="_blank" rel="noopener noreferrer">Descargar iPhone</a></div>`,
-   
-         // Respuesta original de Seguridad con información detallada sobre cada servicio, contacto directo a través de WhatsApp 
-   // y enlaces rápidos a las aplicaciones oficiales
    'alcohol_info': `
     <div class="info-card">
         <strong>🎥 Guía de alcohol al volante</strong><br><br>
@@ -565,13 +571,14 @@ const RES = {
             Mirá este breve tutorial sobre alcohol al volante.
         </p>
     </div>`,
-
+    'seg_infracciones': 
+    `<div class="info-card">
+    <strong>⚖️ Infracciones:</strong><br>
+    🔗 <a href="https://chascomus.gob.ar/municipio/estaticas/consultaInfracciones"style="background-color:#25D366 
+     target="_blank">VER MIS MULTAS</a></div>`,
     'seg_academia': `<div class="info-card"><strong>🚗 Academia de Conductores</strong><br>Turnos para cursos y exámenes teóricos.<br>🔗 <a href="https://apps.chascomus.gob.ar/academia/" target="_blank">INGRESAR A LA WEB</a></div>`,
     'seg_medido': `<div class="info-card"><strong>🅿️ Estacionamiento Medido</strong><br>Gestioná tu estacionamiento desde el celular.<br><br>📲 <b>Descargar App:</b><br>🤖 <a href="https://play.google.com/store/apps/details?id=ar.edu.unlp.sem.mobile.chascomus" target="_blank">Android (Google Play)</a><br>🍎 <a href="https://apps.apple.com/ar/app/sem-mobile/id1387705895" target="_blank">iPhone (App Store)</a><br><br>💻 <a href="https://chascomus.gob.ar/estacionamientomedido/" target="_blank">Gestión vía Web</a></div>`,
     'lic_turno': `<b>📅 Turno Licencia:</b><br>🔗 <a href="https://apps.chascomus.gob.ar/academia/">SOLICITAR TURNO</a>`, 
-    'seg_infracciones': `<b>⚖️ Infracciones:</b><br>🔗 <a href="https://chascomus.gob.ar/municipio/estaticas/consultaInfracciones">VER MIS MULTAS</a>`, 
-// Respuesta original de la policía con información detallada sobre el monitoreo, contacto directo a 
-// través de WhatsApp para emergencias y enlace rápido a la línea telefónica de la comisaría
     'poli': `
     <div class="info-card">
         <strong>🎥 (MONITOREO)</strong><br><br>
@@ -581,14 +588,9 @@ const RES = {
         <small><i>⚠️ Solo emergencias.</i></small><br><br>
          🚔 <b>POLICIA:</b><br>
         Solicitalo a <a href="tel:422222"class="wa-btn" style="background-color:#25D366 !important; text-align:center;">📞 42-2222</a><br><br>`,
-
-        // Respuesta original de Turismo con información detallada sobre la subsecretaría, dirección, 
-        // contacto telefónico, correo electrónico y enlace a Linktree para más información sobre actividades turísticas
     'turismo_info': `<div class="info-card"><strong>🏖️ Subsecretaría de Turismo</strong><br>📍 Av. Costanera España 25<br>📞 <a href="tel:02241615542">02241 61-5542</a><br>📧 <a href="mailto:turismo@chascomus.gob.ar">Enviar Email</a><br>🔗 <a href="https://linktr.ee/turismoch" target="_blank">Más info en Linktree</a></div>`,
     'deportes_info': `<div class="info-card"><strong>⚽ Dirección de Deportes</strong><br>📍 Av. Costanera España y Av. Lastra<br>📞 <a href="tel:02241424649">(02241) 42 4649</a></div>`,
     'deportes_circuito': `<div class="info-card"><strong>🏃 Circuito de Calle</strong><br>Inscripciones, cronograma y resultados oficiales.<br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/circuitodecalle/" target="_blank">IR A LA WEB</a></div>`,
-  
-
     'politicas_gen': `<div class="info-card" style="border-left: 5px solid #9b59b6;"><strong style="color: #8e44ad; font-size: 1rem;">
     💜 Género y Diversidad</strong><br><br><div style="font-size: 0.85rem; margin-bottom: 12px;">
     🚨 <b>Guardia 24/7:</b> Orientación y acompañamiento en casos de violencia.<br>
@@ -600,8 +602,6 @@ const RES = {
     ☎️ <b>Fijo Oficina:</b> <a href="tel:02241530448">2241-530448</a><br>
     🚓 <b>Comisaría Mujer:</b> <a href="tel:02241422653">42-2653</a></div><a href="https://wa.me/5492241559397" target="_blank" class="wa-btn" style="background-color: #8e44ad !important;">
     🚨 GUARDIA 24HS (WhatsApp)</a></div>`,
-    
-    /* --- TARJETA NUEVA: MÓDULOS ALIMENTARIOS (Estilo destacado) --- */
     'asistencia_social': `
     <div class="info-card" style="border-left: 5px solid #e67e22;">
         <strong style="color: #d35400; font-size: 1rem;">🍎 Módulos Alimentarios (CAM)</strong><br><br>
@@ -628,16 +628,10 @@ const RES = {
             📲 Consultar Cronograma (WhatsApp)
         </a>
     </div>`,
-    
-    // --- SALUD Y BIENESTAR SOCIAL --- //
     'ninez': `<div class="info-card"><strong>👶 Niñez:</b> Mendoza Nº 95. 📞 43-1146.`,
     'mediacion_info': `<div class="info-card"><strong>⚖️ Mediación Comunitaria</strong><br>Resolución pacífica y gratuita de conflictos vecinales (ruidos, mascotas, edilicios).<br>📍 <b>Acercate a:</b> Moreno 259.</div>`,
     'uda_info': `<div class="info-card"><strong>📍 Puntos UDA (Atención en Barrios)</strong><br><i>Acercate a tu punto más cercano:</i><br><br>🔹 <b>UDA 1 (San Luis):</b> Chubut 755 (Mar/Vie 9-12).<br>🔹 <b>UDA 2 (San José Obrero):</b> F. Chapa 625 (Mar/Vie 9-12).<br>🔹 <b>UDA 3 (El Porteño):</b> Mansilla y Calle 3 (Vie 9-12).<br>🔹 <b>UDA 4 (30 de Mayo):</b> Bvd. 5 y Calle 2 (Vie 9-12).<br>🔹 <b>UDA 5 (B. Jardín):</b> J. Quintana e/ Misiones (Mar/Mié 9-12).<br>🔹 <b>UDA 6 (Gallo Blanco):</b> EE.UU. y Las Flores (Lun 9-12).<br>🔹 <b>UDA 7 (San Cayetano):</b> Comedor (Mar 9-12).<br>🔹 <b>UDA 8 (Políticas Com.):</b> Sarmiento 42 (Lun-Vie 8-12).<br>🔹 <b>UDA 9 (Iporá):</b> Perú y S. Cabral (Jue 9-12).<br><br>🚨 <b>Guardia 24hs:</b> <a href="https://wa.me/5492241559397">2241-559397</a></div>`,
-   
-    // --- TRÁMITES Y SERVICIOS MUNICIPALES --- //
-
     'hac_tomasa': `<div class="info-card"><strong>🌾 TOMASA:</b><br>ℹ️ Portal de autogestión.<br>🔗 <a href="https://tomasa.chascomus.gob.ar/">INGRESAR</a>`,
-
     'deuda_video_info': `
     <div class="info-card">
         <strong>🎥 La muni Invierte</strong><br><br>
@@ -650,11 +644,10 @@ const RES = {
             Mirá este breve tutorial sobre cómo iniciar tu trámite de habilitación comercial 100% online.
         </p>
     </div>`,
-    'boleta': `<div class="info-card"><strong>📧 BOLETA DIGITAL</strong><br>🟢 <i>Para inscribirse comomunicarce por estas vias</a><br> 
+    'boleta': `<div class="info-card"><strong>📧 BOLETA DIGITAL</strong><br>🟢 <i>Para inscribirse comomunicarce por estas vias<br> 
     📲: <a href="https://wa.me/5492241557616">2241-557616</a><br>📧 <a href="mailto:ingresospublicos@chascomus.gob.ar">Email</a></div>`,
     'agua': `<div class="info-card"><strong>💧 CONSUMO DE AGUA</strong><br> ℹ️ Para conocer y pagar su consumo ingrese a este Link</b><br>
     🔗 <a href="https://apps.chascomus.gob.ar/caudalimetros/consulta.php">VER MI CONSUMO</a>`, 
-
     'consulta_tributaria': `
     <div class="info-card">
         <strong>💸 CONSULTA TRIBUTARIA</strong><br><br>
@@ -670,15 +663,11 @@ const RES = {
         Seleccione <b>CUOTAS DE CONVENIO</b> para listar las cuotas de convenio de pago vigentes.<br><br>
         🔗 <a href="https://deuda.chascomus.gob.ar/consulta.php">CONSULTAR AQUÍ</a>
     </div>`,
-
-      
     'deuda': `<div class="info-card"><strong>🔍 CONSULTA DEUDA</strong><br>💸 Para ver sus inpuesto.<br>
     🏠<b>INMOBILIARIO</b><br>
     👤<b>CONTRIBUYENTE</b><br>
     ⚰️<b>CEMENTERIO</b><br>
     🔗 <a href="https://pagos.chascomus.gob.ar/#destino=imponible">CONSULTAR AQUÍ</a>`,
-     
-    /* --- HABILITACIÓN COMERCIAL / INDUSTRIAL GENERAL --- */
     'hab_gral': `
     <div class="info-card">
         <strong>🏢 Habilitación Comercial / Industrial</strong><br><br>
@@ -692,8 +681,6 @@ const RES = {
         📍 <b>Presencial:</b> Maipú 415 (Producción).<br><br>
         🚀 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionComercial.php" target="_blank" class="wa-btn">INICIAR TRÁMITE ONLINE</a>
     </div>`,
-// Respuesta original de Hábitat con información detallada sobre el trámite de habilitación comercial, 
-    /* --- HABILITACIÓN EVENTOS Y ESPACIO PÚBLICO --- */
     'hab_eventos': `
     <div class="info-card">
         <strong>🎉 Eventos y Salones de Fiesta</strong><br>
@@ -706,8 +693,6 @@ const RES = {
         📞 (02245) 44-6107<br><br>
         📝 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionEventoPrivado2.0.php" target="_blank">IR AL FORMULARIO</a>
     </div>`,
-
-    /* --- HABILITACIÓN ESPACIO PÚBLICO (FOODTRUCKS Y PATIOS) --- */
     'hab_espacio': `
     <div class="info-card">
         <strong>🍔 Uso de Espacio Público</strong><br>
@@ -720,8 +705,6 @@ const RES = {
         • Domicilio en Chascomús.<br><br>
         📝 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionCarro.php" target="_blank">SOLICITAR PERMISO</a>
     </div>`,
-
-    /* --- HABILITACIÓN REBA (REGISTRO DE ALCOHOL) --- */
   'hab_reba': `
     <div class="info-card">
         <strong>🍷 Registro de Alcohol (REBA)</strong><br><br>
@@ -733,8 +716,6 @@ const RES = {
         Solicitalo a <a href="mailto:habilitaciones@chascomus.gob.ar">habilitaciones@chascomus.gob.ar</a><br><br>
         🏦 <b>Pago:</b> Recibirás una boleta para abonar en Banco Provincia.
     </div>`,
-    
-    /* --- RESPUESTAS HOSPITAL MUNICIPAL --- */
     'h_turnos': `
     <div class="info-card">
         <strong>📍 <b>Hospital Municipal:</b> Av. Alfonsín e Yrigoyen.<br>🚨 Guardia 24 hs.</strong><br>
@@ -742,9 +723,6 @@ const RES = {
             📲 Consultar por turnos (WhatsApp)
         </a>
     </div>`, 
-    
-    
-    /* --- ESPECIALIDADES HOSPITAL (NUEVO ORDEN: Especialidad -> Día) --- */
     'info_pediatria': `
     <div class="info-card">
         <strong>👶 Pediatría</strong><br>
@@ -753,7 +731,6 @@ const RES = {
         👇 <i>Sacá turno por WhatsApp:</i>
         <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn">📅 SOLICITAR TURNO</a>
     </div>`,
-
     'info_clinica': `
     <div class="info-card">
         <strong>🩺 Clínica Médica</strong><br><br>
@@ -761,7 +738,6 @@ const RES = {
         👇 <i>Sacá turno por WhatsApp:</i>
         <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn">📅 SOLICITAR TURNO</a>
     </div>`,
-
     'info_gineco': `
     <div class="info-card">
         <strong>🤰 Salud de la Mujer</strong><br><br>
@@ -770,7 +746,6 @@ const RES = {
         👇 <i>Sacá turno por WhatsApp:</i>
         <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn">📅 SOLICITAR TURNO</a>
     </div>`,
-
     'info_cardio': `
     <div class="info-card">
         <strong>❤️ Cardiología</strong><br><br>
@@ -778,7 +753,6 @@ const RES = {
         👇 <i>Sacá turno por WhatsApp:</i>
         <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn">📅 SOLICITAR TURNO</a>
     </div>`,
-
     'info_trauma': `
     <div class="info-card">
         <strong>🦴 Traumatología</strong><br><br>
@@ -786,7 +760,6 @@ const RES = {
         👇 <i>Sacá turno por WhatsApp:</i>
         <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn">📅 SOLICITAR TURNO</a>
     </div>`,
-
     'info_oftalmo': `
     <div class="info-card">
         <strong>👁️ Oftalmología</strong><br><br>
@@ -794,7 +767,6 @@ const RES = {
         👇 <i>Sacá turno por WhatsApp:</i>
         <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn">📅 SOLICITAR TURNO</a>
     </div>`,
-
     'info_nutri': `
     <div class="info-card">
         <strong>🍎 Nutrición</strong><br><br>
@@ -802,7 +774,6 @@ const RES = {
         👇 <i>Sacá turno por WhatsApp:</i>
         <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn">📅 SOLICITAR TURNO</a>
     </div>`,
-
     'info_cirugia': `
     <div class="info-card">
         <strong>🔪 Cirugía General</strong><br><br>
@@ -810,7 +781,6 @@ const RES = {
         👇 <i>Sacá turno por WhatsApp:</i>
         <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn">📅 SOLICITAR TURNO</a>
     </div>`,
-
     'info_neuro_psiq': `
     <div class="info-card">
         <strong>🧠 Salud Mental y Neurología</strong><br><br>
@@ -819,9 +789,6 @@ const RES = {
         👇 <i>Sacá turno por WhatsApp:</i>
         <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn">📅 SOLICITAR TURNO</a>
     </div>`,
-    
-    // Respuestas Dirección de Producción
-    /* 🟢 ECONOMÍA SOCIAL */
     'res_compre_chascomus': `
     <div class="info-card">
         <strong>🤝 Compre Chascomús - Producción Local</strong><br><br>
@@ -831,8 +798,6 @@ const RES = {
         👇 <i>Completá el formulario y la Dirección de Producción te contactará:</i><br>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfa4LPccR6dYwkQFWhG31HELnaKMCSgUF7Jqy1xfiSNR_fA_g/viewform" target="_blank" class="wa-btn">📝 FORMULARIO DE INSCRIPCIÓN</a>
     </div>`,
-
-/* 🟡 PRODUCCIÓN AGROPECUARIA */
     'res_prod_frescos': `
     <div class="info-card">
         <strong>🥦 Orientación Productores Alimentos Frescos</strong><br><br>
@@ -840,8 +805,6 @@ const RES = {
         <i>Acompañamos el desarrollo de tu unidad económica.</i><br><br>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSeMzImHt14uXF4ZSk3wiJEqfxK4U2Tw9bSJrJXaKGLv5kLGew/closedform" target="_blank" class="wa-btn">📝 FORMULARIO PRODUCTORES</a>
     </div>`,
-
-    /* 🔵 OFICINA DE EMPLEO */
     'res_oe_inscripcion': `
     <div class="info-card">
         <strong>📝 Inscripción / Actualización Laboral</strong><br><br>
@@ -850,8 +813,6 @@ const RES = {
         2. Te contactaremos (Lun a Vie 8 a 14hs) para una entrevista y asesoramiento.<br><br>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfl7uzaIU0u8G-S3uTjtddZl7y4o5jajZUzNuftZEyfqPdDKg/viewform" target="_blank" class="wa-btn">📝 CARGAR MI CV / DATOS</a>
     </div>`,
-
-    /* 🟣 OFICINA DE EMPLEO - PROGRAMAS */
     'res_oe_promover': `
     <div class="info-card">
         <strong>♿ Programa Nacional Promover</strong><br><br>
@@ -859,8 +820,6 @@ const RES = {
         Ofrece formación, capacitación y acompañamiento en el perfil laboral.<br><br>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSdGoPi4Xmg0zD2VtBzTr1sFol1QtLAM5G0oDA6vExM_cvIYbQ/viewform" target="_blank" class="wa-btn">📝 INSCRIPCIÓN PROMOVER</a>
     </div>`,
-
-    /* 🟣 OFICINA DE EMPLEO - TALLERES */
     'res_oe_taller_cv': `
     <div class="info-card">
         <strong>📄 Armado de CV y Búsqueda de Empleo</strong><br><br>
@@ -868,9 +827,6 @@ const RES = {
         Te ofrecemos información y estrategias para tener la mejor herramienta de presentación.<br><br>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSdQkEPZZx7gXZXO9vAb7u3Klxj8g5cwSe1fXqz6Zmo4jjMNBg/viewform" target="_blank" class="wa-btn">📝 INSCRIBIRSE AL TALLER</a>
     </div>`,
-
-    /* 🟠 EMPRESAS */
-
     'res_emp_chasco': `
     <div class="info-card">
         <strong>🚀 Programa Chascomús Emprende</strong><br><br>
@@ -878,8 +834,6 @@ const RES = {
         Al completar el formulario, ingresás al listado para coordinar una entrevista de diagnóstico y orientación.<br><br>
         <a href="https://uploads.chascomus.gob.ar/produccion/PROGRAMA%20CHASCOMUS%20EMPRENDE.pdf" target="_blank" class="wa-btn">📝 INSCRIPCIÓN EMPRENDEDORES</a>
     </div>`,
-
-    /* 🟣 EMPLEADORES */
     'res_empl_busqueda': `
     <div class="info-card">
         <strong>🔎 Búsqueda de Personal</strong><br><br>
@@ -887,16 +841,12 @@ const RES = {
         ✅ La Dirección de Producción realizará una preselección y te presentará una <b>terna final de candidatos</b>.<br><br>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSdOeVRsshYtc8JF-sTXyEqQgJl2hyTbxyfDPb0G7SsiGBMj_g/viewform" target="_blank" class="wa-btn">📝 PUBLICAR PUESTO</a>
     </div>`,
-
-    /* 🟣 EMPLEADORES - EMPRESAS MADRINAS */
     'res_empl_madrinas': `
     <div class="info-card">
         <strong>🤝 Programa Formando Red - Empresas Madrinas</strong><br><br>
         Vinculamos empresas con compromiso social que deseen capacitar a futuros trabajadores, favoreciendo la igualdad de oportunidades.<br><br>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSe7SA_eKKQw-EDuFU9pDBIE_nUjzLOX6AZrHI_KfO3bwufVSA/viewform" target="_blank" class="wa-btn">📝 QUIERO SER EMPRESA MADRINA</a>
     </div>`,
-
-    /* 🔴 MANIPULACIÓN */
     'res_manipulacion': `
     <div class="info-card">
         <strong>🔴 Carnet de Manipulación de Alimentos</strong><br><br>
@@ -906,8 +856,6 @@ const RES = {
         <i>Modalidad presencial (y próximamente virtual).</i><br><br>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSctX7eGQxBNei5howcIjXhIzlBTKQQb_RIBImnKXjVPvIVrvw/closedform" target="_blank" class="wa-btn">📝 INSCRIPCIÓN AL CURSO</a>
     </div>`,
-
-    /* 🔴 CONTACTO PRODUCCIÓN */
      'prod_contacto': `
     <div class="info-card">
         <strong>📍 Dirección de Producción</strong><br><br>
@@ -917,8 +865,6 @@ const RES = {
         ℹ️ <b>Atención:</b><br>
         Orientación a productores de alimentos frescos, PYMES y cooperativas, impulsando la economía social y la agricultura familiar.
     </div>`,
-
-    /* ☎️ CONTACTO GENERAL MUNICIPAL --- */
         'contacto_gral': `<div class="info-card">
     <strong>🏛️ Contacto Municipalidad</strong><br>
     <i>Canales de atención directa:</i><br><br>
@@ -934,441 +880,333 @@ const RES = {
     Cr. Cramer 270.</div>`
 };
 
+/* --- 3. LÓGICA DEL CHAT --- */
+function normalizar(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim(); } 
 
-/* --- 5. MOTOR DE CHAT --- */
-const FRASES_RESPUESTA = ["¡Excelente selección! ⭐", "¡Perfecto! 👍", "¡Genial! Te ayudo con eso 😊", "¡Buena opción! 🔍", "¡Excelente elección! 🎯"];
-function getFraseAleatoria() { return FRASES_RESPUESTA[Math.floor(Math.random() * FRASES_RESPUESTA.length)]; }
+function validarTexto(texto) {
+    const t = normalizar(texto);
+    for (let i = 0; i < PALABRAS_OFENSIVAS.length; i++) {
+        if (t.includes(PALABRAS_OFENSIVAS[i])) {
+            return { v: false, m: "Por favor, mantengamos el respeto en el chat. 😇" };
+        }
+    }
+    return { v: true, m: "" };
+}
 
-function scrollToBottom() {
-    const container = document.getElementById('chatMessages');
-    setTimeout(() => container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' }), 50);
+function registrarEvento(categoria, accion_detalle) {
+    const datos = {
+        usuario: userName || 'Anónimo',
+        barrio: userNeighborhood || 'No especificado',
+        edad: userAge || 'No especificada',
+        accion: categoria,
+        detalle: accion_detalle
+    };
+    // Esta parte se sigue conectando a tu archivo .php en el servidor sin problemas
+    fetch('guardar_datos.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+    }).catch(error => console.error('❌ Error al guardar:', error));
 }
 
 function showTyping() {
     isBotThinking = true;
     const container = document.getElementById('chatMessages');
-    const typing = document.createElement('div');
-    typing.id = 'typingIndicator';
-    typing.className = 'typing-indicator nuevo-mensaje';
-    typing.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
-    container.appendChild(typing);
-    scrollToBottom();
+    const wrapper = document.createElement('div'); wrapper.className = 'message-wrapper'; wrapper.id = 'typingWrapper';
+    
+    wrapper.innerHTML = `<img src="${IMG_BOT_PENSANDO}" class="avatar-chat thinking" alt="Bot Pensando"><div class="message bot">...</div>`;
+    
+    container.appendChild(wrapper); container.scrollTop = container.scrollHeight; 
 }
 
-function removeTyping() {
-    const typing = document.getElementById('typingIndicator');
-    if (typing) typing.remove();
-    isBotThinking = false;
-}
 
 function addMessage(content, side = 'bot', options = null) {
-    if (side === 'bot') removeTyping();
-    const container = document.getElementById('chatMessages');
-    const row = document.createElement('div'); 
-    row.className = 'message-wrapper';
-    row.style.display = 'flex';
-    row.style.flexDirection = 'column';
+    if(side === 'bot') { 
+        isBotThinking = false; 
+        const t = document.getElementById('typingWrapper'); 
+        if(t) t.remove(); 
+        
+        document.querySelectorAll('.avatar-chat.speaking').forEach(img => {
+            img.src = IMG_BOT_NORMAL;
+            img.classList.remove('speaking');
+        });
+    } 
 
-    const div = document.createElement('div');
-    // Se añade 'nuevo-mensaje' para que el CSS dispare la animación
-    div.className = `message ${side} nuevo-mensaje`; 
+    const container = document.getElementById('chatMessages');
+    const wrapper = document.createElement('div'); wrapper.className = `message-wrapper ${side}`;
     
-    if (side === 'user') div.textContent = content; else div.innerHTML = content;
-    
-    row.appendChild(div);
+    let html = (side === 'bot') ? `<img src="${IMG_BOT_HABLANDO}" class="avatar-chat speaking" alt="Bot">` : ''; 
+    html += `<div class="message ${side}">${content}</div>`;
+    wrapper.innerHTML = html; container.appendChild(wrapper);
+
+    if (side === 'bot') { 
+        hablar(content); 
+        
+        const tiempoLectura = Math.max(2000, content.length * 50);
+        
+        setTimeout(() => {
+            const imgActual = wrapper.querySelector('.avatar-chat.speaking');
+            if (imgActual) {
+                imgActual.src = IMG_BOT_NORMAL;
+                imgActual.classList.remove('speaking');
+            }
+        }, tiempoLectura);
+    }
 
     if (options) {
-        const optDiv = document.createElement('div');
-        optDiv.className = 'options-container';
-        options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = `option-button ${opt.id === 'back' ? 'back' : ''}`;
-            btn.innerText = opt.label;
-            btn.onclick = () => handleAction(opt);
+        const optDiv = document.createElement('div'); optDiv.className = 'options-container'; 
+        options.forEach(o => {
+            const btn = document.createElement('button'); btn.className = `option-button ${o.id==='back'?'back':''}`;
+            btn.innerText = o.label; btn.onclick = () => handleAction(o);
             optDiv.appendChild(btn);
         });
-        row.appendChild(optDiv);
+        container.appendChild(optDiv);
     }
-
-    container.appendChild(row);
-    scrollToBottom();
-}
-
-function handleAction(opt) {
-    if (isBotThinking) return;
-    if (opt.id === 'back') { 
-        if (currentPath.length > 1) currentPath.pop(); 
-        showMenu(currentPath[currentPath.length - 1]); 
-        return; 
-    }
-    if (opt.link) { window.open(opt.link, '_blank'); return; }
-
-    addMessage(opt.label, 'user');
-
-    if (opt.type === 'barrio_select') {
-        userNeighborhood = opt.label;
-        localStorage.setItem('muni_user_neighborhood', userNeighborhood);
-        showTyping();
-        setTimeout(() => {
-            addMessage(`¡Excelente! ¿Cuál es tu edad?`, 'bot', [
-                {label:'-20', type:'age_select'}, {label:'20-40', type:'age_select'}, 
-                {label:'40-60', type:'age_select'}, {label:'+60', type:'age_select'}
-            ]);
-        }, 1200);
-        return;
-    }
-
-    showTyping();
-    // Tiempo de espera aumentado para simular escritura real
-    setTimeout(() => {
-        if (opt.type === 'leaf' || opt.apiKey) {
-            addMessage(RES[opt.apiKey] || "Información no disponible.", 'bot');
-            showNavControls();
-        } else if (MENUS[opt.id]) {
-            currentPath.push(opt.id);
-            showMenu(opt.id);
-        }
-    }, 1500); 
-}
-
-function showMenu(key) {
-    removeTyping();
-    const menu = MENUS[key];
-    const title = typeof menu.title === 'function' ? menu.title(userName) : menu.title;
-    let opts = [...menu.options];
-    if (currentPath.length > 1) opts.push({ id: 'back', label: '⬅️ Volver' });
-    addMessage(title, 'bot', opts);
-}
-
-function resetToMain() { 
-    currentPath = ['main']; 
-    showTyping(); 
-    setTimeout(() => showMenu('main'), 1000); 
-}
-
-/* --- INICIO --- */
-document.getElementById('sendButton').onclick = processInput;
-document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') processInput(); };
-
-window.onload = () => { 
-    if (!userName) { 
-        showTyping(); 
-        setTimeout(() => addMessage("👋 Bienvenido a <b>MuniBot</b>. ¿Cuál es tu <b>nombre</b>?", 'bot'), 1200); 
-    } else {
-        resetToMain();
-    }
-};
-
-function toggleInfo() { document.getElementById('infoModal').classList.toggle('show'); }
-function clearSession() { if(confirm("¿Borrar datos?")) { localStorage.clear(); location.reload(); } }
-    
-function handleAction(opt) {
-    // Acción para desplegar la lista de barrios
-    if (opt.id === 'ver_lista_barrios') {
-        showTyping();
-        // Generamos la lista larga solo cuando el usuario la pide
-        const opcionesBarrios = BARRIOS_CHASCOMUS.map(b => ({ 
-            label: b, 
-            type: 'barrio_select' 
-        }));
-        setTimeout(() => {
-            addMessage("📍 Por favor, elegí tu barrio de la lista oficial:", "bot", opcionesBarrios);
-        }, 600);
-        return;
-    }
-    
-    if (isBotThinking) return; 
-    
-    if (opt.id === 'back') { 
-        if (currentPath.length > 1) currentPath.pop(); 
-        showMenu(currentPath[currentPath.length - 1]); 
-        return; 
-    }
-
-    if (opt.link) { window.open(opt.link, '_blank'); return; }
-
-    addMessage(opt.label, 'user');
-
-    // REGISTRO DE BARRIO (Nuevo Handler)
-    if (opt.type === 'barrio_select') {
-        userNeighborhood = opt.label;
-        localStorage.setItem('muni_user_neighborhood', userNeighborhood);
-        registrarEvento("Registro", "Barrio: " + userNeighborhood);
-        showTyping();
-        
-        const edades = [{label:'-20', type:'age_select'}, {label:'20-40', type:'age_select'}, {label:'40-60', type:'age_select'}, {label:'+60', type:'age_select'}];
-        setTimeout(() => addMessage(`¡Excelente! <b>${userName}</b> de <b>${userNeighborhood}</b>. ¿Cuál es tu edad?`, 'bot', edades), 800);
-        return;
-    }
-
-    // REGISTRO DE EDAD
-    if (opt.type === 'age_select') {
-        userAge = opt.label; 
-        localStorage.setItem('muni_user_age', userAge);
-        registrarEvento("Registro", "Perfil Completo - Edad: " + userAge);
-        showTyping();
-        setTimeout(() => {
-            addMessage(`¡Gracias <b>${userName}</b>! Ahora con tus datos. ¿En qué te ayudo hoy?`, 'bot');
-            resetToMain();
-        }, 1000);
-        return;
-    }
-
-    registrarEvento("Click", opt.label || opt.id);
-
-    if (opt.type === 'form_147') return startReclamoForm();
-    showTyping();
-    const frase = getFraseAleatoria();
-
-    if (opt.type === 'leaf' || opt.apiKey) {
-        setTimeout(() => {
-            addMessage(`${frase}<br>${RES[opt.apiKey] || "Información no disponible."}`, 'bot');
-            showNavControls(); 
-        }, 2000); // <-- Cambialo de 800 a 2000 para que se vea el "Escribiendo..."
-    
-    } else if (MENUS[opt.id]) {
-        currentPath.push(opt.id);
-        setTimeout(() => { addMessage(frase, 'bot'); showMenu(opt.id); }, 600);
-    }
-}
-
-function showMenu(key) {
-    if (document.getElementById('typingIndicator')) removeTyping();
-    const menu = MENUS[key];
-    const title = typeof menu.title === 'function' ? menu.title(userName) : menu.title;
-    let opts = [...menu.options];
-    if (currentPath.length > 1) opts.push({ id: 'back', label: '⬅️ Volver' });
-    addMessage(title, 'bot', opts);
+    container.scrollTop = container.scrollHeight;
 }
 
 function showNavControls() {
     const container = document.getElementById('chatMessages');
     const navDiv = document.createElement('div'); navDiv.className = 'options-container'; 
-    navDiv.innerHTML = `<button class="option-button back" onclick="showMenu(currentPath[currentPath.length - 1])">⬅️ Volver</button>
-                        <button class="option-button" onclick="resetToMain()">🏠 Inicio</button>`;
-    container.appendChild(navDiv); scrollToBottom();
+    navDiv.innerHTML = `<button class="option-button back" onclick="showMenu(currentPath[currentPath.length-1])">⬅️ Volver</button><button class="option-button" onclick="resetToMain()">🏠 Inicio</button>`;
+    container.appendChild(navDiv); container.scrollTop = container.scrollHeight;
 }
 
-function resetToMain() { currentPath = ['main']; showTyping(); setTimeout(() => showMenu('main'), 600); }
+function handleAction(opt) {
+    if(opt.id === 'back') { if(currentPath.length > 1) currentPath.pop(); showMenu(currentPath[currentPath.length-1]); return; } 
+    if(opt.type === 'age_select') { userAge = opt.label; localStorage.setItem('muni_user_age', userAge); registrarEvento("Registro", "Perfil Completo"); resetToMain(); return; } 
+    if(opt.type === 'barrio_select') { selectBarrio(opt.label); return; }
 
-/* --- 6. FORMULARIO 147 --- */
-function startReclamoForm() {
-    isAwaitingForm = true; currentFormStep = 1; toggleInput(true); 
-    showTyping(); setTimeout(() => addMessage("📝 <b>Paso 1/3:</b> ¿Qué problema es? (Ej: Luminaria, Basura)", 'bot'), 600);
+    addMessage(opt.label, 'user');
+    
+    if(opt.apiKey) {
+        showTyping(); 
+        setTimeout(() => { addMessage(RES[opt.apiKey]); showNavControls(); }, 800); 
+        registrarEvento("Consulta", opt.label);
+    } else if(opt.link) { 
+        showTyping();
+        setTimeout(() => { 
+            addMessage(`Te dejo el acceso directo acá: <br><br><a href="${opt.link}" target="_blank" class="wa-btn">${opt.label}</a>`, 'bot'); 
+            showNavControls(); 
+        }, 800);
+    } else if(MENUS[opt.id]) {
+        currentPath.push(opt.id); showMenu(opt.id); 
+    }
 }
 
-function processFormStep(text) {
-    showTyping();
-    setTimeout(() => {
-        if (currentFormStep === 1) { formData.tipo = text; currentFormStep = 2; addMessage("📍 <b>Paso 2/3:</b> ¿Dirección exacta?", 'bot'); }
-        else if (currentFormStep === 2) { formData.ubicacion = text; currentFormStep = 3; addMessage("🖊️ <b>Paso 3/3:</b> Descripción breve.", 'bot'); }
-        else if (currentFormStep === 3) { formData.descripcion = text; finalizeForm(); }
-    }, 600);
+function showMenu(key) {
+    const m = MENUS[key];
+    let opts = [...m.options];
+    if(currentPath.length > 1) opts.push({ id: 'back', label: '⬅️ Volver' }); 
+    addMessage(typeof m.title === 'function' ? m.title(userName) : m.title, 'bot', opts);
 }
 
-function finalizeForm() {
-    isAwaitingForm = false; toggleInput(false);
-    const msg = `🏛️ *RECLAMO 147*\n👤 *Vecino:* ${userName}\n🏷️ *Tipo:* ${formData.tipo}\n📍 *Ubicación:* ${formData.ubicacion}\n📝 *Desc:* ${formData.descripcion}`;
-    const url = `https://wa.me/5492241514700?text=${encodeURIComponent(msg)}`;
-    addMessage(`<div class="info-card">✅ <strong>Datos Listos</strong><br><a href="${url}" target="_blank" class="wa-btn">📲 ENVIAR RECLAMO</a></div>`, 'bot');
-    showNavControls();
-}
+function resetToMain() { currentPath = ['main']; showMenu('main'); } 
 
-/* --- 7. BUSCADOR INTELIGENTE Y PROCESAMIENTO --- */
-function ejecutarBusquedaInteligente(texto) {
-   const diccionario = {
-        'farmacia':   { type: 'leaf', apiKey: 'farmacias_lista', label: '💊 Farmacias' },
-        'agenda':     { type: 'leaf', apiKey: 'agenda_actual', label: '🎭 Agenda Cultural' },
-        'cultural':   { type: 'leaf', apiKey: 'agenda_actual', label: '🎭 Agenda Cultural' },
-        'teatro':     { type: 'leaf', apiKey: 'agenda_actual', label: '🎭 Agenda Cultural' },
-        'turno':      { type: 'leaf', apiKey: 'h_turnos', label: '📅 Turnos Hospital' },
-        'especialidad':{ type: 'leaf', apiKey: 'h_turnos', label: '📅 Turnos Hospital' },
-        'medico':     { type: 'leaf', apiKey: 'h_turnos', label: '📅 Turnos Hospital' },
-        'hospital':   { id: 'hospital_menu', label: '🏥 Menú Hospital' }, 
-        '147':        { type: 'leaf', apiKey: 'link_147', label: '📝 Reclamos 147' },
-        'reclamo':    { type: 'leaf', apiKey: 'link_147', label: '📝 Reclamos 147' },
-        'luz':        { type: 'leaf', apiKey: 'link_147', label: '📝 Reclamos 147' },
-        'foco':       { type: 'leaf', apiKey: 'link_147', label: '📝 Reclamos 147' },
-        'bache':      { type: 'leaf', apiKey: 'link_147', label: '📝 Reclamos 147' },
-        'perdida':     { type: 'leaf', apiKey: 'link_147', label: '📝 Reclamos 147' },
-        'caño':       { type: 'leaf', apiKey: 'link_147', label: '📝 Reclamos 147' },
-        'ramas':      { type: 'leaf', apiKey: 'link_147', label: '📝 Reclamos 147' },
-        'basura':     { type: 'leaf', apiKey: 'obras_basura', label: '♻️ Recolección' },
-        'contenedor': { type: 'leaf', apiKey: 'obras_basura', label: '♻️ Recolección' },
-        'reciclo':    { type: 'leaf', apiKey: 'obras_basura', label: '♻️ Recolección' },
-        'recoleccion': { type: 'leaf', apiKey: 'obras_basura', label: '♻️ Recolección' },
-        'poda':       { type: 'leaf', apiKey: 'poda', label: '🌿 Poda' },
-        'arbol':      { type: 'leaf', apiKey: 'poda', label: '🌿 Poda' },
-        'deporte':    { id: 'deportes', label: '⚽ Deportes' },  
-        'futbol':     { id: 'deportes', label: '⚽ Deportes' },
-        'canchas':    { id: 'deportes', label: '⚽ Deportes' },
-        'natacion':   { id: 'deportes', label: '⚽ Deportes' },
-        'piscina':    { id: 'deportes', label: '⚽ Deportes' },
-        'turismo':    { id: 'turismo', label: '🏖️ Turismo' },
-        'turista':    { id: 'turismo', label: '🏖️ Turismo' },
-        'reba':       { type: 'leaf', apiKey: 'hab_reba', label: '🍷 REBA' },
-        'alcohol':    { type: 'leaf', apiKey: 'hab_reba', label: '🍷 REBA' },
-        'licencia':   { type: 'leaf', apiKey: 'lic_turno', label: '🪪 Licencias' },
-        'carnet':     { type: 'leaf', apiKey: 'lic_turno', label: '🪪 Licencias' },
-        'castracion': { type: 'leaf', apiKey: 'zoo_rabia', label: '🐾 Zoonosis' },
-        'vacunacion': { type: 'leaf', apiKey: 'vacunacion_info', label: '💉 Vacunación' },
-        'vacuna':     { type: 'leaf', apiKey: 'vacunacion_info', label: '💉 Vacunación' },
-        'empleo':     { type: 'leaf', apiKey: 'prod_empleo', label: '👷 Empleo' },
-        'emprende':   { id: 'produccion_menu', label: '👷 Producción y Empleo' }, 
-        'caps':       { id: 'centros', label: '🏥 Caps' },
-        'saludmental': { id: 'centros', label: '🏥 Caps' },
-        'salita':     { id: 'centros', label: '🏥 Caps' },
-        'salud':      { id: 'salud', label: '🏥 Menú Salud' },         
-        'seguridad':  { id: 'seguridad', label: '🛡️ Menú Seguridad' }, 
-        'tormenta':   { type: 'leaf', apiKey: 'defensa_civil', label: '🌪️ Defensa Civil' },
-        'viento':     { type: 'leaf', apiKey: 'defensa_civil', label: '🌪️ Defensa Civil' },
-        'inundacion': { type: 'leaf', apiKey: 'defensa_civil', label: '🌪️ Defensa Civil' },
-        'clima':      { type: 'leaf', apiKey: 'defensa_civil', label: '🌪️ Defensa Civil' },
-        'lluvia':     { type: 'leaf', apiKey: 'defensa_civil', label: '🌪️ Defensa Civil' },
-        'emergencia': { type: 'leaf', apiKey: 'defensa_civil', label: '🌪️ Defensa Civil' },
-        'camara':     { type: 'leaf', apiKey: 'poli', label: '📹 Camaras de seguridad' },
-        'camaras':    { type: 'leaf', apiKey: 'poli', label: '📹 Camaras de seguridad' },
-        'espacio':    { type: 'leaf', apiKey: 'hab_espacio', label: '🍔 Uso de Espacio Público' },
-        'publico':    { type: 'leaf', apiKey: 'hab_espacio', label: '🍔 Uso de Espacio Público' },
-        'evento':     { type: 'leaf', apiKey: 'hab_espacio', label: '🍔 Uso de Espacio Público' },
-        'fiesta':     { type: 'leaf', apiKey: 'hab_espacio', label: '🍔 Uso de Espacio Público' },
-        'foodtruck':  { type: 'leaf', apiKey: 'hab_espacio', label: '🍔 Uso de Espacio Público' },
-        'carro':      { type: 'leaf', apiKey: 'hab_espacio', label: '🍔 Uso de Espacio Público' },
-        'local':      { type: 'leaf', apiKey: 'hab_gral', label: '🏢 Habilitación Comercial' },  
-        'comercio':   { type: 'leaf', apiKey: 'hab_gral', label: '🏢 Habilitación Comercial' },
-        'medidor':    { type: 'leaf', apiKey: 'agua', label: '💧 Consumo de Agua'  }, 
-        'agua':       { type: 'leaf', apiKey: 'agua', label: '💧 Consumo de Agua'  }, 
-        'boleta':     { type: 'leaf', apiKey: 'boleta', label: '📧 Boleta Digital' },
-        'tomasa':     { type: 'leaf', apiKey: 'hac_tomasa', label: '📧 Tomasa' },
-        'casa':       { type: 'leaf', apiKey: 'habitat_info', label: '🏢 Habilitación Habitacional'  },
-        'vivienda':   { type: 'leaf', apiKey: 'habitat_info', label: '🏢 Habilitación Habitacional'  },       
-        'denuncia':   { id: 'omic', label: '🏦 Denuncias Omic' },
-        'consumidor': { id: 'omic', label: '🏦 Denuncias Omic' },
-        'barrio':     { id: 'vecinales', label: '🏘️ Vecinales' },
-        'trabajo':    { id: 'produccion', label: '👷 Producción y Empleo' },        
-        'curriculum': { id: 'produccion', label: '👷 Producción y Empleo' },
-        'cv':         { id: 'produccion', label: '👷 Producción y Empleo' },
-        'boletin':    { id: 'sibon', label: '📰 Boletín Oficial' },
-        'oficial':    { id: 'sibon', label: '📰 Boletín Oficial' },
-        'diario':     { id: 'el_digital', label: '📰 Diario Digital' },
-        'digital':    { id: 'el_digital', label: '📰 Diario Digital' },
-        'tasas':       { type: 'leaf', apiKey: 'deuda', label: '💰 Pagos de Tasas' }
+/* --- 4. BUSCADOR INTELIGENTE PROFUNDO --- */
+const FRASES = ["¡Bip bop! 🤖 Encontré esto:", "¡Acá tengo la info! ✨", "¡Búsqueda exitosa! 🐾", "¡Ya sé lo que buscás! 💡", "¡Eso era lo que buscabas! 🎯"];
 
-    };
-    showTyping();
-    setTimeout(() => {
-        for (let palabra in diccionario) {
-            if (texto.includes(palabra)) { 
-                addMessage(getFraseAleatoria(), 'bot');
-                handleAction(diccionario[palabra]); return;
+const PALABRAS_CLAVE = {
+    'farmacia': { id: 'f_lista', label: '💊 Farmacias y Turnos', type: 'leaf', apiKey: 'farmacias_lista' },
+    'turno hospital': { id: 'h_tur', label: '📅 WhatsApp Turnos', type: 'leaf', apiKey: 'h_turnos' },
+    'hospital': { id: 'hospital_menu', label: '🏥 Hospital' },
+    '147': { id: 'info_147', label: '📝 Iniciar Reclamo 147', type: 'leaf', apiKey: 'link_147' },
+    'poda': { id: 'poda', label: '🌿 Poda', type: 'leaf', apiKey: 'poda' },
+    'agenda': { id: 'ag_actual', label: '📅 Agenda del Mes', type: 'leaf', apiKey: 'agenda_actual' },
+    'cultura': { id: 'cultura', label: '🎭 Cultura y Agenda' },
+    'deuda': { id: 'deuda', label: '🔍 Ver Deuda / Pagar', type: 'leaf', apiKey: 'deuda' },
+    'salud': { id: 'salud', label: '🏥 Salud' },
+    'seguridad': { id: 'seguridad', label: '🛡️ Seguridad' },
+    'licencia': { id: 'lic_tramite', label: '🪪 Licencia (Carnet)', type: 'leaf', apiKey: 'lic_turno' },
+    'carnet': { id: 'lic_tramite', label: '🪪 Licencia (Carnet)', type: 'leaf', apiKey: 'lic_turno' },
+    'basura': { id: 'obras_basura', label: '♻️ Recolección', type: 'leaf', apiKey: 'obras_basura' },
+    'recoleccion': { id: 'obras_basura', label: '♻️ Recolección', type: 'leaf', apiKey: 'obras_basura' },
+    'pediatria': { id: 'esp_pediatria', label: '👶 Pediatría', type: 'leaf', apiKey: 'info_pediatria' },
+    'clinica': { id: 'esp_clinica', label: '🩺 Clínica Médica', type: 'leaf', apiKey: 'info_clinica' },
+    'ginecologia': { id: 'esp_gineco', label: '🤰 Ginecología', type: 'leaf', apiKey: 'info_gineco' },
+    'cardiologia': { id: 'esp_cardio', label: '❤️ Cardiología', type: 'leaf', apiKey: 'info_cardio' },
+    'traumatologia': { id: 'esp_trauma', label: '🦴 Traumatología', type: 'leaf', apiKey: 'info_trauma' },
+    'oftalmologia': { id: 'esp_oftalmo', label: '👁️ Oftalmología', type: 'leaf', apiKey: 'info_oftalmo' },
+    'nutricion': { id: 'esp_nutri', label: '🍎 Nutrición', type: 'leaf', apiKey: 'info_nutri' },
+    'cirugia': { id: 'esp_cirugia', label: '🔪 Cirugía', type: 'leaf', apiKey: 'info_cirugia' },
+    'neurologia': { id: 'esp_neuro', label: '🧠 Neurología', type: 'leaf', apiKey: 'info_neuro_psiq' },
+    'psiquiatria': { id: 'esp_neuro', label: '🧠 Psiquiatría', type: 'leaf', apiKey: 'info_neuro_psiq' },
+    'zoonosis': { id: 'zoonosis', label: '🐾 Zoonosis', type: 'leaf', apiKey: 'zoo_rabia' },
+    'castracion': { id: 'zoonosis', label: '🐾 Zoonosis', type: 'leaf', apiKey: 'zoo_rabia' },
+    'perro': { id: 'zoonosis', label: '🐾 Zoonosis', type: 'leaf', apiKey: 'zoo_rabia' },
+    'gato': { id: 'zoonosis', label: '🐾 Zoonosis', type: 'leaf', apiKey: 'zoo_rabia' },
+    'vacunacion': { id: 'vac_hu', label: '💉 Vacunatorio', type: 'leaf', apiKey: 'vacunacion_info' },
+    'vacuna': { id: 'vac_hu', label: '💉 Vacunatorio', type: 'leaf', apiKey: 'vacunacion_info' },
+    'habitat': { id: 'habitat', label: '🏡 Hábitat', type: 'leaf', apiKey: 'info_habitat' },
+    'vivienda': { id: 'hab_plan', label: '🏘️ Planes Habitacionales', type: 'leaf', apiKey: 'habitat_planes' },
+    'terreno': { id: 'hab_plan', label: '🏘️ Planes Habitacionales', type: 'leaf', apiKey: 'habitat_planes' },
+    'genero': { id: 'politicas_gen', label: '💜 GÉNERO', type: 'leaf', apiKey: 'politicas_gen' },
+    'violencia': { id: 'politicas_gen', label: '💜 GÉNERO', type: 'leaf', apiKey: 'politicas_gen' },
+    'alimentos': { id: 'politicas_comu', label: '🛍️ Módulos', type: 'leaf', apiKey: 'asistencia_social' },
+    'modulo': { id: 'politicas_comu', label: '🛍️ Módulos', type: 'leaf', apiKey: 'asistencia_social' },
+    'empleo': { id: 'prod_of_empleo', label: '🔵 Oficina de Empleo' },
+    'trabajo': { id: 'prod_of_empleo', label: '🔵 Oficina de Empleo' },
+    'cv': { id: 'oe_inscripcion', label: '📝 Inscripción / Actualizar CV', type: 'leaf', apiKey: 'res_oe_inscripcion' },
+    'habilitacion': { id: 'habilitaciones', label: '💰 Habilitaciones' },
+    'comercio': { id: 'hab_gral', label: '🏢 Comercio e Industria', type: 'leaf', apiKey: 'hab_gral' },
+    'agua': { id: 'agua', label: '💧 Agua', type: 'leaf', apiKey: 'agua' },
+    'boleta': { id: 'boleta', label: '📧 Boleta Digital', type: 'leaf', apiKey: 'boleta' },
+    'impuesto': { id: 'consulta_tributaria', label: '💸 Consulta Tributaria', type: 'leaf', apiKey: 'consulta_tributaria' },
+    'omic': { id: 'omic_info', label: '📢 OMIC', type: 'leaf', apiKey: 'omic_info' },
+    'consumidor': { id: 'omic_info', label: '📢 OMIC', type: 'leaf', apiKey: 'omic_info' },
+    'turismo': { id: 'turismo', label: '🏖️ Turismo' },
+    'deporte': { id: 'deportes', label: '⚽ Deportes' },
+    'policia': { id: 'poli', label: '📞 Monitoreo y Comisaría', type: 'leaf', apiKey: 'poli' },
+    'emergencia': { id: 'poli', label: '📞 Monitoreo y Comisaría', type: 'leaf', apiKey: 'poli' },
+    'ojos': { id: 'ojos_en_alerta', label: '👁️ Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
+    'alerta': { id: 'ojos_en_alerta', label: '👁️ Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
+    'basapp': { id: 'seg_video_b', label: '🎥 Basapp', type: 'leaf', apiKey: 'Basapp_info' },
+    'estacionamiento': { id: 'apps_seg', label: '📲 Descargar Apps (Basapp y SEM)', type: 'leaf', apiKey: 'apps_seguridad' },
+    'multa': { id: 'seg_infracciones', label: '⚖️ Mis Infracciones', type: 'leaf', apiKey: 'seg_infracciones' },
+    'infraccion': { id: 'seg_infracciones', label: '⚖️ Mis Infracciones', type: 'leaf', apiKey: 'seg_infracciones' },
+    'academia': { id: 'seg_academia', label: '🚗 Academia Conductores', type: 'leaf', apiKey: 'seg_academia' },
+    'conducir': { id: 'seg_academia', label: '🚗 Academia Conductores', type: 'leaf', apiKey: 'seg_academia' }
+};
+
+function buscarOpcionProfunda(texto) {
+    const t = normalizar(texto);
+    
+    const clavesOrdenadas = Object.keys(PALABRAS_CLAVE).sort((a, b) => b.length - a.length);
+    for (let i = 0; i < clavesOrdenadas.length; i++) {
+        const k = clavesOrdenadas[i];
+        if (t === k || (t.includes(k) && k.length >= 4)) {
+            return PALABRAS_CLAVE[k];
+        }
+    }
+
+    const palabrasBuscadas = t.split(' ').filter(p => p.length > 3);
+    for (let menuId in MENUS) {
+        const opciones = MENUS[menuId].options;
+        for (let i = 0; i < opciones.length; i++) {
+            const opt = opciones[i];
+            if (opt.id === 'back' || opt.id === 'full_menu') continue;
+            const labelNorm = normalizar(opt.label);
+            
+            if (labelNorm.includes(t)) return opt; 
+            
+            for(let p of palabrasBuscadas) {
+                if(labelNorm.includes(p)) return opt;
             }
         }
-        addMessage("No entendí. Escribí '<b>Menú</b>' para ver opciones. 🤔", 'bot');
-        showNavControls();
+    }
+    return null;
+}
+
+function ejecutarBusquedaInteligente(texto) {
+    showTyping();
+    setTimeout(() => {
+        const opcionEncontrada = buscarOpcionProfunda(texto);
+        if (opcionEncontrada) {
+            addMessage(FRASES[Math.floor(Math.random() * FRASES.length)], 'bot');
+            setTimeout(() => {
+                if (opcionEncontrada.apiKey) {
+                    showTyping();
+                    setTimeout(() => {
+                        addMessage(RES[opcionEncontrada.apiKey]);
+                        showNavControls();
+                        registrarEvento("Búsqueda Profunda", opcionEncontrada.label);
+                    }, 600);
+                } else if (opcionEncontrada.link) {
+                    showTyping();
+                    setTimeout(() => {
+                        addMessage(`Te dejo el acceso directo acá: <br><br><a href="${opcionEncontrada.link}" target="_blank" class="wa-btn">${opcionEncontrada.label}</a>`, 'bot');
+                        showNavControls();
+                    }, 600);
+                } else if (MENUS[opcionEncontrada.id]) {
+                    currentPath.push(opcionEncontrada.id);
+                    showMenu(opcionEncontrada.id);
+                }
+            }, 500); 
+        } else {
+            addMessage("Mmm, mi inteligencia de mascota no encontró eso. 🐶 ¿Querés buscar manualmente en el menú completo?", 'bot', [{id:'full_menu', label:'☰ Ver Menú Completo'}]);
+        }
+    }, 800); 
+}
+
+/* --- 5. REGISTRO Y PROCESAMIENTO --- */
+function selectBarrio(b) {
+    userNeighborhood = b; localStorage.setItem('muni_user_neighborhood', b); 
+    registrarEvento("Registro", "Barrio: " + b);
+   
+    setTimeout(() => {
+        const edades = [{label:'-20', type:'age_select'}, {label:'20-40', type:'age_select'}, {label:'40-60', type:'age_select'}, {label:'+60', type:'age_select'}];
+        addMessage(`¡Excelente barrio <b>${userName}</b>! Ahora me decís tu edad para ayudarte:`, 'bot', edades);
     }, 800);
 }
 
-f/* --- INTEGRACIÓN DE FILTRO DE PALABRAS --- */
 function processInput() {
-    const input = document.getElementById('userInput'); 
-    const val = input.value.trim();
-    
-    // Si está vacío o el bot está pensando, no hacemos nada
-    if (!val || isBotThinking) return;
+    const input = document.getElementById('userInput'); const val = input.value.trim();
+    if(!val || isBotThinking) return; 
 
-    // 1. PRIMERO: VALIDAMOS SI HAY INSULTOS
-    // Convertimos a minúsculas para comparar mejor
-    const validacion = validarTexto(val.toLowerCase()); 
-    
-    if (!validacion.v) {
-        // Si hay insulto: Mostramos el mensaje del usuario
-        addMessage(val, 'user'); 
-        input.value = ""; 
-        showTyping();
-        
-        // El bot responde retándolo y CORTA la ejecución (return)
-        setTimeout(() => {
-            addMessage(validacion.m, 'bot');
-        }, 600);
-        return; // <--- ESTO ES CLAVE: Detiene todo aquí.
-    }
+    const validacion = validarTexto(val); 
+    if(!validacion.v) { addMessage(val, 'user'); input.value = ""; showTyping(); setTimeout(() => addMessage(validacion.m, 'bot'), 600); return; } 
 
-    // 2. Si pasa el filtro, sigue la lógica normal...
-    
-    if (isAwaitingForm) { 
-        addMessage(val, 'user'); input.value = ""; processFormStep(val); return; 
-    }
-
-    // REGISTRO DE NOMBRE
-    if (!userName) { 
-        if (val.length < 3) return;
-        userName = val; 
-        localStorage.setItem('muni_user_name', val); 
-        registrarEvento("Registro", "Nombre: " + val); 
-        addMessage(val, 'user'); input.value = ""; showTyping(); 
-        
-        setTimeout(() => {
-            addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 Para continuar, necesitamos saber tu barrio para mejorar la atención; puedes elegirlo o escribirlo:`, 'bot', [
-                { id: 'ver_lista_barrios', label: '🏙️ Seleccionar mi Barrio' }
-            ]);
-        }, 800); 
-        return; 
-    }
-
-    if (!userNeighborhood) { 
-        const barrioIngresado = buscarBarrioValido(val);
-        const barriosSimilares = buscarBarriosSimilares(val);
-        addMessage(val, 'user');
-        input.value = "";
-
-        if (barrioIngresado) {
-            userNeighborhood = barrioIngresado;
-            localStorage.setItem('muni_user_neighborhood', userNeighborhood);
-            registrarEvento("Registro", "Barrio: " + userNeighborhood);
-            showTyping();
-
-            const edades = [
-                { label: '-20', type: 'age_select' },
-                { label: '20-40', type: 'age_select' },
-                { label: '40-60', type: 'age_select' },
-                { label: '+60', type: 'age_select' }
-            ];
-
-            setTimeout(() => addMessage(`¡Excelente! <b>${userName}</b> de <b>${userNeighborhood}</b>. ¿Cuál es tu edad?`, 'bot', edades), 800);
-            return;
-        }
-
-        if (barriosSimilares.length > 0) {
-            const opcionesSugeridas = barriosSimilares.map(barrio => ({
-                label: barrio,
-                type: 'barrio_select'
-            }));
-
-            opcionesSugeridas.push({ id: 'ver_lista_barrios', label: '🏙️ Ver lista completa' });
-
-            showTyping();
-            setTimeout(() => addMessage("No lo encontré exacto. ¿Quisiste decir alguno de estos barrios?", 'bot', opcionesSugeridas), 600);
-            return;
-        }
-
-        showTyping();
-        setTimeout(() => addMessage("⚠️ No encontré ese barrio. Escribilo de nuevo o tocá 'Seleccionar mi Barrio'.", 'bot'), 600);
+    if(!userName) {
+        userName = val; localStorage.setItem('muni_user_name', userName); 
+        addMessage(val, 'user'); input.value = ""; showTyping();
+        setTimeout(() => addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 ¿De qué barrio eres?`, 'bot'), 800);
         return;
     }
 
-    // Búsqueda normal
-    addMessage(val, 'user'); 
-    registrarEvento("Búsqueda", val); 
-    input.value = ""; 
-    ejecutarBusquedaInteligente(val.toLowerCase());
+    if(!userNeighborhood) {
+        addMessage(val, 'user'); input.value = "";
+        const exacto = BARRIOS.find(x => normalizar(x) === normalizar(val));
+        const similares = BARRIOS.filter(x => normalizar(x).includes(normalizar(val))); 
+        
+        if(exacto) selectBarrio(exacto);
+        else if(similares.length > 0 && normalizar(val).length > 2) {
+            addMessage("No lo encontré exacto. ¿Es alguno de estos?, ¿toca el botón correspondiente?", "bot", similares.map(s => ({label: s, type: 'barrio_select'})));
+        } else {
+            addMessage(`⚠️ No reconozco ese barrio. Por favor, escribilo de nuevo (Ej: Iporá, Centro, San Luis, El Algarrobo, etc.).`, 'bot'); 
+        }
+        return;
+    }
+
+    if(!userAge) {
+        addMessage(val, 'user'); input.value = "";
+        
+        let numeros = val.match(/\d+/); 
+        
+        if (numeros) {
+            let edadNum = parseInt(numeros[0]);
+            
+            if (edadNum < 20) userAge = '-20';
+            else if (edadNum <= 40) userAge = '20-40';
+            else userAge = '+40';
+            
+            localStorage.setItem('muni_user_age', userAge); 
+            registrarEvento("Registro", "Perfil Completo (Edad: " + edadNum + ")");
+            
+            showTyping();
+            setTimeout(() => {
+                resetToMain();
+            }, 800);
+        } else {
+            addMessage(`Mmm, mi oído falló ahí. 🤔 Escribí tu edad con números (ej: 35) o elegí un botón:`, 'bot', [
+                {label:'-20', type:'age_select'}, 
+                {label:'20-40', type:'age_select'}, 
+                {label:'40-60', type:'age_select'}, 
+                {label:'+60', type:'age_select'}
+            ]);
+        }
+        return;
+    }
+
+    addMessage(val, 'user'); input.value = "";
+    ejecutarBusquedaInteligente(val); 
 }
 
-/* --- 8. CARGA --- */
-document.getElementById('sendButton').onclick = processInput;
-document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') processInput(); };
-function toggleInput(show) { document.getElementById('inputBar').style.display = show ? 'flex' : 'none'; }
-function toggleInfo() { document.getElementById('infoModal').classList.toggle('show'); }
-function clearSession() { if(confirm("¿Borrar datos?")) { localStorage.clear(); location.reload(); } }
+/* --- 6. INICIALIZACIÓN --- */
+window.onload = () => {
+    if(!userName) { showTyping(); setTimeout(() => addMessage("👋 ¡Hola! Soy <b>MuniBot</b>, el asistente virtual de la Municipalidad de Chascomús. ¿Cómo te llamás?", "bot"), 1000); } 
+    else { resetToMain(); }
+};
 
-window.onload = () => { if (!userName) { showTyping(); setTimeout(() => addMessage("👋 Bienvenido a <b>MuniBot</b>. Para empezar, ¿cuál es tu <b>nombre</b>?", 'bot'), 600); } else resetToMain(); };
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+document.getElementById('sendButton').onclick = processInput; 
+document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') processInput(); };
+function clearSession() { if(confirm("¿Reiniciar chat y borrar datos?")) { localStorage.clear(); location.reload(); } }
