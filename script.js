@@ -59,20 +59,14 @@ reconocimiento.onresult = (evento) => {
     const transcripcion = evento.results[0][0].transcript;
     inputArea.value = transcripcion;
     
-    // Si ya estamos procesando un audio, frenamos acá y evitamos el duplicado
     if (procesandoVoz) return; 
-    
-    // Activamos el "escudo"
     procesandoVoz = true; 
     
-    // Enviamos el mensaje automáticamente
-    processInput(); 
-    
-    // Desactivamos el "escudo" después de 1.5 segundos 
-    // (tiempo suficiente para ignorar el bug del navegador móvil)
+    // Esperamos 400ms para que Android termine de escribir el texto antes de procesar
     setTimeout(() => {
+        processInput(); 
         procesandoVoz = false;
-    }, 1500);
+    }, 400);
 };
     
     reconocimiento.onend = () => {
@@ -1069,18 +1063,20 @@ const PALABRAS_CLAVE = {
     'ecopunto': { id: 'obras_basura', label: '♻️ Ecopuntos', type: 'leaf', apiKey: 'obras_basura' }
 };
 
+f/* --- 4. BUSCADOR INTELIGENTE PROFUNDO (CORREGIDO) --- */
 function buscarOpcionProfunda(texto) {
     let t = normalizar(texto);
     
-    // Si el vecino escribe en plural (ej: "turnos"), probamos también en singular
+    // 1. Buscamos coincidencia exacta en PALABRAS_CLAVE
+    if (PALABRAS_CLAVE[t]) return PALABRAS_CLAVE[t];
+
+    // 2. Lógica de Plurales: si escribe "turnos", probamos con "turno"
     if (t.endsWith('s') && t.length > 4) {
         let singular = t.slice(0, -1);
         if (PALABRAS_CLAVE[singular]) return PALABRAS_CLAVE[singular];
     }
 
-    // ... resto de tu lógica actual de búsqueda ...
-}
-
+    // 3. Búsqueda por palabras sueltas dentro de las etiquetas de los MENUS
     const palabrasBuscadas = t.split(' ').filter(p => p.length > 3);
     for (let menuId in MENUS) {
         const opciones = MENUS[menuId].options;
