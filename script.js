@@ -1,11 +1,10 @@
 /* --- PWA: REGISTRO DEL SERVICE WORKER --- */
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    // Acá le decimos al navegador que vaya a buscar el archivo sw.js
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('¡Service Worker registrado correctamente!', reg))
-      .catch(err => console.error('Falló el registro del Service Worker:', err));
-  });
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+            .then(reg => console.log('✅ PWA: Service Worker registrado listos para instalar'))
+            .catch(err => console.error('❌ PWA: Error al registrar', err));
+    });
 }
 
 //* --- ACCESIBILIDAD: RECONOCIMIENTO Y SÍNTESIS DE VOZ --- */
@@ -894,21 +893,21 @@ function validarTexto(texto) {
     return { v: true, m: "" };
 }
 
-//function registrarEvento(categoria, accion_detalle) {
-    //const datos = {
-        //usuario: userName || 'Anónimo',
-        //barrio: userNeighborhood || 'No especificado',
-        //edad: userAge || 'No especificada',
-        //accion: categoria,
-        //detalle: accion_detalle
-    //};
+function registrarEvento(categoria, accion_detalle) {
+    const datos = {
+        usuario: userName || 'Anónimo',
+        barrio: userNeighborhood || 'No especificado',
+        edad: userAge || 'No especificada',
+        accion: categoria,
+        detalle: accion_detalle
+    };
     // Esta parte se sigue conectando a tu archivo .php en el servidor sin problemas
-    //fetch('guardar_datos.php', {
-      //  method: 'POST',
-       // headers: { 'Content-Type': 'application/json' },
-        //body: JSON.stringify(datos)
-    //}).catch(error => console.error('❌ Error al guardar:', error));
-//}
+    fetch('guardar_datos.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+    }).catch(error => console.error('❌ Error al guardar:', error));
+}
 
 function showTyping() {
     isBotThinking = true;
