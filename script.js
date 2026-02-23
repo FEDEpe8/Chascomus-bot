@@ -1,10 +1,11 @@
 /* --- PWA: REGISTRO DEL SERVICE WORKER --- */
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-            .then(reg => console.log('✅ PWA: Service Worker registrado listos para instalar'))
-            .catch(err => console.error('❌ PWA: Error al registrar', err));
-    });
+  window.addEventListener('load', () => {
+    // Acá le decimos al navegador que vaya a buscar el archivo sw.js
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('¡Service Worker registrado correctamente!', reg))
+      .catch(err => console.error('Falló el registro del Service Worker:', err));
+  });
 }
 
 //* --- ACCESIBILIDAD: RECONOCIMIENTO Y SÍNTESIS DE VOZ --- */
