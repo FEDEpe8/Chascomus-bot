@@ -901,14 +901,10 @@ function registrarEvento(categoria, accion_detalle) {
         accion: categoria,
         detalle: accion_detalle
     };
-    // Esta parte se sigue conectando a tu archivo .php en el servidor sin problemas
-    fetch('guardar_datos.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(datos)
-    }).catch(error => console.error('❌ Error al guardar:', error));
+    
+    // Solo mostramos en consola para verificar que el bot "sigue" el flujo
+    console.log("Evento registrado:", datos);
 }
-
 function showTyping() {
     isBotThinking = true;
     const container = document.getElementById('chatMessages');
