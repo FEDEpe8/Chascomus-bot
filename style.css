@@ -172,14 +172,13 @@ body { display: flex; flex-direction: column; }
     border-top: 1px solid #f1f5f9; 
 }
 
-.input-wrapper { 
-    display: flex; 
-    align-items: center; 
-    background: #f1f5f9; 
-    border-radius: 30px; 
-    padding: 6px 18px; 
-    gap: 10px; 
-    border: 1px solid #e2e8f0;
+.input-wrapper {
+    display: flex;
+    align-items: center;               /* Centra todo verticalmente */
+    background: #f1f5f9;               /* Color de fondo suave */
+    border-radius: 25px;               /* Bordes redondeados */
+    padding: 5px 15px;                 /* Espaciado interno */
+    gap: 8px;                          /* Espacio entre mic, texto y enviar */
 }
 
 #userInput { 
@@ -191,7 +190,24 @@ body { display: flex; flex-direction: column; }
     padding: 12px 0; 
     color: var(--text-main);
 }
+.btn-mic {
+    background: transparent;           /* Sin fondo azul */
+    border: none;                      /* Sin bordes */
+    font-size: 1.4rem;                 /* Tamaño del emoji */
+    cursor: pointer;                   /* Cambia el cursor */
+    padding: 0 10px;                   /* Espaciado interno */
+    outline: none;                     /* ELIMINA EL RECUADRO AL TOCAR */
+    -webkit-tap-highlight-color: transparent; /* Quita el cuadro gris en celulares */
+    transition: transform 0.2s;        /* Animación de escala */
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;                    /* Evita que se achique */
+}
 
+/* Efecto al presionar o pasar el mouse */
+.btn-mic:hover, .btn-mic:active {
+    transform: scale(1.15);            /* Se agranda sutilmente */
+}
 .btn-send { 
     background: var(--primary); 
     color: white; 
