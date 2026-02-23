@@ -1201,12 +1201,22 @@ function processInput() {
     ejecutarBusquedaInteligente(val); 
 }
 
-/* --- 6. INICIALIZACIÓN --- */
+/* --- REFINANDO LA BIENVENIDA --- */
 window.onload = () => {
-    if(!userName) { showTyping(); setTimeout(() => addMessage("👋 ¡Hola! Soy <b>MuniBot</b>, el asistente virtual de la Municipalidad de Chascomús. ¿Cómo te llamás?", "bot"), 1000); } 
-    else { resetToMain(); }
+    if (!userName) {
+        showTyping();
+        setTimeout(() => addMessage("👋 ¡Hola! Soy <b>MuniBot</b>, el asistente virtual de la Municipalidad de Chascomús. ¿Cómo te llamás?", "bot"), 1000);
+    } else {
+        // En lugar de ir directo al menú, saludamos por el nombre guardado
+        showTyping();
+        setTimeout(() => {
+            addMessage(`¡Hola de nuevo, <b>${userName}</b>! 👋 Qué bueno tenerte otra vez por acá.`, 'bot');
+            setTimeout(() => {
+                resetToMain(); // Recién acá mostramos el menú principal
+            }, 1200);
+        }, 800);
+    }
 };
-
 document.getElementById('sendButton').onclick = processInput; 
 document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') processInput(); };
 function clearSession() { if(confirm("¿Reiniciar chat y borrar datos?")) { localStorage.clear(); location.reload(); } }
