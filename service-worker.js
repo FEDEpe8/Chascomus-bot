@@ -1,4 +1,4 @@
-const CACHE_NAME = 'munibot-v5'; // Subimos la versión para forzar la actualización
+const CACHE_NAME = 'munibot-v6'; // Subimos la versión para forzar la actualización
 const urlsToCache = [
   './',
   './index.html',  // ¡Actualizado!
