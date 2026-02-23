@@ -46,8 +46,19 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Devuelve lo que está en caché o hace la petición a la red
-        return response || fetch(event.request);
+        // 1. Si el archivo está en caché, lo devuelve al toque
+        if (response) {
+          return response;
+        }
+        
+        // 2. Si no está en caché, lo busca en internet
+        return fetch(event.request).catch(() => {
+          // 3. SI FALLA INTERNET (Modo Avión) y el usuario intenta abrir la página...
+          if (event.request.mode === 'navigate') {
+            // ...le forzamos a mostrar el index.html guardado
+            return caches.match('./index.html');
+          }
+        });
       })
   );
 });
