@@ -1,14 +1,48 @@
-const CACHE_NAME = 'muni-chascomus-v92';
-const assets = [ './', './index.html', './style.css', './script.js', './manifest.json', './logo.png' ];
+const CACHE_NAME = 'munibot-cache-v41';
+const assets = [
+  './',           // La raíz del sitio
+  './index.php',  // El archivo principal
+  './manifest.json'
+  // Podes agregar aquí los íconos si querés que también estén offline:
+  // './icon-192.png',
+  // './icon-512.png'
+];
 
-self.addEventListener('install', e => {
-    self.skipWaiting();
-    e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(assets)));
+// INSTALACIÓN: Guarda los archivos en la caché
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Service Worker: Cacheando archivos');
+        return cache.addAll(assets);
+      })
+      .then(() => self.skipWaiting()) // Fuerza a que el SW nuevo tome el control
+  );
 });
 
-self.addEventListener('activate', e => {
-    e.waitUntil(caches.keys().then(ks => Promise.all(ks.map(k => k !== CACHE_NAME && caches.delete(k)))));
-    self.clients.claim();
+// ACTIVACIÓN: Limpia cachés antiguas
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME) {
+            console.log('Service Worker: Borrando caché antigua', cache);
+            return caches.delete(cache);
+          }
+        })
+      );
+    })
+    .then(() => self.clients.claim()) // Toma el control de la página inmediatamente
+  );
 });
 
-self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
+// PETICIONES: Sirve desde la caché si existe, si no, va a la red
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      // Si está en caché, lo devuelve. Si no, hace la petición a la red.
+      return response || fetch(event.request);
+    })
+  );
+});
