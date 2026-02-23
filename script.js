@@ -113,10 +113,10 @@ const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga",
 
 const BARRIOS = ["30 de Mayo", "Acceso Norte", "Barrio Jardín",
  "Centro", "Comandante Giribone", "El Algarrobo", "El Porteño",
-  "Escribano", "Fátima", "Gallo Blanco", "Iporá", "La Noria", 
-  "Las Violetas", "Lomas Altas", "Los Sauces", "Parque Girado",
-   "San Cayetano", "San José Obrero", "San Luis", "139 Viviendas",
-    "Cooperativa", "Comi Pini"]; 
+ "Barrio Escribano", "Barrio Fátima", "Gallo Blanco", "Iporá", "La Noria", 
+ "Las Violetas", "Lomas Altas", "Los Sauces", "Barrio Parque Girado",
+ "San Cayetano", "Barrio Obrero", "San Luis", "139 Viviendas",
+ "Cooperativa", "Comi Pini", "Los Sauces"]; 
 
 /* --- 2. RESPUESTAS Y MENÚS --- */
 const MENUS = {
@@ -137,7 +137,7 @@ const MENUS = {
             { id: 'politicas_gen', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
             { id: 'politicas_comu', label: '🛍️ Módulos (alimentos)', type: 'leaf', apiKey: 'asistencia_social' },
             { id: 'desarrollo_menu', label: '🤝 Desarrollo Social' },
-            { id: 'sibon', label: '📰 Boletin Oficial' },
+            { id: 'sibom', label: '📰 Boletin Oficial' },
             { id: 'ojos_en_alerta', label: '👁️ Ojos en Alerta (Seguridad)', type: 'leaf', apiKey: 'ojos_en_alerta' },
             { id: 'el_digital', label: '📰 Diario digital' },
             { id: 'turismo', label: '🏖️ Turismo' },
@@ -166,23 +166,48 @@ const MENUS = {
             { id: 'ag_actual', label: '📅 Agenda del Mes (FEBRERO)', type: 'leaf', apiKey: 'agenda_actual' },
         ]
     },
-     el_digital: {
-        title: () => '📰 Diario digital:',
-        options: [
-            { id: 'digital_link', label: '🔗 Ir al Diario Digital', link: 'https://www.eldigitalchascomus.com.ar/' }
-        ]
-    },
-    sibon: {
-        title: () => '📰 Boletín Oficial de Chascomús:',
-        options: [
-            { id: 'sibon_link', label: '🔗 Ir al Boletín Oficial', link: 'https://sibom.slyt.gba.gob.ar/cities/31' }
-        ]
-    },
+    el_digital: {
+    type: 'card', // Útil para que tu frontend sepa qué componente usar
+    title: () => '📰 El Digital Chascomús',
+    subtitle: 'Noticias y actualidad local',
+    description: 'Toda la información actualizada de Chascomús y la región en un solo lugar.',
+    image: 'https://www.eldigitalchascomus.com.ar/images/logo-redes.jpg', // Un thumbnail atractivo
+    footer: 'Actualización diaria',
+    options: [
+        { 
+            id: 'digital_link', 
+            label: '🚀 Leer noticias ahora', 
+            link: 'https://www.eldigitalchascomus.com.ar/', 
+            target: '_blank',
+            style: 'primary' // Para darle un color destacado al botón
+        },
+    ]
+},
+       sibom: {
+    type: 'card', // Útil para que tu frontend sepa qué componente usar
+    title: () => '📰 Boletín Oficial de Chascomús',
+    subtitle: 'Noticias y actualidad local',
+    description: `Email: despacho@chascomus.gob.ar<br><br>
+    El Boletín Oficial de Chascomús (SIBOM) es la publicación digital que contiene todas las normativas,
+     decretos, ordenanzas y disposiciones oficiales del municipio. 
+     Es la fuente primaria para conocer las decisiones y acciones del gobierno local.`,
+    image: 'https://sibom.slyt.gba.gob.ar/cities/31/images/logo-redes.jpg', // Un thumbnail atractivo
+    footer: 'Actualización diaria',
+    options: [
+        { 
+            id: 'digital_link', 
+            label: 'Sistema de Boletines Oficiales Municipales', 
+            link: 'https://sibom.slyt.gba.gob.ar/cities/31/', 
+            target: '_blank',
+            style: 'primary' // Para darle un color destacado al botón
+        },
+    ]
+},
     turismo: {
         title: () => 'Turismo y Cultura:',
         options: [
             { id: 't_info', label: 'ℹ️ Oficinas y Contacto', type: 'leaf', apiKey: 'turismo_info' },
-            { id: 't_link', label: '🔗 Web de Turismo', link: 'https://linktr.ee/turismoch' }
+            { id: 't_link', label: '🔗 Web de Turismo', link: 'https://linktr.ee/turismoch', target: '_blank' }
         ]
     },
     deportes: {
@@ -336,58 +361,42 @@ const MENUS = {
 const RES = {
     'agenda_actual': `
     <div class="info-card">
-        <strong>📅 AGENDA FEBRERO 2026</strong><br>
-        <i>¡Disfrutá el verano en Chascomús!</i><br><br>
+        <strong>📅 AGENDA MARZO 2026</strong><br>
+        <i>¡Viví la cultura y el deporte en Chascomús!</i><br><br>
 
-        🌕 <b>Sáb 1 - Remada Luna Llena:</b><br>
-        Kayak & Tablas al atardecer.<br>
-        📍 Club de Pesca y Náutica. (Horario a confirmar).<br><br>
+        ⚫ <b>Dom 1 - 🎉 Proyección de película:</b><br>
+        "LA ZORRA Y LA PAMPA" (Día del Ferroviario).<br>
+        📍 C.C. Vieja Estación | 16 a 19 hs | 🎟️ Arancelado.<br><br>
 
-        🎬 <b>Vie 6 - Audiovisual:</b><br>
-        "Mis imágenes diarias".<br>
-        📍 C.C. Vieja Estación | 21hs | Gratis.<br><br>
+        ⚫ <b>Dom 1 - ⚽ Ciclismo:</b><br>
+        "Chascomús a Pura Ruta".<br>
+        📍 Circuito Juan Carlos Haedo | 09:00 hs.<br><br>
 
-        🎭 <b>Sáb 7 - Teatro:</b><br>
-        "Amores y Desamores".<br>
-        📍 Casa de Casco | 21hs | 🎟️ $18.000.<br><br>
-
-        🎂 <b>Sáb 7 - 90 Años Bellas Artes:</b><br>
-        Música en vivo y danza. Llevá tu reposera.<br>
-        📍 Mazzini y Lincoln | 19hs | Gratis.<br><br>
-
-        🏊 <b>Dom 8 - Triatlón Olímpico:</b><br>
-        Competencia de resistencia.<br>
-        📍 Paseo de los Inmigrantes | 8hs.<br><br>
-
-        🎉 <b>13, 14, 15 y 16 - CARNAVAL INFANTIL:</b><br>
-        Desfiles, música y color.<br>
-        📍 Corsódromo (Av. Alfonsín) | 20hs | Gratis.<br><br>
-
-        🏊 <b>Sáb 14 - Aguas Abiertas (3ra fecha):</b><br>
-        Carreras de 750m y 2500m.<br>
-        📍 Escalinatas Costanera | 12:00hs.<br><br>
-
-        🎭 <b>Sáb 21 - Teatro:</b><br>
-        Obra "El Acompañamiento".<br>
-        📍 Casa de Casco | 21hs | 🎟️ $18.000.<br><br>
-
-        🐴 <b>21 y 22 - Gran Fiesta Criolla:</b><br>
-        Jineteadas, desfiles y peña.<br>
-        📍 Fortín Chascomús (Ruta 20) | 13hs.<br><br>
-
-        🎭 <b>27 y 28 - Visitas Dramatizadas:</b><br>
+        🔴 <span style="color: #e74c3c;"><b>Jue 5 y Vie 6 - 🎭 Visitas Dramatizadas:</b><br>
         Recorrido teatralizado histórico.<br>
-        📍 Vieja Estación | 21hs | 🎟️ $18.000.<br><br>
+        📍 Vieja Estación / Casa de Casco | 21:00 hs | 🎟️ $18.000.</span><br><br>
+
+        ⚫ <b>Sáb 7 - 🏊 Natación:</b><br>
+        "Cruce de la Laguna" (3.000 mts).<br>
+        📍 Club de Regatas | 13:00 hs (Largada).<br><br>
+
+        ⚫ <b>Dom 29 - 🚵 MTB:</b><br>
+        "Desafío MTB Chascomús" (Rally 14k, 28k y 42k).<br>
+        📍 Costanera | Horario a confirmar.<br><br>
 
         <hr style="border-top: 1px dashed #ccc; margin: 10px 0;">
 
-        🏛️🌅 <b>INSCRIPCIONES Y LINKS:</b><br>
-        Solicitá los formularios de inscripción para actividades:<br><br>
-        <a href="https://wa.me/5492241603414" target="_blank" class="wa-btn" style="background-color: #efe8e3ff !important;">
-        📲 Por cualquier info (WhatsApp)
+        🏛️ <b>ESPACIOS PERMANENTES:</b><br>
+        • <b>Museos y Vieja Estación:</b> MAR a VIE 9-15hs / SAB y DOM 10-16 y 19-21hs.<br>
+        • <b>Feria de Artesanos:</b> VIE (17hs), SAB y DOM (11hs) en Costanera y Perón.<br><br>
+
+        🔗 <b>INSCRIPCIONES Y LINKS:</b><br>
+        <a href="https://wa.me/5492241603414" target="_blank" class="wa-btn" style="background-color: #efe8e3ff !important; display: inline-block; padding: 5px 10px; border-radius: 5px; text-decoration: none; color: #25d366; font-weight: bold; border: 1px solid #25d366;">
+        📲 Info por WhatsApp
         </a><br><br>
-        🔗 <b>Linktree Inscripciones:</b><br>
-        <a href="https://linktr.ee/visitasguiadas.turismoch" target="_blank">Ingresar al Linktree</a>
+        <a href="https://linktr.ee/visitasguiadas.turismoch" target="_blank" style="color: #2c3e50; font-weight: bold;">
+        🔗 Linktree de Inscripciones
+        </a>
     </div>`,
     'omic_info': `
     <div class="info-card">
@@ -551,7 +560,7 @@ const RES = {
         
         🅿️ <b>SEM (Estacionamiento Medido):</b><br>
         Gestioná tu estacionamiento.<br>
-        🤖 <a href="https://play.google.com/store/apps/details?id=ar.edu.unlp.sem.mobile" target="_blank" rel="noopener noreferrer">Descargar Android</a><br>
+        🤖 <a href="https://play.google.com/store/apps/details?id=ar.edu.unlp.semmobile.chascomus" target="_blank" rel="noopener noreferrer">Descargar Android</a><br>
         🍎 <a href="https://apps.apple.com/ar/app/sem-mobile/id1387705895" target="_blank" rel="noopener noreferrer">Descargar iPhone</a></div>`,
    'alcohol_info': `
     <div class="info-card">
