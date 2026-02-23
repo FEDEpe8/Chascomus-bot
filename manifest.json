@@ -1,7 +1,7 @@
 {
   "name": "MuniBot Chascomús",
   "short_name": "MuniBot",
-  "start_url": "./index.index",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f4f6f8",
   "theme_color": "#004a7c",
