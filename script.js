@@ -1121,7 +1121,7 @@ function ejecutarBusquedaInteligente(texto) {
                 }
             }, 500); 
         } else {
-            addMessage("Mmm, mi inteligencia de mascota no encontró eso. 🐶 ¿Querés buscar manualmente en el menú completo?", 'bot', [{id:'full_menu', label:'☰ Ver Menú Completo'}]);
+            addMessage("Mmm, mi inteligencia de asistente no encontró eso. 🤖 ¿Querés buscar manualmente en el menú completo?", 'bot', [{id:'full_menu', label:'☰ Ver Menú Completo'}]);
         }
     }, 800); 
 }
