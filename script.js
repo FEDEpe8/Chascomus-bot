@@ -1063,20 +1063,20 @@ const PALABRAS_CLAVE = {
     'ecopunto': { id: 'obras_basura', label: '♻️ Ecopuntos', type: 'leaf', apiKey: 'obras_basura' }
 };
 
-f/* --- 4. BUSCADOR INTELIGENTE PROFUNDO (CORREGIDO) --- */
+/* --- 4. BUSCADOR INTELIGENTE PROFUNDO (CORREGIDO) --- */
 function buscarOpcionProfunda(texto) {
     let t = normalizar(texto);
     
-    // 1. Buscamos coincidencia exacta en PALABRAS_CLAVE
+    // 1. Coincidencia exacta
     if (PALABRAS_CLAVE[t]) return PALABRAS_CLAVE[t];
 
-    // 2. Lógica de Plurales: si escribe "turnos", probamos con "turno"
+    // 2. Plurales
     if (t.endsWith('s') && t.length > 4) {
         let singular = t.slice(0, -1);
         if (PALABRAS_CLAVE[singular]) return PALABRAS_CLAVE[singular];
     }
 
-    // 3. Búsqueda por palabras sueltas dentro de las etiquetas de los MENUS
+    // 3. Búsqueda en los labels de los MENUS
     const palabrasBuscadas = t.split(' ').filter(p => p.length > 3);
     for (let menuId in MENUS) {
         const opciones = MENUS[menuId].options;
