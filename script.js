@@ -137,7 +137,7 @@ const MENUS = {
         options: [
             { id: 'oea_shortcut', label: '👀 Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
             { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_dinamica' }, // Actualizado a dinámica
-            { id: 'f_shortcut', label: '💊 Farmacias de Turno', type: 'leaf', apiKey: 'farmacias_lista' },
+            { id: 'f_shortcut', label: '📚 Educación cartelera docente', type: 'leaf', apiKey: 'cartelera_docente' },
             { id: 'h_shortcut', label: '📅 Turnos Hospital', type: 'leaf', apiKey: 'h_turnos' },
             { id: 'politicas_gen_shortcut', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
             { id: 'full_menu', label: '☰ VER MENÚ COMPLETO' }
@@ -152,6 +152,7 @@ const MENUS = {
             { id: 'sibom', label: '📰 Boletin Oficial' },
             { id: 'ojos_en_alerta', label: '👁️ Ojos en Alerta (Seguridad)', type: 'leaf', apiKey: 'ojos_en_alerta' },
             { id: 'el_digital', label: '📰 Diario digital' },
+            { id: 'educacion', label: '📚 Educación', type: 'submenu'},
             { id: 'turismo', label: '🏖️ Turismo' },
             { id: 'deportes', label: '⚽ Deportes' },
             { id: 'salud', label: '🏥 Salud' },
@@ -211,6 +212,14 @@ const MENUS = {
                 target: '_blank',
                 style: 'primary'
             },
+        ]
+    },
+    educacion: {
+        title: () => '📚 Educación:',
+        options: [
+            { id: 'edu_info', label: '🎓 Educación y Tribunal', type: 'leaf', apiKey: 'educacion_info' },
+            { id: 'ap_info', label: '📢 Actos Públicos (Horarios)', type: 'leaf', apiKey: 'actos_publicos' },
+            { id: 'cartelera_web', label: '📊 Cartelera y Listados', type: 'leaf', apiKey: 'cartelera_docente' },
         ]
     },
     turismo: {
@@ -376,6 +385,7 @@ const RES = {
     <div class="info-card">
         <strong>📅 AGENDA MARZO 2026</strong><br>
         <i>¡Viví la cultura y el deporte en Chascomús!</i><br><br>
+        ⚫ <b>Dom 1 - 🎉 Proyección de película:</b><br>"LA ZORRA Y LA PAMPA" (Día del Ferroviario).<br>📍 C.C. Vieja Estación | 16 a 19 hs | 🎟️ Arancelado.<br><br>
         ⚫ <b>Dom 1 - ⚽ Ciclismo:</b><br>"Chascomús a Pura Ruta".<br>📍 Circuito Juan Carlos Haedo | 09:00 hs.<br><br>
         🔴 <span style="color: #e74c3c;"><b>Jue 5 y Vie 6 - 🎭 Visitas Dramatizadas:</b><br>Recorrido teatralizado histórico.<br>📍 Vieja Estación / Casa de Casco | 21:00 hs | 🎟️ $18.000.</span><br><br>
         ⚫ <b>Sáb 7 - 🏊 Natación:</b><br>"Cruce de la Laguna" (3.000 mts).<br>📍 Club de Regatas | 13:00 hs (Largada).<br><br>
@@ -395,6 +405,78 @@ const RES = {
         <button onclick="resetToMain()" class="menu-btn" style="width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
             ☰ Ver Menú Completo
         </button>
+    </div>`,
+
+'educacion_info': `
+    <div class="info-card">
+        <strong>🎓 Educación, Infancias y Juventudes</strong><br>
+        <i>Subsecretario: Lic. Enrique Inciarte</i><br><br>
+        📍 <b>Dirección de Educación:</b><br>
+        Mendoza 95, esq. Moreno.<br>
+        ⏰ Lun a Vie de 8 a 14 hs.<br><br>
+        📞 <b>Vías de contacto:</b><br>
+        <div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:5px;">
+            <a href="tel:02241430332" class="wa-btn" style="flex:1; background-color:#004a7c !important; text-align:center; min-width: 120px;">📞 Fijo 43-0332</a>
+           <a href="https://wa.me/5492241569898" target="_blank" class="wa-btn" style="flex:1; background-color:#25D366 !important; text-align:center; min-width: 120px;">
+           💬 WhatsApp 56-9898</a>
+        </div> <br> 📧 <a href="mailto:educacion@chascomus.gob.ar">educacion@chascomus.gob.ar</a><br>
+        <small><i>Admin: M. Lastero y L. Dellavalle</i></small>
+        <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
+        ⚖️ <b>Tribunal de Clasificación Docente</b><br>
+        📅 Lunes y Miércoles 16 a 17:30 hs.<br>
+        👥 <i>Sallenave, Ganuza, Esain e Inciarte.</i><br><br>
+        📧 <a href="mailto:tribunalmunicipalchascomus@gmail.com" class="wa-btn" style="background-color:#e67e22 !important; display:block; text-align:center;">✉️ Email Tribunal</a>
+    </div>`,
+
+    'actos_publicos': `
+    <div class="info-card" style="border-left: 5px solid #2980b9;">
+        <strong>📢 Actos Públicos Presenciales (AP)</strong><br>
+        <i>Designación de cargos docentes</i><br><br>
+        📅 <b>¿Cuándo?</b><br>
+        Se realizan todos los días (Lun a Vie).<br><br>
+        ⏰ <b>Horarios (Puntual):</b><br>
+        ☀️ Mañana: <b>08:45 hs</b><br>
+        🕐 Tarde: <b>12:45 hs</b><br><br>
+        📍 <b>Lugar:</b> Mendoza 95.<br><br>
+        ⚠️ <b>Requisito Excluyente:</b><br>
+        Presentarse con <b style="color:#c0392b; text-decoration: underline;">DNI FÍSICO</b>.<br>
+        <small>(No se acepta DNI digital en el celular).</small><br><br>
+        <hr style="border-top: 1px dashed #ccc; margin: 10px 0;">
+        👤 <b>¿Envías un representante?</b><br>
+        Debe presentar sin excepción:<br><br>
+        1️⃣ <a href="https://docs.google.com/document/d/1EMRh4aS-bGvaayc7RrXReb950zW4dXHrOxODatNoark/edit?tab=t.0&usp=sharing" target="_blank" style="color: #2980b9; font-weight: bold; text-decoration: underline;">📄 Descargar Acta Poder</a><br>
+        2️⃣ Copia de DNI (del docente y del representante).<br>
+        3️⃣ <a href="https://docs.google.com/document/d/19iBlPe4QvzMT1G1_SI5KmNOJ9MjSJxHy/edit?usp=sharing" target="_blank" style="color: #2980b9; font-weight: bold; text-decoration: underline;">📜 Estatuto Docente Municipal</a><br><br>
+        <a href="https://www.google.com/maps/search/?api=1&query=Mendoza+95+Chascomus" target="_blank" class="wa-btn" style="background-color: #004a7c !important;">
+            📍 Ver Ubicación en Mapa
+        </a>
+    </div>`,
+
+'cartelera_docente': `
+    <div class="info-card" style="border-left: 5px solid #27ae60;">
+        <strong>📊 Cartelera en Línea (Actos Públicos)</strong><br>
+        <i>Actualización en tiempo real</i><br><br>
+        En esta planilla se publican los <b>cargos/horas a cubrir</b> y los resultados (designaciones o desiertos).<br><br>
+        <a href="https://docs.google.com/spreadsheets/d/15w5mnPVqRsaebkZ-zAmrum8ndqh5MhoWkMDc9j8J7tM/edit?gid=0#gid=0" target="_blank" class="wa-btn" style="background-color: #27ae60 !important; text-align: center; display: block;">
+            ✅ Ver Cartelera y Designaciones</a>
+        <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
+        <strong>🏆 Resultados Titularizaciones 2026</strong><br>
+        <small>📅 Publicado: 22/12/2025</small><br><br>
+        Los resultados del Acto de Titularizaciones pueden observarse aquí:<br><br>
+        <a href="https://docs.google.com/spreadsheets/d/1ZzYjG5drCNG50gWmmdheHYfUygtz0XK1hWfLSoAwcyk/edit?gid=0#gid=0" target="_blank" class="wa-btn" style="background-color: #2980b9 !important; text-align: center; display: block;">
+            📄 Ver Planilla Titularizaciones</a>
+        <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
+        <strong>📂 Listados Oficiales 2026</strong><br>
+        <small style="color: #e67e22;">🚧 (En proceso de actualización)</small><br><br>
+        👇 <i>Consultá por nivel:</i><br>
+        <ul style="padding-left: 20px; margin-top: 5px;">
+            <li>🎒 <b>Inicial</b></li>
+            <li>✏️ <b>Primaria</b></li>
+            <li>📖 <b>Secundaria</b></li>
+           <li>🤝 <b>Psicología (EOE)</b></li>
+        </ul> <br><a href="https://docs.google.com/spreadsheets/d/15731Nf1EuRPRv8Z8isPW_-_VNawWyiuHMhnFWH70W14/edit?gid=0#gid=0" target="_blank" class="wa-btn" style="background-color: #7f8c8d !important; font-size: 0.85rem;">
+            🔗 Ver carpeta de Listados
+        </a>
     </div>`,
 
     'omic_info': `
@@ -1100,7 +1182,18 @@ const PALABRAS_CLAVE = {
     'doctor': { id: 'hospital_menu', label: '🏥 Especialidades Médicas' },
     'medico': { id: 'hospital_menu', label: '🏥 Especialidades Médicas' },
     'cementerio': { id: 'deuda', label: '⚰️ Tasas de Cementerio', type: 'leaf', apiKey: 'deuda' },
-    'ecopunto': { id: 'obras_basura', label: '♻️ Ecopuntos', type: 'leaf', apiKey: 'obras_basura' }
+    'ecopunto': { id: 'obras_basura', label: '♻️ Ecopuntos', type: 'leaf', apiKey: 'obras_basura' },
+    'educacion': { id: 'edu_info', label: '🎓 Educación', type: 'leaf', apiKey: 'educacion_info' },
+    'docente': { id: 'edu_info', label: '🎓 Tribunal Docente', type: 'leaf', apiKey: 'educacion_info' },
+    'tribunal': { id: 'edu_info', label: '🎓 Tribunal Docente', type: 'leaf', apiKey: 'educacion_info' },
+    'acto': { id: 'ap_info', label: '📢 Actos Públicos', type: 'leaf', apiKey: 'actos_publicos' },
+    'publico': { id: 'ap_info', label: '📢 Actos Públicos', type: 'leaf', apiKey: 'actos_publicos' },
+    'designacion': { id: 'ap_info', label: '📢 Actos Públicos', type: 'leaf', apiKey: 'actos_publicos' },
+    'poder': { id: 'ap_info', label: '📢 Requisitos Representante (AP)', type: 'leaf', apiKey: 'actos_publicos' },
+    'cartelera': { id: 'cartelera_web', label: '📊 Cartelera Digital', type: 'leaf', apiKey: 'cartelera_docente' },
+    'listado': { id: 'cartelera_web', label: '📂 Listados 2026', type: 'leaf', apiKey: 'cartelera_docente' },
+    'puntaje': { id: 'cartelera_web', label: '📂 Listados y Puntajes', type: 'leaf', apiKey: 'cartelera_docente' },
+    'resultados': { id: 'cartelera_web', label: '📊 Resultados Acto Público', type: 'leaf', apiKey: 'cartelera_docente' }
 };
 
 function buscarOpcionProfunda(texto) {
