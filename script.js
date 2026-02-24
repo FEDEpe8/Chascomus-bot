@@ -398,6 +398,19 @@ const RES = {
         🔗 Linktree de Inscripciones
         </a>
     </div>`,
+
+    // NUEVA TARJETA DE ERROR
+    'error_busqueda': `
+    <div class="info-card" style="border-left: 5px solid #ffc107;">
+        <div style="font-size: 1.1rem; margin-bottom: 8px;">🤔 <b>¡Ups! No encontré eso</b></div>
+        <p style="font-size: 0.9rem; margin-bottom: 15px; color: #333;">
+            Todavía estoy aprendiendo. ¿Probamos con otra palabra o querés ver el menú completo?
+        </p>
+        <button onclick="resetToMain()" class="menu-btn" style="width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            ☰ Ver Menú Completo
+        </button>
+    </div>`,
+
     'omic_info': `
     <div class="info-card">
         <strong>📢 OMIC (Defensa del Consumidor)</strong><br>
@@ -1128,11 +1141,17 @@ function ejecutarBusquedaInteligente(texto) {
                     currentPath.push(opcionEncontrada.id);
                     showMenu(opcionEncontrada.id);
                 }
-            }, 500); 
+            }, 500);
         } else {
-            addMessage("Mmm, mi inteligencia de asistente no encontró eso. 🤖 ¿Querés buscar manualmente en el menú completo?", 'bot', [{id:'full_menu', label:'☰ Ver Menú Completo'}]);
+            setMuniBotState('looking');
+
+            // 2. Mostramos la tarjeta del objeto RES
+            addMessage(RES['error_busqueda'], "bot");
+
+            // 3. Opcional: Volvemos a 'normal' después de 3 segundos
+            setTimeout(() => setMuniBotState('normal'), 3000);
         }
-    }, 800); 
+    });
 }
 
 /* --- 5. REGISTRO Y PROCESAMIENTO --- */
@@ -1228,3 +1247,49 @@ window.onload = () => {
 document.getElementById('sendButton').onclick = processInput; 
 document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') processInput(); };
 function clearSession() { if(confirm("¿Reiniciar chat y borrar datos?")) { localStorage.clear(); location.reload(); } }
+
+/**
+ * Cambia el estado visual del avatar del MuniBot
+ * @param {string} state - Los estados pueden ser: 'speaking', 'thinking', 'celebration', 'pointing', 'looking', 'normal'
+ */
+/**
+ * Cambia el estado visual del avatar del MuniBot (Header)
+ */
+function setMuniBotState(state) {
+    const avatar = document.getElementById('avatar-bot');
+    if (!avatar) return;
+
+    // Lista de estados
+    const states = ['speaking', 'thinking', 'celebration', 'pointing', 'looking', 'normal'];
+    
+    // Limpiamos clases viejas
+    avatar.classList.remove(...states);
+    
+    // Aplicamos la nueva clase
+    avatar.classList.add(state);
+
+    // MAPEO DE IMÁGENES: Cambia la imagen según el estado
+    const images = {
+        'normal': IMG_BOT_NORMAL,
+        'thinking': IMG_BOT_PENSANDO,
+        'speaking': IMG_BOT_HABLANDO,
+        'celebration': IMG_BOT_FESTEJO,
+        'pointing': IMG_BOT_SENALANDO,
+        'looking': IMG_BOT_MIRANDO
+    };
+
+    if (images[state]) {
+        avatar.src = images[state];
+    }
+}
+
+// Inicialización de la animación de bienvenida
+// La envolvemos en el onload para asegurar que el ID 'avatar-bot' ya exista
+const originalOnload = window.onload;
+window.onload = () => {
+    if (originalOnload) originalOnload();
+    
+    // El bot celebra que entraste
+    setMuniBotState('celebration');
+    setTimeout(() => setMuniBotState('normal'), 3000);
+};

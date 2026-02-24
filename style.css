@@ -43,14 +43,41 @@ body { display: flex; flex-direction: column; }
 
 .header-brand { display: flex; align-items: center; gap: 12px; }
 
-.header-logo-img { 
-    width: 42px; height: 42px; 
-    border-radius: 14px; /* Estilo iOS */
-    background: #fff; 
-    padding: 3px; 
-    box-shadow: var(--shadow-sm);
+.header-logo-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Si querés que sea circular */
+    object-fit: cover;
+    margin-right: 10px;
+    border: 2px solid transparent; /* Espacio para el borde de color que agregamos antes */
+    transition: border-color 0.3s ease;
 }
 
+/* --- ANIMACIONES ÚNICAS --- */
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-12px); } /* Salto más notorio */
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; border-color: transparent; }
+    100% { transform: scale(1.1); opacity: 0.8; border-color: #ffc107; }
+}
+
+/* --- CLASES DE ESTADO --- */
+.avatar-chat {
+    transition: all 0.3s ease;
+}
+
+.avatar-chat.speaking { animation: bounce 0.4s ease infinite alternate; }
+.avatar-chat.thinking { animation: pulse 0.6s infinite alternate; }
+.avatar-chat.celebration { 
+    animation: bounce 0.25s ease infinite alternate; 
+    border-color: #28a745 !important; 
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+}
+.avatar-chat.pointing { animation: bounce 0.5s ease infinite alternate; border-color: #17a2b8 !important; }
+.avatar-chat.looking { animation: pulse 1s ease infinite alternate; border-color: #6f42c1 !important; }
 /* --- CONTENEDOR DE CHAT --- */
 .chat-container { 
     flex: 1; 
@@ -85,6 +112,10 @@ body { display: flex; flex-direction: column; }
 
 .avatar-chat.speaking { animation: bounce 0.5s ease infinite alternate; }
 .avatar-chat.thinking { animation: pulse 0.8s infinite alternate; border-color: #ffc107; }
+.avatar-chat.celebration { animation: bounce 0.3s ease infinite alternate; border-color: #28a745; }
+.avatar-chat.pointing { animation: bounce 0.4s ease infinite alternate; border-color: #17a2b8; }
+.avatar-chat.looking { animation: pulse 1s ease infinite alternate; border-color: #6f42c1; }
+.avatar-chat.normal { animation: none; border-color: var(--accent); }
 
 .message { 
     max-width: 80%; 
@@ -240,6 +271,20 @@ body { display: flex; flex-direction: column; }
     align-items: center; 
     justify-content: center; 
 }
+/* --- Animaciones Base --- */
+
+/* Salto (Bounce) */
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-10px); }
+}
+
+/* Pulso (Pulse) */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.05); opacity: 0.8; }
+}
+
 /* --- ANIMACIONES --- */
 @keyframes entrada { 
     from { opacity: 0; transform: translateY(20px) scale(0.95); } 
