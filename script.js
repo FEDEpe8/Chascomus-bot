@@ -7,7 +7,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-//* --- ACCESIBILIDAD: RECONOCIMIENTO Y SÍNTESIS DE VOZ --- */
+/* --- ACCESIBILIDAD: RECONOCIMIENTO Y SÍNTESIS DE VOZ --- */
 let vozActivada = false;
 
 function toggleVoz() {
@@ -22,21 +22,20 @@ function toggleVoz() {
 
 function hablar(textoHtml) {
     if (!vozActivada) return;
-    // Extraemos solo el texto limpio sin código HTML para que no lea etiquetas raras
     let div = document.createElement("div");
     div.innerHTML = textoHtml;
     let textoLimpio = div.textContent || div.innerText || "";
     
-    // Filtramos emojis comunes para que la voz robótica no los lea literal
+    // Filtramos emojis
     textoLimpio = textoLimpio.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
 
     const mensaje = new SpeechSynthesisUtterance(textoLimpio);
-    mensaje.lang = 'es-AR'; // Acento argentino
+    mensaje.lang = 'es-AR'; 
     mensaje.rate = 1.0; 
     window.speechSynthesis.speak(mensaje);
 }
 
-// Configuración del Micrófono (Speech to Text)
+// Configuración del Micrófono
 const micBtn = document.getElementById('micButton');
 const inputArea = document.getElementById('userInput');
 const ReconocimientoVoz = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -52,22 +51,20 @@ if (ReconocimientoVoz) {
         inputArea.placeholder = "Escuchando... 👂";
     };
     
-   // Agregamos una variable de control fuera de la función
-let procesandoVoz = false; 
+    let procesandoVoz = false; 
 
-reconocimiento.onresult = (evento) => {
-    const transcripcion = evento.results[0][0].transcript;
-    inputArea.value = transcripcion;
-    
-    if (procesandoVoz) return; 
-    procesandoVoz = true; 
-    
-    // Esperamos 400ms para que Android termine de escribir el texto antes de procesar
-    setTimeout(() => {
-        processInput(); 
-        procesandoVoz = false;
-    }, 400);
-};
+    reconocimiento.onresult = (evento) => {
+        const transcripcion = evento.results[0][0].transcript;
+        inputArea.value = transcripcion;
+        
+        if (procesandoVoz) return; 
+        procesandoVoz = true; 
+        
+        setTimeout(() => {
+            processInput(); 
+            procesandoVoz = false;
+        }, 400);
+    };
     
     reconocimiento.onend = () => {
         micBtn.classList.remove('recording');
@@ -80,9 +77,8 @@ reconocimiento.onresult = (evento) => {
         inputArea.placeholder = "Escribí un mensaje...";
     };
 } else {
-    micBtn.style.display = 'none'; // Ocultamos el botón si el navegador no es compatible
+    if(micBtn) micBtn.style.display = 'none';
 }
-
 
 /* --- FUNCIONES DEL MODAL DE INFO --- */
 function showInfo() { document.getElementById('infoModal').style.display = 'flex'; }
@@ -107,31 +103,19 @@ const IMG_BOT_FESTEJO = 'img-bot-festejo.png';
 const IMG_BOT_SENALANDO = 'img-bot-senalando.png'; 
 const IMG_BOT_MIRANDO = 'img-bot-mirando.png'; 
 
-const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga",
- "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo",
-  "pelotuda", "idiota", "tarado", "tarada"]; 
+const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo", "pelotuda", "idiota", "tarado", "tarada"]; 
 
-const BARRIOS = [ "SAN CAYETANo","COMI PINI","ACCESO NORTE",
-"EL OBISPADO","BARRIO JARDIN","VILLA LUJAN","EL ALGARROBO",
-"LA NORIA CHICA","LA ESMERALDA","SAN LUIS","LA CONCORDIA",
-"ESCRIBANO","SAN JOSE","CENTRO","EL HUECO","FATIMA",
-"SAN JUAN BAUTISTA","LAS VIOLETAS","BALDOMERO FERNANDEZ MORENO GALLO BLANCO",
-"EL IPORA","LA PAMPITA","ANAHI","EL PORTEÑO","ESTEBAN ECHEVERRIA",
-"LOS AROMOS","BARRIO PARQUE GIRADO CHASCOMUS","CABALLO BLANCO",
-"30 DE MAYO","LOS SAUCES","SAN NICOLAS"]; 
-/* --- FUNCIÓN FALTANTE: CONTROL DE ESTADOS DEL AVATAR --- */
+const BARRIOS = ["SAN CAYETANo","COMI PINI","ACCESO NORTE","EL OBISPADO","BARRIO JARDIN","VILLA LUJAN","EL ALGARROBO","LA NORIA CHICA","LA ESMERALDA","SAN LUIS","LA CONCORDIA","ESCRIBANO","SAN JOSE","CENTRO","EL HUECO","FATIMA","SAN JUAN BAUTISTA","LAS VIOLETAS","BALDOMERO FERNANDEZ MORENO GALLO BLANCO","EL IPORA","LA PAMPITA","ANAHI","EL PORTEÑO","ESTEBAN ECHEVERRIA","LOS AROMOS","BARRIO PARQUE GIRADO CHASCOMUS","CABALLO BLANCO","30 DE MAYO","LOS SAUCES","SAN NICOLAS"]; 
+
+/* --- FUNCIÓN CONTROL DE ESTADOS DEL AVATAR --- */
 function setMuniBotState(state) {
     const avatar = document.getElementById('avatar-bot');
     if (!avatar) return;
 
-    // 1. Limpiamos clases anteriores
     const states = ['speaking', 'thinking', 'celebration', 'pointing', 'looking', 'normal'];
     avatar.classList.remove(...states);
-    
-    // 2. Aplicamos la nueva clase de animación
     avatar.classList.add(state);
 
-    // 3. Cambiamos la imagen según el estado
     const images = {
         'normal': IMG_BOT_NORMAL,
         'thinking': IMG_BOT_PENSANDO,
@@ -145,20 +129,21 @@ function setMuniBotState(state) {
         avatar.src = images[state];
     }
 }
+
 /* --- 2. RESPUESTAS Y MENÚS --- */
 const MENUS = {
     main: { 
         title: (name) => `¡<b>${name}</b>! 👋 Soy el asistente virtual. Acá te dejo los accesos más rápidos de hoy:`, 
         options: [
             { id: 'oea_shortcut', label: '👀 Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
-            { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_actual' },
+            { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_dinamica' }, // Actualizado a dinámica
             { id: 'f_shortcut', label: '💊 Farmacias de Turno', type: 'leaf', apiKey: 'farmacias_lista' },
             { id: 'h_shortcut', label: '📅 Turnos Hospital', type: 'leaf', apiKey: 'h_turnos' },
             { id: 'politicas_gen_shortcut', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
             { id: 'full_menu', label: '☰ VER MENÚ COMPLETO' }
         ]
     },
- full_menu: {
+    full_menu: {
         title: () => '📱 Menú Completo de Servicios Municipales:',
         options: [
             { id: 'politicas_gen', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
@@ -190,15 +175,16 @@ const MENUS = {
     cultura: {
         title: () => '🎭 Agenda Cultural:',
         options: [
-            { id: 'ag_actual', label: '📅 Agenda del Mes (MARZO)', type: 'leaf', apiKey: 'agenda_actual' },
+            // ACÁ CAMBIAMOS PARA QUE USE LA AGENDA DINÁMICA DE GOOGLE SHEETS
+            { id: 'ag_actual', label: '📅 agenda dinámica', type: 'leaf', apiKey: 'agenda_dinamica' },
         ]
     },
-   el_digital: {
+    el_digital: {
         type: 'card',
         title: () => '📰 El Digital Chascomús',
         subtitle: 'Noticias y actualidad local',
         description: 'Toda la información actualizada de Chascomús y la región en un solo lugar.',
-        image: 'el_digi.png', // <--- CAMBIO AQUÍ (Tu archivo local)
+        image: 'el_digi.png', 
         footer: 'Actualización diaria',
         options: [
             { 
@@ -214,9 +200,8 @@ const MENUS = {
         type: 'card',
         title: () => '📰 Boletín Oficial',
         subtitle: 'Normativas y Decretos',
-        description: `Email: despacho@chascomus.gob.ar<br><br>
-        Fuente oficial de todas las normativas, decretos y ordenanzas municipales.`,
-        image: 'sibom.png', // <--- CAMBIO AQUÍ (Tu archivo local)
+        description: `Email: despacho@chascomus.gob.ar<br><br>Fuente oficial de todas las normativas, decretos y ordenanzas municipales.`,
+        image: 'sibom.png',
         footer: 'Gobierno de la Provincia de Buenos Aires',
         options: [
             { 
@@ -384,47 +369,23 @@ const MENUS = {
 
 /* --- 4. RESPUESTAS --- */
 const RES = {
+    // Fallback por si la agenda dinámica no carga
+    'agenda_dinamica': `<div class="info-card">⚠️ <b>Cargando agenda...</b><br>Si esto no cambia en unos segundos, revisá tu conexión.</div>`,
+
     'agenda_actual': `
     <div class="info-card">
         <strong>📅 AGENDA MARZO 2026</strong><br>
         <i>¡Viví la cultura y el deporte en Chascomús!</i><br><br>
-
-        ⚫ <b>Dom 1 - 🎉 Proyección de película:</b><br>
-        "LA ZORRA Y LA PAMPA" (Día del Ferroviario).<br>
-        📍 C.C. Vieja Estación | 16 a 19 hs | 🎟️ Arancelado.<br><br>
-
-        ⚫ <b>Dom 1 - ⚽ Ciclismo:</b><br>
-        "Chascomús a Pura Ruta".<br>
-        📍 Circuito Juan Carlos Haedo | 09:00 hs.<br><br>
-
-        🔴 <span style="color: #e74c3c;"><b>Jue 5 y Vie 6 - 🎭 Visitas Dramatizadas:</b><br>
-        Recorrido teatralizado histórico.<br>
-        📍 Vieja Estación / Casa de Casco | 21:00 hs | 🎟️ $18.000.</span><br><br>
-
-        ⚫ <b>Sáb 7 - 🏊 Natación:</b><br>
-        "Cruce de la Laguna" (3.000 mts).<br>
-        📍 Club de Regatas | 13:00 hs (Largada).<br><br>
-
-        ⚫ <b>Dom 29 - 🚵 MTB:</b><br>
-        "Desafío MTB Chascomús" (Rally 14k, 28k y 42k).<br>
-        📍 Costanera | Horario a confirmar.<br><br>
-
+        ⚫ <b>Dom 1 - ⚽ Ciclismo:</b><br>"Chascomús a Pura Ruta".<br>📍 Circuito Juan Carlos Haedo | 09:00 hs.<br><br>
+        🔴 <span style="color: #e74c3c;"><b>Jue 5 y Vie 6 - 🎭 Visitas Dramatizadas:</b><br>Recorrido teatralizado histórico.<br>📍 Vieja Estación / Casa de Casco | 21:00 hs | 🎟️ $18.000.</span><br><br>
+        ⚫ <b>Sáb 7 - 🏊 Natación:</b><br>"Cruce de la Laguna" (3.000 mts).<br>📍 Club de Regatas | 13:00 hs (Largada).<br><br>
+        ⚫ <b>Dom 29 - 🚵 MTB:</b><br>"Desafío MTB Chascomús" (Rally 14k, 28k y 42k).<br>📍 Costanera | Horario a confirmar.<br><br>
         <hr style="border-top: 1px dashed #ccc; margin: 10px 0;">
-
-        🏛️ <b>ESPACIOS PERMANENTES:</b><br>
-        • <b>Museos y Vieja Estación:</b> MAR a VIE 9-15hs / SAB y DOM 10-16 y 19-21hs.<br>
-        • <b>Feria de Artesanos:</b> VIE (17hs), SAB y DOM (11hs) en Costanera y Perón.<br><br>
-
-        🔗 <b>INSCRIPCIONES Y LINKS:</b><br>
-        <a href="https://wa.me/5492241603414" target="_blank" class="wa-btn" style="background-color: #efe8e3ff !important; display: inline-block; padding: 5px 10px; border-radius: 5px; text-decoration: none; color: #25d366; font-weight: bold; border: 1px solid #25d366;">
-        📲 Info por WhatsApp
-        </a><br><br>
-        <a href="https://linktr.ee/visitasguiadas.turismoch" target="_blank" style="color: #2c3e50; font-weight: bold;">
-        🔗 Linktree de Inscripciones
-        </a>
+        🏛️ <b>ESPACIOS PERMANENTES:</b><br>• <b>Museos y Vieja Estación:</b> MAR a VIE 9-15hs / SAB y DOM 10-16 y 19-21hs.<br>• <b>Feria de Artesanos:</b> VIE (17hs), SAB y DOM (11hs) en Costanera y Perón.<br><br>
+        🔗 <b>INSCRIPCIONES Y LINKS:</b><br><a href="https://wa.me/5492241603414" target="_blank" class="wa-btn" style="background-color: #efe8e3ff !important; display: inline-block; padding: 5px 10px; border-radius: 5px; text-decoration: none; color: #25d366; font-weight: bold; border: 1px solid #25d366;">📲 Info por WhatsApp</a><br><br>
+        <a href="https://linktr.ee/visitasguiadas.turismoch" target="_blank" style="color: #2c3e50; font-weight: bold;">🔗 Linktree de Inscripciones</a>
     </div>`,
-
-    // NUEVA TARJETA DE ERROR
+    
     'error_busqueda': `
     <div class="info-card" style="border-left: 5px solid #ffc107;">
         <div style="font-size: 1.1rem; margin-bottom: 8px;">🤔 <b>¡Ups! No encontré eso</b></div>
@@ -669,7 +630,7 @@ const RES = {
             📲 Consultar Cronograma (WhatsApp)
         </a>
     </div>`,
-    'ninez': `<div class="info-card"><strong>👶 Niñez:</b> Mendoza Nº 95. 📞 43-1146.`,
+    'ninez': `<div class="info-card"><strong>👶 Niñez:</strong> Mendoza Nº 95. 📞 43-1146.</div>`,
     'mediacion_info': `<div class="info-card"><strong>⚖️ Mediación Comunitaria</strong><br>Resolución pacífica y gratuita de conflictos vecinales (ruidos, mascotas, edilicios).<br>📍 <b>Acercate a:</b> Moreno 259.</div>`,
     'uda_info': `<div class="info-card"><strong>📍 Puntos UDA (Atención en Barrios)</strong><br><i>Acercate a tu punto más cercano:</i><br><br>🔹 <b>UDA 1 (San Luis):</b> Chubut 755 (Mar/Vie 9-12).<br>🔹 <b>UDA 2 (San José Obrero):</b> F. Chapa 625 (Mar/Vie 9-12).<br>🔹 <b>UDA 3 (El Porteño):</b> Mansilla y Calle 3 (Vie 9-12).<br>🔹 <b>UDA 4 (30 de Mayo):</b> Bvd. 5 y Calle 2 (Vie 9-12).<br>🔹 <b>UDA 5 (B. Jardín):</b> J. Quintana e/ Misiones (Mar/Mié 9-12).<br>🔹 <b>UDA 6 (Gallo Blanco):</b> EE.UU. y Las Flores (Lun 9-12).<br>🔹 <b>UDA 7 (San Cayetano):</b> Comedor (Mar 9-12).<br>🔹 <b>UDA 8 (Políticas Com.):</b> Sarmiento 42 (Lun-Vie 8-12).<br>🔹 <b>UDA 9 (Iporá):</b> Perú y S. Cabral (Jue 9-12).<br><br>🚨 <b>Guardia 24hs:</b> <a href="https://wa.me/5492241559397">2241-559397</a></div>`,
     'hac_tomasa': `<div class="info-card"><strong>🌾 TOMASA:</b><br>ℹ️ Portal de autogestión.<br>🔗 <a href="https://tomasa.chascomus.gob.ar/">INGRESAR</a>`,
@@ -944,17 +905,16 @@ function registrarEvento(categoria, accion_detalle) {
     };
     console.log("Evento registrado:", datos);
 } 
-// ¡Asegurate de que NO haya ninguna llave '}' extra después de esta línea!
+
 function showTyping() {
     isBotThinking = true;
-    setMuniBotState('thinking'); // El logo del header empieza a pulsar
+    setMuniBotState('thinking'); 
 
     const container = document.getElementById('chatMessages');
     const wrapper = document.createElement('div'); 
     wrapper.className = 'message-wrapper'; 
     wrapper.id = 'typingWrapper';
     
-    // Usamos la clase 'typing-dots' para la animación
     wrapper.innerHTML = `
         <img src="${IMG_BOT_PENSANDO}" class="avatar-chat thinking" alt="Bot Pensando">
         <div class="message bot"><span class="typing-dots">Escribiendo</span></div>
@@ -1079,7 +1039,7 @@ const PALABRAS_CLAVE = {
     'hospital': { id: 'hospital_menu', label: '🏥 Hospital' },
     '147': { id: 'info_147', label: '📝 Iniciar Reclamo 147', type: 'leaf', apiKey: 'link_147' },
     'poda': { id: 'poda', label: '🌿 Poda', type: 'leaf', apiKey: 'poda' },
-    'agenda': { id: 'ag_actual', label: '📅 Agenda del Mes', type: 'leaf', apiKey: 'agenda_actual' },
+    'agenda': { id: 'ag_actual', label: '📅 Agenda del Mes', type: 'leaf', apiKey: 'agenda_dinamica' }, // Actualizado a dinámica
     'cultura': { id: 'cultura', label: '🎭 Cultura y Agenda' },
     'deuda': { id: 'deuda', label: '🔍 Ver Deuda / Pagar', type: 'leaf', apiKey: 'deuda' },
     'salud': { id: 'salud', label: '🏥 Salud' },
@@ -1143,7 +1103,6 @@ const PALABRAS_CLAVE = {
     'ecopunto': { id: 'obras_basura', label: '♻️ Ecopuntos', type: 'leaf', apiKey: 'obras_basura' }
 };
 
-/* --- 4. BUSCADOR INTELIGENTE PROFUNDO (CORREGIDO) --- */
 function buscarOpcionProfunda(texto) {
     let t = normalizar(texto);
     
@@ -1285,9 +1244,80 @@ function processInput() {
     ejecutarBusquedaInteligente(val); 
 }
 
-// Única inicialización al cargar la página
-document.addEventListener('DOMContentLoaded', () => {
-    // Si no hay nombre, saludamos casi instantáneamente
+/* --- GESTOR DE AGENDA DINÁMICA (GOOGLE SHEETS) --- */
+async function cargarAgendaDinamica() {
+    // TU LINK DE GOOGLE SHEETS
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTl9D6xP_nenB_S-xlnMgAd9rBjY17-fGNiGrVnKgOvlQ3I23giB2VgCnN62JYRB6qX_cVEfpdx6g6k/pub?output=csv'; 
+    
+    // Inicializamos con el mensaje de carga por si tarda
+    RES['agenda_dinamica'] = `<div class="info-card">⚠️ <b>Cargando agenda...</b><br>Si esto no cambia en unos segundos, revisá tu conexión.</div>`;
+
+    try {
+        const response = await fetch(SHEET_URL);
+        
+        if (!response.ok) throw new Error("Error de conexión");
+        
+        const data = await response.text();
+        const filas = data.split('\n').slice(1); // Quitamos la fila de encabezados
+        
+        // Si el archivo está vacío o el link no devuelve datos CSV, lanzamos error para usar el respaldo
+        if (filas.length < 1 || !data.includes(',')) throw new Error("Archivo vacío o formato incorrecto");
+
+        let htmlAgenda = '<div class="info-card"><strong>📅 AGENDA ACTUALIZADA</strong><br><i>En tiempo real</i><br><br>';
+        
+        filas.forEach(fila => {
+            // Separa las columnas por coma (formato CSV)
+            // OJO: Evitá usar comas dentro de los textos de las celdas en el Excel para no romper esto
+            const cols = fila.split(','); 
+            
+            // Verificamos que la fila tenga al menos 5 columnas con datos
+            if (cols.length >= 5) { 
+                const fecha = cols[0] ? cols[0].trim() : '';
+                const titulo = cols[1] ? cols[1].trim() : '';
+                const lugar = cols[2] ? cols[2].trim() : '';
+                const hora = cols[3] ? cols[3].trim() : '';
+                const precio = cols[4] ? cols[4].trim() : '';
+                const estado = cols[5] ? cols[5].trim() : 'Confirmado';
+
+                // Solo mostramos si hay título
+                if (titulo) {
+                    let iconoEstado = '⚫'; 
+                    if (estado.toLowerCase().includes('cancelado')) iconoEstado = '🔴';
+                    if (estado.toLowerCase().includes('reprogramado')) iconoEstado = '🟠';
+
+                    htmlAgenda += `
+                        ${iconoEstado} <b>${fecha} - ${titulo}</b><br>
+                        📍 ${lugar} | ⏰ ${hora} | 🎟️ ${precio}<br>
+                        <hr style="border-top: 1px dashed #eee; margin: 8px 0;">
+                    `;
+                }
+            }
+        });
+
+        htmlAgenda += `<br><small><i>⚠️ Información sujeta a cambios.</i></small></div>`;
+        
+        // ¡Éxito! Guardamos la agenda nueva
+        RES['agenda_dinamica'] = htmlAgenda;
+        return true; 
+
+    } catch (error) {
+        console.warn('⚠️ No se pudo cargar Google Sheets, usando Agenda Estática de respaldo.', error);
+        
+        // SI FALLA: Usamos la agenda manual que tenés en 'agenda_actual'
+        if (RES['agenda_actual']) {
+            RES['agenda_dinamica'] = RES['agenda_actual'];
+        } else {
+            RES['agenda_dinamica'] = `<div class="info-card">❌ <b>Info no disponible</b><br>Intentá más tarde.</div>`;
+        }
+        return false;
+    }
+}
+// INICIALIZACIÓN
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Cargamos agenda
+    await cargarAgendaDinamica();
+
+    // 2. Flujo normal
     if (!userName) {
         showTyping();
         setTimeout(() => {
@@ -1295,7 +1325,6 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage("👋 ¡Hola! Soy <b>MuniBot</b>, el asistente virtual de la Municipalidad de Chascomús. ¿Cómo te llamás?", "bot");
         }, 500); 
     } else {
-        // El bot celebra que volviste
         setMuniBotState('celebration');
         showTyping();
         setTimeout(() => {
@@ -1308,7 +1337,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    // Configuración de botones
     document.getElementById('sendButton').onclick = processInput; 
     document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') processInput(); };
 });
