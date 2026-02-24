@@ -111,12 +111,14 @@ const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga",
  "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo",
   "pelotuda", "idiota", "tarado", "tarada"]; 
 
-const BARRIOS = ["30 de Mayo", "Acceso Norte", "Barrio Jardín",
- "Centro", "Comandante Giribone", "El Algarrobo", "El Porteño",
- "Barrio Escribano", "Barrio Fátima", "Gallo Blanco", "Iporá", "La Noria", 
- "Las Violetas", "Lomas Altas", "Los Sauces", "Barrio Parque Girado",
- "San Cayetano", "Barrio Obrero", "San Luis", "139 Viviendas",
- "Cooperativa", "Comi Pini", "Los Sauces"]; 
+const BARRIOS = [ "SAN CAYETANo","COMI PINI","ACCESO NORTE",
+"EL OBISPADO","BARRIO JARDIN","VILLA LUJAN","EL ALGARROBO",
+"LA NORIA CHICA","LA ESMERALDA","SAN LUIS","LA CONCORDIA",
+"ESCRIBANO","SAN JOSE","CENTRO","EL HUECO","FATIMA",
+"SAN JUAN BAUTISTA","LAS VIOLETAS","BALDOMERO FERNANDEZ MORENO GALLO BLANCO",
+"EL IPORA","LA PAMPITA","ANAHI","EL PORTEÑO","ESTEBAN ECHEVERRIA",
+"LOS AROMOS","BARRIO PARQUE GIRADO CHASCOMUS","CABALLO BLANCO",
+"30 DE MAYO","LOS SAUCES","SAN NICOLAS"]; 
 /* --- FUNCIÓN FALTANTE: CONTROL DE ESTADOS DEL AVATAR --- */
 function setMuniBotState(state) {
     const avatar = document.getElementById('avatar-bot');
