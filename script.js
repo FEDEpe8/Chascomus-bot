@@ -188,7 +188,7 @@ const MENUS = {
     cultura: {
         title: () => '🎭 Agenda Cultural:',
         options: [
-            { id: 'ag_actual', label: '📅 Agenda del Mes (FEBRERO)', type: 'leaf', apiKey: 'agenda_actual' },
+            { id: 'ag_actual', label: '📅 Agenda del Mes (MARZO)', type: 'leaf', apiKey: 'agenda_actual' },
         ]
     },
    el_digital: {
