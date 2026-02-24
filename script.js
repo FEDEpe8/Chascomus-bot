@@ -1339,10 +1339,14 @@ function processInput() {
 
 /* --- GESTOR DE AGENDA DINÁMICA (GOOGLE SHEETS) --- */
 async function cargarAgendaDinamica() {
-    // TU LINK DE GOOGLE SHEETS
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTl9D6xP_nenB_S-xlnMgAd9rBjY17-fGNiGrVnKgOvlQ3I23giB2VgCnN62JYRB6qX_cVEfpdx6g6k/pub?output=csv'; 
+    // 1. TU LINK ORIGINAL (Sin cambios acá)
+    const BASE_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTl9D6xP_nenB_S-xlnMgAd9rBjY17-fGNiGrVnKgOvlQ3I23giB2VgCnN62JYRB6qX_cVEfpdx6g6k/pub?output=csv'; 
     
-    // Inicializamos con el mensaje de carga por si tarda
+    // 2. EL TRUCO: Le agregamos una "marca de tiempo" única al final
+    // Esto obliga al celular a descargar la lista fresca SIEMPRE.
+    const SHEET_URL = `${BASE_URL}&t=${Date.now()}`;
+
+    // Inicializamos con el mensaje de carga
     RES['agenda_dinamica'] = `<div class="info-card">⚠️ <b>Cargando agenda...</b><br>Si esto no cambia en unos segundos, revisá tu conexión.</div>`;
 
     try {
@@ -1351,19 +1355,15 @@ async function cargarAgendaDinamica() {
         if (!response.ok) throw new Error("Error de conexión");
         
         const data = await response.text();
-        const filas = data.split('\n').slice(1); // Quitamos la fila de encabezados
+        const filas = data.split('\n').slice(1); 
         
-        // Si el archivo está vacío o el link no devuelve datos CSV, lanzamos error para usar el respaldo
         if (filas.length < 1 || !data.includes(',')) throw new Error("Archivo vacío o formato incorrecto");
 
         let htmlAgenda = '<div class="info-card"><strong>📅 AGENDA ACTUALIZADA</strong><br><i>En tiempo real</i><br><br>';
         
         filas.forEach(fila => {
-            // Separa las columnas por coma (formato CSV)
-            // OJO: Evitá usar comas dentro de los textos de las celdas en el Excel para no romper esto
             const cols = fila.split(','); 
             
-            // Verificamos que la fila tenga al menos 5 columnas con datos
             if (cols.length >= 5) { 
                 const fecha = cols[0] ? cols[0].trim() : '';
                 const titulo = cols[1] ? cols[1].trim() : '';
@@ -1372,7 +1372,6 @@ async function cargarAgendaDinamica() {
                 const precio = cols[4] ? cols[4].trim() : '';
                 const estado = cols[5] ? cols[5].trim() : 'Confirmado';
 
-                // Solo mostramos si hay título
                 if (titulo) {
                     let iconoEstado = '⚫'; 
                     if (estado.toLowerCase().includes('cancelado')) iconoEstado = '🔴';
@@ -1389,14 +1388,12 @@ async function cargarAgendaDinamica() {
 
         htmlAgenda += `<br><small><i>⚠️ Información sujeta a cambios.</i></small></div>`;
         
-        // ¡Éxito! Guardamos la agenda nueva
         RES['agenda_dinamica'] = htmlAgenda;
         return true; 
 
     } catch (error) {
         console.warn('⚠️ No se pudo cargar Google Sheets, usando Agenda Estática de respaldo.', error);
         
-        // SI FALLA: Usamos la agenda manual que tenés en 'agenda_actual'
         if (RES['agenda_actual']) {
             RES['agenda_dinamica'] = RES['agenda_actual'];
         } else {
