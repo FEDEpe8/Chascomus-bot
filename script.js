@@ -117,7 +117,32 @@ const BARRIOS = ["30 de Mayo", "Acceso Norte", "Barrio Jardín",
  "Las Violetas", "Lomas Altas", "Los Sauces", "Barrio Parque Girado",
  "San Cayetano", "Barrio Obrero", "San Luis", "139 Viviendas",
  "Cooperativa", "Comi Pini", "Los Sauces"]; 
+/* --- FUNCIÓN FALTANTE: CONTROL DE ESTADOS DEL AVATAR --- */
+function setMuniBotState(state) {
+    const avatar = document.getElementById('avatar-bot');
+    if (!avatar) return;
 
+    // 1. Limpiamos clases anteriores
+    const states = ['speaking', 'thinking', 'celebration', 'pointing', 'looking', 'normal'];
+    avatar.classList.remove(...states);
+    
+    // 2. Aplicamos la nueva clase de animación
+    avatar.classList.add(state);
+
+    // 3. Cambiamos la imagen según el estado
+    const images = {
+        'normal': IMG_BOT_NORMAL,
+        'thinking': IMG_BOT_PENSANDO,
+        'speaking': IMG_BOT_HABLANDO,
+        'celebration': IMG_BOT_FESTEJO,
+        'pointing': IMG_BOT_SENALANDO,
+        'looking': IMG_BOT_MIRANDO
+    };
+
+    if (images[state]) {
+        avatar.src = images[state];
+    }
+}
 /* --- 2. RESPUESTAS Y MENÚS --- */
 const MENUS = {
     main: { 
@@ -166,43 +191,41 @@ const MENUS = {
             { id: 'ag_actual', label: '📅 Agenda del Mes (FEBRERO)', type: 'leaf', apiKey: 'agenda_actual' },
         ]
     },
-    el_digital: {
-    type: 'card', // Útil para que tu frontend sepa qué componente usar
-    title: () => '📰 El Digital Chascomús',
-    subtitle: 'Noticias y actualidad local',
-    description: 'Toda la información actualizada de Chascomús y la región en un solo lugar.',
-    image: 'https://www.eldigitalchascomus.com.ar/images/logo-redes.jpg', // Un thumbnail atractivo
-    footer: 'Actualización diaria',
-    options: [
-        { 
-            id: 'digital_link', 
-            label: '🚀 Leer noticias ahora', 
-            link: 'https://www.eldigitalchascomus.com.ar/', 
-            target: '_blank',
-            style: 'primary' // Para darle un color destacado al botón
-        },
-    ]
-},
-       sibom: {
-    type: 'card', // Útil para que tu frontend sepa qué componente usar
-    title: () => '📰 Boletín Oficial de Chascomús',
-    subtitle: 'Noticias y actualidad local',
-    description: `Email: despacho@chascomus.gob.ar<br><br>
-    El Boletín Oficial de Chascomús (SIBOM) es la publicación digital que contiene todas las normativas,
-     decretos, ordenanzas y disposiciones oficiales del municipio. 
-     Es la fuente primaria para conocer las decisiones y acciones del gobierno local.`,
-    image: 'https://sibom.slyt.gba.gob.ar/cities/31/images/logo-redes.jpg', // Un thumbnail atractivo
-    footer: 'Actualización diaria',
-    options: [
-        { 
-            id: 'digital_link', 
-            label: 'Sistema de Boletines Oficiales Municipales', 
-            link: 'https://sibom.slyt.gba.gob.ar/cities/31/', 
-            target: '_blank',
-            style: 'primary' // Para darle un color destacado al botón
-        },
-    ]
-},
+   el_digital: {
+        type: 'card',
+        title: () => '📰 El Digital Chascomús',
+        subtitle: 'Noticias y actualidad local',
+        description: 'Toda la información actualizada de Chascomús y la región en un solo lugar.',
+        image: 'el_digi.png', // <--- CAMBIO AQUÍ (Tu archivo local)
+        footer: 'Actualización diaria',
+        options: [
+            { 
+                id: 'digital_link', 
+                label: '🚀 Leer noticias ahora', 
+                link: 'https://www.eldigitalchascomus.com.ar/', 
+                target: '_blank',
+                style: 'primary'
+            },
+        ]
+    },
+    sibom: {
+        type: 'card',
+        title: () => '📰 Boletín Oficial',
+        subtitle: 'Normativas y Decretos',
+        description: `Email: despacho@chascomus.gob.ar<br><br>
+        Fuente oficial de todas las normativas, decretos y ordenanzas municipales.`,
+        image: 'sibom.png', // <--- CAMBIO AQUÍ (Tu archivo local)
+        footer: 'Gobierno de la Provincia de Buenos Aires',
+        options: [
+            { 
+                id: 'digital_link', 
+                label: '🔗 Ir al Boletín Oficial', 
+                link: 'https://sibom.slyt.gba.gob.ar/cities/31/', 
+                target: '_blank',
+                style: 'primary'
+            },
+        ]
+    },
     turismo: {
         title: () => 'Turismo y Cultura:',
         options: [
@@ -922,12 +945,21 @@ function registrarEvento(categoria, accion_detalle) {
 // ¡Asegurate de que NO haya ninguna llave '}' extra después de esta línea!
 function showTyping() {
     isBotThinking = true;
+    setMuniBotState('thinking'); // El logo del header empieza a pulsar
+
     const container = document.getElementById('chatMessages');
-    const wrapper = document.createElement('div'); wrapper.className = 'message-wrapper'; wrapper.id = 'typingWrapper';
+    const wrapper = document.createElement('div'); 
+    wrapper.className = 'message-wrapper'; 
+    wrapper.id = 'typingWrapper';
     
-    wrapper.innerHTML = `<img src="${IMG_BOT_PENSANDO}" class="avatar-chat thinking" alt="Bot Pensando"><div class="message bot">...</div>`;
+    // Usamos la clase 'typing-dots' para la animación
+    wrapper.innerHTML = `
+        <img src="${IMG_BOT_PENSANDO}" class="avatar-chat thinking" alt="Bot Pensando">
+        <div class="message bot"><span class="typing-dots">Escribiendo</span></div>
+    `;
     
-    container.appendChild(wrapper); container.scrollTop = container.scrollHeight; 
+    container.appendChild(wrapper); 
+    container.scrollTop = container.scrollHeight; 
 }
 
 
@@ -937,6 +969,9 @@ function addMessage(content, side = 'bot', options = null) {
         const t = document.getElementById('typingWrapper'); 
         if(t) t.remove(); 
         
+        // RESETEAMOS EL AVATAR DEL HEADER
+        setMuniBotState('normal'); 
+
         document.querySelectorAll('.avatar-chat.speaking').forEach(img => {
             img.src = IMG_BOT_NORMAL;
             img.classList.remove('speaking');
@@ -976,6 +1011,7 @@ function addMessage(content, side = 'bot', options = null) {
     container.scrollTop = container.scrollHeight;
 }
 
+
 function showNavControls() {
     const container = document.getElementById('chatMessages');
     const navDiv = document.createElement('div'); navDiv.className = 'options-container'; 
@@ -1007,6 +1043,24 @@ function handleAction(opt) {
 
 function showMenu(key) {
     const m = MENUS[key];
+    
+    // Si el menú en sí es una tarjeta (como el_digital)
+    if (m.type === 'card') {
+        const cardHtml = `
+            <div class="info-card card-visual">
+                <img src="${m.image}" style="width:100%; border-radius:10px; margin-bottom:10px;">
+                <strong>${m.title()}</strong><br>
+                <small style="color:var(--text-muted)">${m.subtitle}</small><br><br>
+                <p>${m.description}</p>
+                <hr style="border-top: 1px dashed #ccc; margin: 10px 0;">
+                <small><i>${m.footer}</i></small>
+            </div>
+        `;
+        addMessage(cardHtml, 'bot', m.options);
+        return;
+    }
+
+    // Si es un menú normal de botones
     let opts = [...m.options];
     if(currentPath.length > 1) opts.push({ id: 'back', label: '⬅️ Volver' }); 
     addMessage(typeof m.title === 'function' ? m.title(userName) : m.title, 'bot', opts);
@@ -1227,69 +1281,37 @@ function processInput() {
     ejecutarBusquedaInteligente(val); 
 }
 
-/* --- INICIALIZACIÓN OPTIMIZADA --- */
-window.onload = () => {
-    // Si no hay nombre, saludamos casi instantáneamente (200ms)
+// Única inicialización al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    // Si no hay nombre, saludamos casi instantáneamente
     if (!userName) {
         showTyping();
         setTimeout(() => {
+            setMuniBotState('speaking');
             addMessage("👋 ¡Hola! Soy <b>MuniBot</b>, el asistente virtual de la Municipalidad de Chascomús. ¿Cómo te llamás?", "bot");
-        }, 200); 
+        }, 500); 
     } else {
-        // Si ya te conoce, el saludo de bienvenida
+        // El bot celebra que volviste
+        setMuniBotState('celebration');
         showTyping();
         setTimeout(() => {
+            setMuniBotState('speaking');
             addMessage(`¡Hola de nuevo, <b>${userName}</b>! 👋 ¿En qué puedo ayudarte hoy?`, 'bot');
-            setTimeout(() => resetToMain(), 800);
-        }, 500);
+            setTimeout(() => {
+                resetToMain();
+                setMuniBotState('normal');
+            }, 1000);
+        }, 1000);
     }
-};
-document.getElementById('sendButton').onclick = processInput; 
-document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') processInput(); };
-function clearSession() { if(confirm("¿Reiniciar chat y borrar datos?")) { localStorage.clear(); location.reload(); } }
 
-/**
- * Cambia el estado visual del avatar del MuniBot
- * @param {string} state - Los estados pueden ser: 'speaking', 'thinking', 'celebration', 'pointing', 'looking', 'normal'
- */
-/**
- * Cambia el estado visual del avatar del MuniBot (Header)
- */
-function setMuniBotState(state) {
-    const avatar = document.getElementById('avatar-bot');
-    if (!avatar) return;
+    // Configuración de botones
+    document.getElementById('sendButton').onclick = processInput; 
+    document.getElementById('userInput').onkeypress = (e) => { if(e.key === 'Enter') processInput(); };
+});
 
-    // Lista de estados
-    const states = ['speaking', 'thinking', 'celebration', 'pointing', 'looking', 'normal'];
-    
-    // Limpiamos clases viejas
-    avatar.classList.remove(...states);
-    
-    // Aplicamos la nueva clase
-    avatar.classList.add(state);
-
-    // MAPEO DE IMÁGENES: Cambia la imagen según el estado
-    const images = {
-        'normal': IMG_BOT_NORMAL,
-        'thinking': IMG_BOT_PENSANDO,
-        'speaking': IMG_BOT_HABLANDO,
-        'celebration': IMG_BOT_FESTEJO,
-        'pointing': IMG_BOT_SENALANDO,
-        'looking': IMG_BOT_MIRANDO
-    };
-
-    if (images[state]) {
-        avatar.src = images[state];
-    }
+function clearSession() { 
+    if(confirm("¿Reiniciar chat y borrar datos?")) { 
+        localStorage.clear(); 
+        location.reload(); 
+    } 
 }
-
-// Inicialización de la animación de bienvenida
-// La envolvemos en el onload para asegurar que el ID 'avatar-bot' ya exista
-const originalOnload = window.onload;
-window.onload = () => {
-    if (originalOnload) originalOnload();
-    
-    // El bot celebra que entraste
-    setMuniBotState('celebration');
-    setTimeout(() => setMuniBotState('normal'), 3000);
-};
