@@ -136,7 +136,7 @@ const MENUS = {
         title: (name) => `¡<b>${name}</b>! 👋 Soy el asistente virtual. Acá te dejo los accesos más rápidos de hoy:`, 
         options: [
             { id: 'oea_shortcut', label: '👀 Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
-            { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_dinamica' }, // Actualizado a dinámica
+            { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_dinamica' }, 
             { id: 'f_shortcut', label: '📚 Educación cartelera docente', type: 'leaf', apiKey: 'cartelera_docente' },
             { id: 'h_shortcut', label: '📅 Turnos Hospital', type: 'leaf', apiKey: 'h_turnos' },
             { id: 'politicas_gen_shortcut', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
@@ -149,9 +149,8 @@ const MENUS = {
             { id: 'politicas_gen', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
             { id: 'politicas_comu', label: '🛍️ Módulos (alimentos)', type: 'leaf', apiKey: 'asistencia_social' },
             { id: 'desarrollo_menu', label: '🤝 Desarrollo Social' },
-            { id: 'sibom', label: '📰 Boletin Oficial' },
             { id: 'ojos_en_alerta', label: '👁️ Ojos en Alerta (Seguridad)', type: 'leaf', apiKey: 'ojos_en_alerta' },
-            { id: 'el_digital', label: '📰 Diario digital' },
+            { id: 'el_digital', label: '📰 Kiosco Digital' },
             { id: 'educacion', label: '📚 Educación', type: 'submenu'},
             { id: 'turismo', label: '🏖️ Turismo' },
             { id: 'deportes', label: '⚽ Deportes' },
@@ -176,43 +175,30 @@ const MENUS = {
     cultura: {
         title: () => '🎭 Agenda Cultural:',
         options: [
-            // ACÁ CAMBIAMOS PARA QUE USE LA AGENDA DINÁMICA DE GOOGLE SHEETS
             { id: 'ag_actual', label: '📅 agenda dinámica', type: 'leaf', apiKey: 'agenda_dinamica' },
         ]
     },
     el_digital: {
         type: 'card',
-        title: () => '📰 El Digital Chascomús',
-        subtitle: 'Noticias y actualidad local',
-        description: 'Toda la información actualizada de Chascomús y la región en un solo lugar.',
+        title: () => '🗞️ Kiosco Digital',
+        subtitle: 'Noticias y Boletín Oficial',
         image: 'el_digi.png', 
-        footer: 'Actualización diaria',
-        options: [
-            { 
-                id: 'digital_link', 
-                label: '🚀 Leer noticias ahora', 
-                link: 'https://www.eldigitalchascomus.com.ar/', 
-                target: '_blank',
-                style: 'primary'
-            },
-        ]
-    },
-    sibom: {
-        type: 'card',
-        title: () => '📰 Boletín Oficial',
-        subtitle: 'Normativas y Decretos',
-        description: `Email: despacho@chascomus.gob.ar<br><br>Fuente oficial de todas las normativas, decretos y ordenanzas municipales.`,
-        image: 'sibom.png',
-        footer: 'Gobierno de la Provincia de Buenos Aires',
-        options: [
-            { 
-                id: 'digital_link', 
-                label: '🔗 Ir al Boletín Oficial', 
-                link: 'https://sibom.slyt.gba.gob.ar/cities/31/', 
-                target: '_blank',
-                style: 'primary'
-            },
-        ]
+        footer: 'Portal Unificado',
+        description: `
+            Accedé a la información local y oficial desde aquí:<br><br>
+            📰 <b>El Digital Chascomús</b><br>
+            <i>Noticias y actualidad al instante.</i><br>
+            <a href="https://www.eldigitalchascomus.com.ar/" target="_blank" class="wa-btn" style="background-color: #03045e !important; color: white; text-align: center; display: block; margin-top: 5px;">
+            🚀 Leer El Digital
+            </a> 
+            <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">   
+            📜 <b>Boletín Oficial (SIBOM)</b><br>
+            <i>Decretos y normativas municipales.</i><br>
+            <a href="https://sibom.slyt.gba.gob.ar/cities/31/" target="_blank" class="wa-btn" style="background-color: #7f8c8d !important; color: white; text-align: center; display: block; margin-top: 5px;">
+            🏛️ Ver Boletín Oficial
+            </a>
+        `,
+        options: [] // Estaba vacío, ¡y eso atrapaba al usuario! Ahora lo arreglamos en showMenu
     },
     educacion: {
         title: () => '📚 Educación:',
@@ -1100,7 +1086,12 @@ function showMenu(key) {
                 <small><i>${m.footer}</i></small>
             </div>
         `;
-        addMessage(cardHtml, 'bot', m.options);
+        
+        // --- CORRECCIÓN CRÍTICA PARA QUE SIEMPRE HAYA BOTÓN VOLVER ---
+        let opts = [...(m.options || [])]; // Copiamos las opciones si existen
+        if(currentPath.length > 1) opts.push({ id: 'back', label: '⬅️ Volver' }); 
+        
+        addMessage(cardHtml, 'bot', opts);
         return;
     }
 
@@ -1402,6 +1393,7 @@ async function cargarAgendaDinamica() {
         return false;
     }
 }
+
 // INICIALIZACIÓN
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Cargamos agenda
