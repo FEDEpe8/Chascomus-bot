@@ -1,237 +1,302 @@
+/* --- VARIABLES MODERNIZADAS --- */
 :root {
-    --primary: #004a7c;
-    --secondary: #0099da;
-    --bg-light: #f4f7f9;
-    --bot-msg: #ffffff;
-    --user-msg: #004a7c;
+    --primary: #03045e;           /* Azul Medianoche */
+    --primary-light: #0077b6;     /* Azul para gradientes */
+    --accent: #00f5d4;            /* Verde Menta vibrante */
+    --bg-app: #f0f4f8;            /* Fondo limpio azulado */
+    --bg-card: #ffffff;
+    --text-main: #1d3557;
+    --text-muted: #64748b;
+    --header-height: 70px;
+    --bot-msg-bg: #ffffff;
+    --user-msg-bg: linear-gradient(135deg, #03045e 0%, #0077b6 100%);
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg-light);
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100dvh; /* Altura dinámica para móviles */
-    overflow: hidden;
+/* --- RESET Y ESTRUCTURA --- */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body { 
+    height: 100%; width: 100%; margin: 0; 
+    overflow: hidden; position: fixed; 
+    background: var(--bg-app); 
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    color: var(--text-main);
 }
 
-/* --- Splash Screen --- */
-#splash-screen {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: white;
-    display: flex; justify-content: center; align-items: center;
-    z-index: 9999;
-    transition: opacity 0.5s, visibility 0.5s;
-}
-#splash-screen.hidden { opacity: 0; visibility: hidden; }
-.splash-logo { width: 120px; margin-bottom: 20px; }
-.loader-bar { width: 200px; height: 4px; background: #eee; border-radius: 2px; overflow: hidden; margin: 0 auto 10px; }
-.loader-progress { width: 100%; height: 100%; background: var(--primary); animation: load 2s infinite ease-in-out; transform-origin: left; }
-@keyframes load { 0% { transform: scaleX(0); } 50% { transform: scaleX(1); } 100% { transform: scaleX(0); transform-origin: right; } }
+body { display: flex; flex-direction: column; }
 
-/* --- Header Nuevo --- */
-.header {
-    background: var(--primary);
-    color: white;
-    padding: 12px 15px;
-    padding-top: max(12px, env(safe-area-inset-top)); /* Notch support */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    z-index: 10;
+/* --- HEADER: EFECTO CRISTAL (Glassmorphism) --- */
+.app-header { 
+    background: rgba(3, 4, 94, 0.95); 
+    backdrop-filter: blur(10px);
+    color: white; 
+    height: var(--header-height); 
+    padding: 0 20px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    z-index: 100; 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
 }
 
-.header-left {
-    display: flex; align-items: center; gap: 10px;
-}
-.header-left span { font-weight: 700; font-size: 1.2rem; letter-spacing: 0.5px; }
-.header-left img { width: 38px; height: 38px; border-radius: 50%; background: white; padding: 2px; }
+.header-brand { display: flex; align-items: center; gap: 12px; }
 
-.header-right {
-    display: flex; gap: 12px;
+.header-logo-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Si querés que sea circular */
+    object-fit: cover;
+    margin-right: 10px;
+    border: 2px solid transparent; /* Espacio para el borde de color que agregamos antes */
+    transition: border-color 0.3s ease;
 }
-.header-right button {
-    background: none;
-    border: none;
-    font-size: 1.3rem;
-    cursor: pointer;
-    padding: 0;
+
+/* --- ANIMACIONES ÚNICAS --- */
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-12px); } /* Salto más notorio */
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; border-color: transparent; }
+    100% { transform: scale(1.1); opacity: 0.8; border-color: #ffc107; }
+}
+
+/* --- CLASES DE ESTADO Y ANIMACIONES --- */
+.avatar-chat {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.avatar-chat.speaking { animation: bounce 0.4s ease infinite alternate; }
+.avatar-chat.thinking { animation: pulse 0.6s infinite alternate; border-color: #ffc107 !important; }
+.avatar-chat.celebration { 
+    animation: bounce 0.25s ease infinite alternate; 
+    border-color: #28a745 !important; 
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.5);
+}
+.avatar-chat.pointing { animation: bounce 0.5s ease infinite alternate; border-color: #17a2b8 !important; }
+.avatar-chat.looking { animation: pulse 1s ease infinite alternate; border-color: #6f42c1 !important; }
+.avatar-chat.normal { animation: none; border-color: transparent; }
+/* --- CONTENEDOR DE CHAT --- */
+.chat-container { 
+    flex: 1; 
+    overflow-y: auto; 
+    padding: 25px 15px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 24px; 
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; 
+}
+
+/* --- BURBUJAS DE MENSAJE --- */
+.message-wrapper { 
+    display: flex; 
+    align-items: flex-end; 
+    gap: 12px; 
+    width: 100%; 
+    animation: entrada 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+}
+
+.message-wrapper.user { flex-direction: row-reverse; }
+
+.avatar-chat { 
+    width: 38px; height: 38px; 
+    border-radius: 50%; 
+    background: white; 
+    border: 2px solid var(--accent); 
+    flex-shrink: 0; 
+    box-shadow: var(--shadow-sm); 
+}
+
+.avatar-chat.speaking { animation: bounce 0.5s ease infinite alternate; }
+.avatar-chat.thinking { animation: pulse 0.8s infinite alternate; border-color: #ffc107; }
+.avatar-chat.celebration { animation: bounce 0.3s ease infinite alternate; border-color: #28a745; }
+.avatar-chat.pointing { animation: bounce 0.4s ease infinite alternate; border-color: #17a2b8; }
+.avatar-chat.looking { animation: pulse 1s ease infinite alternate; border-color: #6f42c1; }
+.avatar-chat.normal { animation: none; border-color: var(--accent); }
+
+.message { 
+    max-width: 80%; 
+    padding: 14px 18px; 
+    border-radius: 22px; 
+    font-size: 0.95rem; 
+    line-height: 1.5; 
+    box-shadow: var(--shadow-md); 
+}
+
+.message.bot { 
+    background: var(--bot-msg-bg); 
+    color: var(--text-main); 
+    border-bottom-left-radius: 4px; 
+}
+
+.message.user { 
+    background: var(--user-msg-bg); 
+    color: white; 
+    border-bottom-right-radius: 4px; 
+}
+
+/* --- TARJETAS DE INFORMACIÓN (INFO CARDS) --- */
+.info-card { 
+    background: #ffffff; 
+    padding: 20px; 
+    border-radius: 20px; 
+    border-left: 6px solid var(--accent); 
+    margin: 10px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    font-size: 0.9rem;
+}
+
+.wa-btn { 
+    display: inline-block; 
+    background: #25D366; 
+    color: white; 
+    text-align: center; 
+    padding: 14px 20px; 
+    border-radius: 15px; 
+    text-decoration: none; 
+    font-weight: bold; 
+    margin-top: 12px;
+    width: 100%;
     transition: transform 0.2s;
 }
-.header-right button:hover { transform: scale(1.1); }
 
-/* --- Modal Info --- */
-.modal {
-    display: none; /* Oculto por defecto */
-    position: fixed;
-    z-index: 2000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.5); /* Fondo oscuro transparente */
-    backdrop-filter: blur(3px);
-    animation: fadeIn 0.3s;
-}
+.wa-btn:active { transform: scale(0.96); }
 
-.modal-content {
-    background-color: white;
-    margin: 15% auto;
-    padding: 20px;
-    border-radius: 15px;
-    width: 85%;
-    max-width: 400px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    position: relative;
-    text-align: center;
-    animation: slideUp 0.3s;
-}
-
-.close-modal {
-    position: absolute;
-    top: 10px; right: 15px;
-    font-size: 28px;
-    font-weight: bold;
-    color: #aaa;
-    cursor: pointer;
-}
-.close-modal:hover { color: #000; }
-
-.credits p { font-size: 0.9rem; color: #555; margin: 5px 0; }
-
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-/* --- Botón Instalar --- */
-#installBtn { animation: pulse 2s infinite; }
-#installBtn.hidden { display: none !important; }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-/* --- Chat Container --- */
-.chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
-
-/* --- Mensajes --- */
-.message-wrapper { display: flex; max-width: 85%; animation: entrada 0.3s ease-out; }
-@keyframes entrada { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.message-wrapper.user { align-self: flex-end; flex-direction: row-reverse; }
-.message { padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
-.message.bot { background: var(--bot-msg); color: #333; border-bottom-left-radius: 2px; }
-.message.user { background: var(--user-msg); color: white; border-bottom-right-radius: 2px; }
-
-/* --- Opciones --- */
-.options-container { display: flex; flex-wrap: wrap; gap: 8px; margin: 5px 0; }
-.option-button { border: 2px solid var(--secondary); background: white; color: var(--primary); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px; }
-.option-button:hover { background: var(--secondary); color: white; }
-
-/* --- Cards --- */
-.info-card { background: white; border-left: 4px solid var(--secondary); padding: 15px; margin: 5px 0; border-radius: 8px; font-size: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-.wa-btn { display: inline-block; text-align: center; background: #25D366; color: white; text-decoration: none; padding: 10px 15px; border-radius: 25px; margin-top: 15px; font-weight: bold; }
-
-/* --- Input Area (Estilo Cápsula) --- */
-.input-area { 
-    padding: 10px 12px; 
-    background: white; 
+/* --- BOTONES DE OPCIÓN (PASTILLAS) --- */
+.options-container { 
     display: flex; 
-    gap: 8px; /* Espacio entre la cápsula y el botón enviar */
-    border-top: 1px solid #eee; 
-    align-items: center; 
-    padding-bottom: max(10px, env(safe-area-inset-bottom)); 
+    flex-wrap: wrap; 
+    gap: 10px; 
+    margin-top: -10px; 
+    margin-left: 50px; 
 }
 
-/* La cápsula que contiene texto + mic */
-.input-group {
-    flex: 1; /* Ocupa todo el espacio disponible */
+.option-button { 
+    background: white; 
+    border: 1.5px solid #e2e8f0; 
+    color: var(--primary); 
+    padding: 10px 20px; 
+    border-radius: 25px; 
+    font-size: 0.85rem; 
+    cursor: pointer; 
+    font-weight: 600; 
+    transition: all 0.3s;
+    box-shadow: var(--shadow-sm);
+}
+
+.option-button:hover, .option-button:active { 
+    background: var(--primary); 
+    color: white; 
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.option-button.back { background: #f8fafc; color: #94a3b8; border-color: #e2e8f0; }
+
+/* --- ÁREA DE ENTRADA --- */
+.input-area { 
+    background: white; 
+    padding: 15px 20px 25px 20px; /* Más padding abajo para móviles */
+    border-top: 1px solid #f1f5f9; 
+}
+
+.input-wrapper {
     display: flex;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 25px;
-    background: #fff;
-    padding-right: 5px; /* Espacio para el mic */
-    transition: border-color 0.3s;
-}
-
-.input-group:focus-within {
-    border-color: var(--secondary); /* Se ilumina al escribir */
+    align-items: center;               /* Centra todo verticalmente */
+    background: #f1f5f9;               /* Color de fondo suave */
+    border-radius: 25px;               /* Bordes redondeados */
+    padding: 5px 15px;                 /* Espaciado interno */
+    gap: 8px;                          /* Espacio entre mic, texto y enviar */
 }
 
 #userInput { 
     flex: 1; 
-    border: none; /* Sin borde propio */
-    background: transparent;
-    padding: 12px 15px; 
-    font-size: 16px; 
-    outline: none; 
-    min-width: 0; /* Evita que se desborde en pantallas muy chicas */
-}
-
-#micButton {
-    background: none; 
+    background: transparent; 
     border: none; 
-    font-size: 1.3rem; 
-    cursor: pointer; 
-    padding: 5px 10px; 
-    transition: 0.3s;
-    color: #666;
-    display: flex; align-items: center; justify-content: center;
+    outline: none; 
+    font-size: 1rem; 
+    padding: 12px 0; 
+    color: var(--text-main);
+}
+.btn-mic {
+    background: transparent;           /* Sin fondo azul */
+    border: none;                      /* Sin bordes */
+    font-size: 1.4rem;                 /* Tamaño del emoji */
+    cursor: pointer;                   /* Cambia el cursor */
+    padding: 0 10px;                   /* Espaciado interno */
+    outline: none;                     /* ELIMINA EL RECUADRO AL TOCAR */
+    -webkit-tap-highlight-color: transparent; /* Quita el cuadro gris en celulares */
+    transition: transform 0.2s;        /* Animación de escala */
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;                    /* Evita que se achique */
 }
 
-#micButton.recording {
-    color: #e74c3c; 
-    animation: pulseRed 1s infinite;
+/* Efecto al presionar o pasar el mouse */
+.btn-mic:hover, .btn-mic:active {
+    transform: scale(1.15);            /* Se agranda sutilmente */
 }
-
-#sendButton { 
+.btn-send { 
     background: var(--primary); 
     color: white; 
     border: none; 
+    width: 44px; height: 44px; 
     border-radius: 50%; 
-    width: 45px; 
-    height: 45px; 
-    flex-shrink: 0; /* Importante: Evita que el botón se aplaste */
     cursor: pointer; 
-    display: flex; 
+    transition: transform 0.2s;
+}
+
+.btn-send:active { transform: scale(0.9); }
+
+/* --- MODAL --- */
+.modal-content { 
+    background-color: white; 
+    padding: 30px; 
+    border-radius: 25px; 
+    width: 90%; 
+    max-width: 400px; 
+    animation: entrada 0.4s ease-out; 
+}
+/* --- FIX PARA EL MODAL --- */
+.modal { 
+    display: none; /* Esto lo oculta por defecto */
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0; 
+    width: 100%; height: 100%; 
+    background-color: rgba(0,0,0,0.6); 
     align-items: center; 
     justify-content: center; 
-    font-size: 1.2rem; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+/* Animación de puntos de escritura */
+.typing-dots::after {
+    content: '...';
+    display: inline-block;
+    width: 20px;
+    animation: dots 1.5s steps(5, end) infinite;
+    text-align: left;
+}
+.card-visual img {
+    width: 100%;           /* Ocupa todo el ancho disponible */
+    height: 150px;         /* Altura fija para uniformidad */
+    object-fit: contain;   /* IMPORTANTE: Muestra la imagen entera sin recortar */
+    background-color: #ffffff; /* Fondo blanco por si el PNG es transparente */
+    border-radius: 10px 10px 0 0;
+    padding: 10px;         /* Un poco de aire para que el logo no toque los bordes */
+    border-bottom: 1px solid #f0f0f0;
 }
 
-@keyframes pulseRed { 
-    0% { transform: scale(1); opacity: 1; } 
-    50% { transform: scale(1.2); opacity: 0.7; } 
-    100% { transform: scale(1); opacity: 1; } 
+/* Mejora el contraste del 'Online' */
+.app-header span[style*="color:var(--accent)"] {
+    text-shadow: 0 0 5px rgba(0, 245, 212, 0.5);
 }
-
-/* --- Micrófono --- */
-#micButton {
-    background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 5px; transition: 0.3s;
-}
-#micButton.recording {
-    color: red; animation: pulseRed 1s infinite;
-}
-@keyframes pulseRed { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
-
-/* --- AJUSTE DEL AVATAR EN EL CHAT --- */
-.avatar-chat {
-    width: 40px;        /* Tamaño fijo y pequeño */
-    height: 40px;
-    border-radius: 50%; /* Que sea redondito */
-    object-fit: cover;  /* Para que no se deforme */
-    margin-right: 10px; /* Separación del texto */
-    align-self: flex-end; /* Alineado abajo junto al mensaje */
-    flex-shrink: 0;     /* Evita que se aplaste si hay mucho texto */
-}
-
-/* Animación opcional para cuando habla */
-.avatar-chat.speaking {
-    border: 2px solid var(--secondary);
-    animation: palpito 1s infinite;
-}
-
-@keyframes palpito {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+@keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
 }
