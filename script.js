@@ -197,6 +197,7 @@ const MENUS = {
             <a href="https://sibom.slyt.gba.gob.ar/cities/31/" target="_blank" class="wa-btn" style="background-color: #7f8c8d !important; color: white; text-align: center; display: block; margin-top: 5px;">
             🏛️ Ver Boletín Oficial
             </a>
+            
         `,
         options: [] // Estaba vacío, ¡y eso atrapaba al usuario! Ahora lo arreglamos en showMenu
     },
@@ -241,8 +242,8 @@ const MENUS = {
     salud: { 
         title: () => 'Gestión de Salud Pública:', 
         options: [
-            { id: 'centros', label: '🏥 CAPS (Salitas)' }, 
-            { id: 'hospital_menu', label: '🏥 Hospital' },
+            { id: 'centros', label: '🏥 CAPS (Salitas)', type: 'submenu' },
+            { id: 'hospital_menu', label: '🏥 Hospital', type: 'submenu' },
             { id: 'f_lista', label: '💊 Farmacias y Turnos', type: 'leaf', apiKey: 'farmacias_lista' },
             { id: 'zoonosis', label: '🐾 Zoonosis', type: 'leaf', apiKey: 'zoo_rabia' },
             { id: 'vac_hu', label: '💉 Vacunatorio', type: 'leaf', apiKey: 'vacunacion_info' }
@@ -1428,4 +1429,68 @@ function clearSession() {
         localStorage.clear(); 
         location.reload(); 
     } 
+}
+
+// Función para entrar a la tarjeta
+function abrirTarjeta() {
+    // 1. Ocultamos el menú y mostramos la tarjeta
+    document.getElementById('menu-principal').style.display = 'none';
+    document.getElementById('vista-tarjeta').style.display = 'block';
+    
+    // 2. Truco PWA: Creamos un "falso" historial en el navegador.
+    // Así el celular sabe que hay un paso anterior al cual volver.
+    history.pushState({ vista: 'tarjeta' }, "Tarjeta", "#tarjeta");
+}
+
+// Función para salir de la tarjeta (se llama desde el botón en pantalla)
+function cerrarTarjeta() {
+    // 1. Ocultamos la tarjeta y mostramos el menú principal
+    document.getElementById('vista-tarjeta').style.display = 'none';
+    document.getElementById('menu-principal').style.display = 'block';
+}
+
+// Evento clave PWA: Ataja el botón físico "Atrás" del celular
+window.onpopstate = function(event) {
+    // Si el usuario presiona "Atrás" en su Android/iOS, ejecutamos la función de cerrado
+    cerrarTarjeta();
+};
+let eventoInstalacion;
+const botonInstalar = document.getElementById('installBtn');
+
+// 1. Escuchamos si el navegador dice "Esta app se puede instalar"
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevenimos que el navegador muestre su propio cartel automático
+    e.preventDefault();
+    // Guardamos el evento para usarlo cuando el vecino toque tu botón
+    eventoInstalacion = e;
+    
+    // Mostramos tu botón (le sacamos la clase oculta)
+    if (botonInstalar) {
+        botonInstalar.classList.remove('hidden');
+        // Si tu CSS no usa la clase 'hidden', probá con esta línea en su lugar:
+        // botonInstalar.style.display = 'inline-block';
+    }
+});
+
+// 2. Le damos la acción al botón cuando lo tocan
+if (botonInstalar) {
+    botonInstalar.addEventListener('click', async () => {
+        if (!eventoInstalacion) {
+            return;
+        }
+        
+        // Disparamos el cartel nativo del celular para instalar
+        eventoInstalacion.prompt();
+        
+        // Esperamos a ver qué elige el usuario (Instalar o Cancelar)
+        const { outcome } = await eventoInstalacion.userChoice;
+        if (outcome === 'accepted') {
+            console.log('El vecino aceptó instalar MuniBot');
+            // Ocultamos el botón porque ya se instaló
+            botonInstalar.classList.add('hidden');
+        }
+        
+        // Limpiamos el evento
+        eventoInstalacion = null;
+    });
 }
