@@ -129,13 +129,80 @@ body {
 .info-card { background: white; border-left: 4px solid var(--secondary); padding: 15px; margin: 5px 0; border-radius: 8px; font-size: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 .wa-btn { display: inline-block; text-align: center; background: #25D366; color: white; text-decoration: none; padding: 10px 15px; border-radius: 25px; margin-top: 15px; font-weight: bold; }
 
-/* --- Input Area --- */
-.input-area { padding: 10px 15px; background: white; display: flex; gap: 10px; border-top: 1px solid #eee; align-items: center; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
-#userInput { flex: 1; border: 1px solid #ddd; border-radius: 25px; padding: 12px 20px; font-size: 16px; outline: none; }
-#userInput:focus { border-color: var(--secondary); }
-#sendButton { background: var(--primary); color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-.typing-dots::after { content: '...'; animation: ellipsis 1.5s infinite; }
-@keyframes ellipsis { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+/* --- Input Area (Estilo Cápsula) --- */
+.input-area { 
+    padding: 10px 12px; 
+    background: white; 
+    display: flex; 
+    gap: 8px; /* Espacio entre la cápsula y el botón enviar */
+    border-top: 1px solid #eee; 
+    align-items: center; 
+    padding-bottom: max(10px, env(safe-area-inset-bottom)); 
+}
+
+/* La cápsula que contiene texto + mic */
+.input-group {
+    flex: 1; /* Ocupa todo el espacio disponible */
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    background: #fff;
+    padding-right: 5px; /* Espacio para el mic */
+    transition: border-color 0.3s;
+}
+
+.input-group:focus-within {
+    border-color: var(--secondary); /* Se ilumina al escribir */
+}
+
+#userInput { 
+    flex: 1; 
+    border: none; /* Sin borde propio */
+    background: transparent;
+    padding: 12px 15px; 
+    font-size: 16px; 
+    outline: none; 
+    min-width: 0; /* Evita que se desborde en pantallas muy chicas */
+}
+
+#micButton {
+    background: none; 
+    border: none; 
+    font-size: 1.3rem; 
+    cursor: pointer; 
+    padding: 5px 10px; 
+    transition: 0.3s;
+    color: #666;
+    display: flex; align-items: center; justify-content: center;
+}
+
+#micButton.recording {
+    color: #e74c3c; 
+    animation: pulseRed 1s infinite;
+}
+
+#sendButton { 
+    background: var(--primary); 
+    color: white; 
+    border: none; 
+    border-radius: 50%; 
+    width: 45px; 
+    height: 45px; 
+    flex-shrink: 0; /* Importante: Evita que el botón se aplaste */
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 1.2rem; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+@keyframes pulseRed { 
+    0% { transform: scale(1); opacity: 1; } 
+    50% { transform: scale(1.2); opacity: 0.7; } 
+    100% { transform: scale(1); opacity: 1; } 
+}
 
 /* --- Micrófono --- */
 #micButton {
