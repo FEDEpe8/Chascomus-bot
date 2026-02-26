@@ -1463,3 +1463,26 @@ window.addEventListener('appinstalled', () => {
     const installBtn = document.getElementById('installBtn');
     if(installBtn) installBtn.classList.add('hidden');
 });
+/* --- LÓGICA DE INSTALACIÓN PWA --- */
+let deferredPrompt; 
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); // Evita el banner automático feo de Chrome
+    deferredPrompt = e; // Guarda el evento
+    const btn = document.getElementById('installBtn');
+    if(btn) {
+        btn.classList.remove('hidden'); // Muestra el botón ⬇️
+        btn.onclick = async () => {
+            btn.classList.add('hidden'); // Lo oculta al tocar
+            deferredPrompt.prompt(); // Lanza el cartel nativo del celu
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log('Usuario decidió:', outcome);
+            deferredPrompt = null;
+        };
+    }
+});
+
+window.addEventListener('appinstalled', () => {
+    const btn = document.getElementById('installBtn');
+    if(btn) btn.classList.add('hidden'); // Ocultar si ya instaló
+});
