@@ -1429,3 +1429,37 @@ function clearSession() {
         location.reload(); 
     } 
 }
+/* ==========================================================================
+   LÓGICA DE INSTALACIÓN PWA (BOTÓN DE DESCARGA)
+   ========================================================================== */
+let deferredPrompt; // Variable para guardar el evento de instalación
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // 1. Evitar que Chrome muestre el cartel automático (que a veces molesta)
+    e.preventDefault();
+    // 2. Guardar el evento para dispararlo cuando el usuario toque el botón
+    deferredPrompt = e;
+    // 3. Buscar el botón y mostrarlo (quitándole la clase hidden)
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+        installBtn.classList.remove('hidden');
+        
+        installBtn.addEventListener('click', async () => {
+            // Ocultamos el botón inmediatamente para que no lo toquen de nuevo
+            installBtn.classList.add('hidden');
+            // Mostramos el cartel nativo de instalación del celular
+            deferredPrompt.prompt();
+            // Esperamos a ver qué decide el usuario
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`El usuario eligió: ${outcome}`);
+            deferredPrompt = null;
+        });
+    }
+});
+
+// Si la app ya se instaló exitosamente, nos aseguramos de ocultar el botón
+window.addEventListener('appinstalled', () => {
+    console.log('Aplicación instalada con éxito');
+    const installBtn = document.getElementById('installBtn');
+    if(installBtn) installBtn.classList.add('hidden');
+});
