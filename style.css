@@ -315,3 +315,28 @@ body { display: flex; flex-direction: column; }
 #installBtn {
     animation: pulse-install 2s infinite;
 }
+/* --- ARREGLO VISUAL DEL ROBOT --- */
+.avatar-chat {
+    width: 40px !important;    /* Forzar tamaño pequeño */
+    height: 40px !important;   /* Forzar tamaño pequeño */
+    min-width: 40px;           /* Que no se aplaste */
+    border-radius: 50%;        /* Círculo perfecto */
+    object-fit: cover;         /* Ajuste de imagen interno */
+    margin-right: 10px;        /* Separación del texto */
+    align-self: flex-end;      /* Alinear abajo junto al mensaje */
+    background: white;         /* Fondo blanco por si la imagen es transparente */
+}
+
+/* --- ESTILOS DEL BOTÓN DE INSTALAR --- */
+.hidden { display: none !important; }
+
+@keyframes pulse-install {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+#installBtn {
+    animation: pulse-install 2s infinite; /* Llamar la atención */
+    margin-right: 5px;
+}
