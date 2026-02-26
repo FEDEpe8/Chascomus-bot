@@ -28,13 +28,20 @@
             <img src="icon-192.png" id="avatar-bot" alt="Bot" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'">
             <span>MuniBot</span>
         </div>
-        <div class="header-right">
-            <button id="voiceToggle" onclick="toggleVoz()" title="Activar/Desactivar Voz">🔇</button>
-            <button id="installBtn" class="hidden" title="Instalar App">⬇️</button>
-            <button onclick="showInfo()" title="Información">ℹ️</button>
-            <button id="closeSessionBtn" onclick="clearSession()" title="Cerrar Sesión">🚪</button>
+       <header class="app-header">
+        <div class="header-brand">
+           <img src="icon-192.png" id="avatar-bot" class="header-logo-img avatar-chat normal" alt="Logo">
+            <div><span style="font-weight:bold; font-size:1.1rem;">MuniBot</span><br><span style="font-size:0.7rem; color:var(--accent);">🟢 Online</span></div>
         </div>
-    </div>
+        
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <button id="installBtn" class="hidden" style="background:none; border:none; color:#00f5d4; font-size:1.3rem; cursor:pointer; animation: pulse 2s infinite;" title="Instalar App">⬇️</button>
+            
+            <button id="voiceToggle" onclick="toggleVoz()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;" title="Activar voz del bot">🔇</button>
+            <button onclick="showInfo()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;" title="Información">ℹ️</button>
+            <button onclick="clearSession()" style="background:none; border:none; color:white; font-size:1.3rem; cursor:pointer;" title="Reiniciar Sesión">🔄</button>
+        </div>
+    </header>
 
     <div id="infoModal" class="modal">
         <div class="modal-content">
