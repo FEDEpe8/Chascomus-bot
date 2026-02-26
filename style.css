@@ -300,3 +300,18 @@ body { display: flex; flex-direction: column; }
     40% { content: '..'; }
     60%, 100% { content: '...'; }
 }
+/* --- UTILIDADES --- */
+.hidden {
+    display: none !important;
+}
+
+/* Animación para llamar la atención al botón de instalar */
+@keyframes pulse-install {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+#installBtn {
+    animation: pulse-install 2s infinite;
+}
