@@ -2,51 +2,68 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover">
     <title>MuniBot - Chascomús</title>
-    <meta name="theme-color" content="#004a7c">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#004a7c">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="header-brand">
-           <img src="icon-192.png" id="avatar-bot" class="header-logo-img avatar-chat normal" alt="Logo">
-            <div><span style="font-weight:bold; font-size:1.1rem;">MuniBot</span><br><span style="font-size:0.7rem; color:var(--accent);">🟢 Online</span></div>
-        </div>
-        
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <button id="voiceToggle" onclick="toggleVoz()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;" title="Activar voz del bot">🔇</button>
-            <button onclick="showInfo()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;" title="Información">ℹ️</button>
-            <button onclick="clearSession()" style="background:none; border:none; color:white; font-size:1.3rem; cursor:pointer;" title="Reiniciar Sesión">🔄</button>
-        </div>
-    </header>
-
-    <div id="infoModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeInfo()">×</span>
-            <h3 style="color: var(--primary); margin-top: 0;">Sobre MuniBot</h3>
-            <p style="font-size: 0.95rem;">Asistente Virtual Oficial de la Municipalidad de Chascomús. Donde podés encontrar información, links y más. Para que puedas gestionar sin moverte de tu casa.</p>
-            <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
-            <p style="font-size: 0.85rem; color: #000000ff; margin-bottom: 5px;">© Creado por Federico Perez Speroni</p> 
-            <p style="font-size: 0.85rem; color: #000000ff; margin-bottom: 5px;">© Valentina Bezic logo y mascota</p> 
-            <p style="font-size: 0.85rem; color: #000000ff; margin-top: 0;">© Para la Municipalidad de Chascomús 2026</p>
+    <div id="splash-screen">
+        <div class="splash-content">
+            <img src="logo-chascomus.png" alt="Muni Chascomús" class="splash-logo" onerror="this.style.display='none'">
+            <div class="loader-bar"><div class="loader-progress"></div></div>
+            <p>Cargando MuniBot...</p>
         </div>
     </div>
 
-    <main id="chatMessages" class="chat-container"></main>
-
-    <footer class="input-area">
-        <div class="input-wrapper">
-            <button id="micButton" class="btn-mic" title="Hablar por micrófono">🎙️</button>
-            <input type="text" id="userInput" placeholder="Escribí un mensaje..." autocomplete="off">
-            <button id="sendButton" class="btn-send">➤</button>
+    <div class="header">
+        <div class="header-left">
+            <img src="icon-192.png" id="avatar-bot" alt="Bot" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'">
+            <span>MuniBot</span>
         </div>
-    </footer>
+        <div class="header-right">
+            <button id="voiceToggle" onclick="toggleVoz()" title="Activar/Desactivar Voz">🔇</button>
+            <button id="installBtn" class="hidden" title="Instalar App">⬇️</button>
+            <button onclick="showInfo()" title="Información">ℹ️</button>
+            <button id="closeSessionBtn" onclick="clearSession()" title="Cerrar Sesión">🚪</button>
+        </div>
+    </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeInfo()">🔄</span>
+            <h3 style="color: var(--primary); margin-top: 0;">Sobre MuniBot</h3>
+            <p style="font-size: 0.95rem;">Asistente Virtual Oficial de la Municipalidad de Chascomús. Donde podés encontrar información, links y más. Para que puedas gestionar sin moverte de tu casa.</p>
+            <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">
+            <div class="credits">
+                <p>© Creado por <b>Federico Perez Speroni</b></p> 
+                <p>© Logo y mascota: <b>Valentina Bezic</b></p> 
+                <p style="margin-top: 10px;"><b>Municipalidad de Chascomús 2026</b></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="chatMessages" class="chat-container"></div>
+
+    <div class="input-area">
+        <button id="micButton" title="Hablar">🎙️</button>
+        <input type="text" id="userInput" placeholder="Escribí un mensaje..." autocomplete="off">
+        <button id="sendButton">➤</button>
+    </div>
 
     <script src="script.js"></script>
+    <script>
+        // Registro básico del SW por si falla el del script.js
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(console.warn);
+        }
+    </script>
 </body>
 </html>

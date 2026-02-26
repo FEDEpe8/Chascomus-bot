@@ -12,7 +12,9 @@ let vozActivada = false;
 
 function toggleVoz() {
     vozActivada = !vozActivada;
-    document.getElementById('voiceToggle').innerText = vozActivada ? '🔊' : '🔇';
+    const btn = document.getElementById('voiceToggle');
+    if(btn) btn.innerText = vozActivada ? '🔊' : '🔇';
+    
     if (vozActivada) {
         hablar("Voz de MuniBot activada.");
     } else {
@@ -26,7 +28,7 @@ function hablar(textoHtml) {
     div.innerHTML = textoHtml;
     let textoLimpio = div.textContent || div.innerText || "";
     
-    // Filtramos emojis
+    // Filtramos emojis para que no los lea
     textoLimpio = textoLimpio.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
 
     const mensaje = new SpeechSynthesisUtterance(textoLimpio);
@@ -40,7 +42,7 @@ const micBtn = document.getElementById('micButton');
 const inputArea = document.getElementById('userInput');
 const ReconocimientoVoz = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-if (ReconocimientoVoz) {
+if (ReconocimientoVoz && micBtn) {
     const reconocimiento = new ReconocimientoVoz();
     reconocimiento.lang = 'es-AR';
     reconocimiento.interimResults = false;
@@ -96,6 +98,7 @@ let currentPath = ['main'];
 let isBotThinking = false; 
 
 /* --- CONFIGURACIÓN DE LA MASCOTA ANIMADA --- */
+// Asegurate que estas imágenes existan en tu carpeta
 const IMG_BOT_NORMAL = 'img-bot-normal.png';   
 const IMG_BOT_PENSANDO = 'img-bot-pensando.png'; 
 const IMG_BOT_HABLANDO = 'img-bot-hablando.png'; 
@@ -105,7 +108,7 @@ const IMG_BOT_MIRANDO = 'img-bot-mirando.png';
 
 const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo", "pelotuda", "idiota", "tarado", "tarada"]; 
 
-const BARRIOS = ["SAN CAYETANo","COMI PINI","ACCESO NORTE","EL OBISPADO","BARRIO JARDIN","VILLA LUJAN","EL ALGARROBO","LA NORIA CHICA","LA ESMERALDA","SAN LUIS","LA CONCORDIA","ESCRIBANO","SAN JOSE","CENTRO","EL HUECO","FATIMA","SAN JUAN BAUTISTA","LAS VIOLETAS","BALDOMERO FERNANDEZ MORENO GALLO BLANCO","EL IPORA","LA PAMPITA","ANAHI","EL PORTEÑO","ESTEBAN ECHEVERRIA","LOS AROMOS","BARRIO PARQUE GIRADO CHASCOMUS","CABALLO BLANCO","30 DE MAYO","LOS SAUCES","SAN NICOLAS"]; 
+const BARRIOS = ["SAN CAYETANO","COMI PINI","ACCESO NORTE","EL OBISPADO","BARRIO JARDIN","VILLA LUJAN","EL ALGARROBO","LA NORIA CHICA","LA ESMERALDA","SAN LUIS","LA CONCORDIA","ESCRIBANO","SAN JOSE","CENTRO","EL HUECO","FATIMA","SAN JUAN BAUTISTA","LAS VIOLETAS","BALDOMERO FERNANDEZ MORENO GALLO BLANCO","EL IPORA","LA PAMPITA","ANAHI","EL PORTEÑO","ESTEBAN ECHEVERRIA","LOS AROMOS","BARRIO PARQUE GIRADO CHASCOMUS","CABALLO BLANCO","30 DE MAYO","LOS SAUCES","SAN NICOLAS"]; 
 
 /* --- FUNCIÓN CONTROL DE ESTADOS DEL AVATAR --- */
 function setMuniBotState(state) {
@@ -126,6 +129,8 @@ function setMuniBotState(state) {
     };
 
     if (images[state]) {
+        // Fallback por si no carga la imagen
+        avatar.onerror = () => { avatar.src = 'icon-192.png'; };
         avatar.src = images[state];
     }
 }
@@ -149,8 +154,9 @@ const MENUS = {
             { id: 'politicas_gen', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
             { id: 'politicas_comu', label: '🛍️ Módulos (alimentos)', type: 'leaf', apiKey: 'asistencia_social' },
             { id: 'desarrollo_menu', label: '🤝 Desarrollo Social' },
+            { id: 'sibom', label: '📰 Boletin Oficial' },
             { id: 'ojos_en_alerta', label: '👁️ Ojos en Alerta (Seguridad)', type: 'leaf', apiKey: 'ojos_en_alerta' },
-            { id: 'el_digital', label: '📰 Kiosco Digital' },
+            { id: 'el_digital', label: '📰 Diario digital' },
             { id: 'educacion', label: '📚 Educación', type: 'submenu'},
             { id: 'turismo', label: '🏖️ Turismo' },
             { id: 'deportes', label: '⚽ Deportes' },
@@ -180,25 +186,37 @@ const MENUS = {
     },
     el_digital: {
         type: 'card',
-        title: () => '🗞️ Kiosco Digital',
-        subtitle: 'Noticias y Boletín Oficial',
+        title: () => '📰 El Digital Chascomús',
+        subtitle: 'Noticias y actualidad local',
+        description: 'Toda la información actualizada de Chascomús y la región en un solo lugar.',
         image: 'el_digi.png', 
-        footer: 'Portal Unificado',
-        description: `
-            Accedé a la información local y oficial desde aquí:<br><br>
-            📰 <b>El Digital Chascomús</b><br>
-            <i>Noticias y actualidad al instante.</i><br>
-            <a href="https://www.eldigitalchascomus.com.ar/" target="_blank" class="wa-btn" style="background-color: #03045e !important; color: white; text-align: center; display: block; margin-top: 5px;">
-            🚀 Leer El Digital
-            </a> 
-            <hr style="border-top: 1px dashed #ccc; margin: 15px 0;">   
-            📜 <b>Boletín Oficial (SIBOM)</b><br>
-            <i>Decretos y normativas municipales.</i><br>
-            <a href="https://sibom.slyt.gba.gob.ar/cities/31/" target="_blank" class="wa-btn" style="background-color: #7f8c8d !important; color: white; text-align: center; display: block; margin-top: 5px;">
-            🏛️ Ver Boletín Oficial
-            </a>
-        `,
-        options: [] // Estaba vacío, ¡y eso atrapaba al usuario! Ahora lo arreglamos en showMenu
+        footer: 'Actualización diaria',
+        options: [
+            { 
+                id: 'digital_link', 
+                label: '🚀 Leer noticias ahora', 
+                link: 'https://www.eldigitalchascomus.com.ar/', 
+                target: '_blank',
+                style: 'primary'
+            },
+        ]
+    },
+    sibom: {
+        type: 'card',
+        title: () => '📰 Boletín Oficial',
+        subtitle: 'Normativas y Decretos',
+        description: `Email: despacho@chascomus.gob.ar<br><br>Fuente oficial de todas las normativas, decretos y ordenanzas municipales.`,
+        image: 'sibom.png',
+        footer: 'Gobierno de la Provincia de Buenos Aires',
+        options: [
+            { 
+                id: 'digital_link', 
+                label: '🔗 Ir al Boletín Oficial', 
+                link: 'https://sibom.slyt.gba.gob.ar/cities/31/', 
+                target: '_blank',
+                style: 'primary'
+            },
+        ]
     },
     educacion: {
         title: () => '📚 Educación:',
@@ -511,7 +529,7 @@ const RES = {
         Lun a Vie de 8 a 15 horas.<br><br>
     </div>`,
     'poda': `<div class="info-card"><strong>🌿 Ingresa en este link 👇🏼</strong><br>🔗 <a href="https://apps.chascomus.gob.ar/podaresponsable/solicitud.php">🌳 Solicitud Poda</a></div>`,
-    'obras_basura': `<div class="info-card"><strong>♻️ Recolección de residuos</strong><br>Lun a Sáb 20hs (Húmedos)</strong><br>Jueves 14hs (Reciclables)`,
+    'obras_basura': `<div class="info-card"><strong>♻️ Recolección de residuos</strong><br>Lun a Sáb 20hs (Húmedos)</strong><br>Jueves 14hs (Reciclables)</div>`,
     'farmacias_lista': `
     <div class="info-card">
         <strong>📍 Farmacias en Chascomús:</strong><br><br>
@@ -644,7 +662,7 @@ const RES = {
     'seg_infracciones': 
     `<div class="info-card">
     <strong>⚖️ Infracciones:</strong><br>
-    🔗 <a href="https://chascomus.gob.ar/municipio/estaticas/consultaInfracciones"style="background-color:#25D366 
+    🔗 <a href="https://chascomus.gob.ar/municipio/estaticas/consultaInfracciones" style="background-color:#25D366;" 
      target="_blank">VER MIS MULTAS</a></div>`,
     'seg_academia': `<div class="info-card"><strong>🚗 Academia de Conductores</strong><br>Turnos para cursos y exámenes teóricos.<br>🔗 <a href="https://apps.chascomus.gob.ar/academia/" target="_blank">INGRESAR A LA WEB</a></div>`,
     'seg_medido': `<div class="info-card"><strong>🅿️ Estacionamiento Medido</strong><br>Gestioná tu estacionamiento desde el celular.<br><br>📲 <b>Descargar App:</b><br>🤖 <a href="https://play.google.com/store/apps/details?id=ar.edu.unlp.sem.mobile.chascomus" target="_blank">Android (Google Play)</a><br>🍎 <a href="https://apps.apple.com/ar/app/sem-mobile/id1387705895" target="_blank">iPhone (App Store)</a><br><br>💻 <a href="https://chascomus.gob.ar/estacionamientomedido/" target="_blank">Gestión vía Web</a></div>`,
@@ -657,7 +675,7 @@ const RES = {
         <a href="tel:43-1333" class="wa-btn" style="background-color:#25D366 !important; text-align:center;">📞 43-1333</a><br>
         <small><i>⚠️ Solo emergencias.</i></small><br><br>
          🚔 <b>POLICIA:</b><br>
-        Solicitalo a <a href="tel:422222"class="wa-btn" style="background-color:#25D366 !important; text-align:center;">📞 42-2222</a><br><br>`,
+        Solicitalo a <a href="tel:422222"class="wa-btn" style="background-color:#25D366 !important; text-align:center;">📞 42-2222</a><br><br></div>`,
     'turismo_info': `<div class="info-card"><strong>🏖️ Subsecretaría de Turismo</strong><br>📍 Av. Costanera España 25<br>📞 <a href="tel:02241615542">02241 61-5542</a><br>📧 <a href="mailto:turismo@chascomus.gob.ar">Enviar Email</a><br>🔗 <a href="https://linktr.ee/turismoch" target="_blank">Más info en Linktree</a></div>`,
     'deportes_info': `<div class="info-card"><strong>⚽ Dirección de Deportes</strong><br>📍 Av. Costanera España y Av. Lastra<br>📞 <a href="tel:02241424649">(02241) 42 4649</a></div>`,
     'deportes_circuito': `<div class="info-card"><strong>🏃 Circuito de Calle</strong><br>Inscripciones, cronograma y resultados oficiales.<br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/circuitodecalle/" target="_blank">IR A LA WEB</a></div>`,
@@ -706,7 +724,7 @@ const RES = {
     <div class="info-card">
         <strong>🎥 La muni Invierte</strong><br><br>
         <video width="100%" height="auto" controls style="border-radius: 8px; border: 1px solid #ddd;">
-            <source src="videos/" type="video/mp4">
+            <source src="" type="video/mp4">
             Tu navegador no soporta el video.
         </video>
         <br><br>
@@ -1086,12 +1104,7 @@ function showMenu(key) {
                 <small><i>${m.footer}</i></small>
             </div>
         `;
-        
-        // --- CORRECCIÓN CRÍTICA PARA QUE SIEMPRE HAYA BOTÓN VOLVER ---
-        let opts = [...(m.options || [])]; // Copiamos las opciones si existen
-        if(currentPath.length > 1) opts.push({ id: 'back', label: '⬅️ Volver' }); 
-        
-        addMessage(cardHtml, 'bot', opts);
+        addMessage(cardHtml, 'bot', m.options);
         return;
     }
 
@@ -1393,13 +1406,20 @@ async function cargarAgendaDinamica() {
         return false;
     }
 }
-
 // INICIALIZACIÓN
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Cargamos agenda
     await cargarAgendaDinamica();
+    
+    // 2. Ocultamos Splash Screen
+    const splash = document.getElementById('splash-screen');
+    if(splash) {
+        splash.classList.add('hidden');
+        // Opcional: remover del DOM despues de la transicion
+        setTimeout(() => splash.style.display = 'none', 500);
+    }
 
-    // 2. Flujo normal
+    // 3. Flujo normal
     if (!userName) {
         showTyping();
         setTimeout(() => {
@@ -1428,4 +1448,62 @@ function clearSession() {
         localStorage.clear(); 
         location.reload(); 
     } 
+}
+/* ==========================================================================
+   LÓGICA DE INSTALACIÓN PWA
+   ========================================================================== */
+let deferredPrompt; // Variable para guardar el evento de instalación
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // 1. Evitar que Chrome muestre el cartel automático (que a veces falla)
+    e.preventDefault();
+    // 2. Guardar el evento para usarlo luego
+    deferredPrompt = e;
+    // 3. Mostrar el botón de descarga que creamos en el HTML
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+        installBtn.classList.remove('hidden');
+        
+        installBtn.addEventListener('click', async () => {
+            // Ocultamos el botón para que no lo toquen de nuevo
+            installBtn.classList.add('hidden');
+            // Mostramos el cartel nativo de instalación del celular
+            deferredPrompt.prompt();
+            // Esperamos a ver qué decide el usuario
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`El usuario eligió: ${outcome}`);
+            deferredPrompt = null;
+        });
+    }
+});
+
+// Si ya se instaló, nos aseguramos de ocultar el botón
+window.addEventListener('appinstalled', () => {
+    console.log('Aplicación instalada con éxito');
+    const installBtn = document.getElementById('installBtn');
+    if(installBtn) installBtn.classList.add('hidden');
+});
+/* ==========================================================================
+   LÓGICA DEL MODAL DE INFORMACIÓN
+   ========================================================================== */
+function showInfo() {
+    const modal = document.getElementById('infoModal');
+    if (modal) {
+        modal.style.display = 'block';
+    }
+}
+
+function closeInfo() {
+    const modal = document.getElementById('infoModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Cerrar modal si tocan afuera de la cajita blanca
+window.onclick = function(event) {
+    const modal = document.getElementById('infoModal');
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
 }
