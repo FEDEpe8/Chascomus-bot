@@ -197,9 +197,8 @@ const MENUS = {
             <a href="https://sibom.slyt.gba.gob.ar/cities/31/" target="_blank" class="wa-btn" style="background-color: #7f8c8d !important; color: white; text-align: center; display: block; margin-top: 5px;">
             🏛️ Ver Boletín Oficial
             </a>
-            
         `,
-        options: [] // Estaba vacío, ¡y eso atrapaba al usuario! Ahora lo arreglamos en showMenu
+        options: [] 
     },
     educacion: {
         title: () => '📚 Educación:',
@@ -363,11 +362,9 @@ const MENUS = {
     }
 };
 
-/* --- 4. RESPUESTAS --- */
+/* --- 4. RESPUESTAS ESTÁTICAS --- */
 const RES = {
-    // Fallback por si la agenda dinámica no carga
     'agenda_dinamica': `<div class="info-card">⚠️ <b>Cargando agenda...</b><br>Si esto no cambia en unos segundos, revisá tu conexión.</div>`,
-
     'agenda_actual': `
     <div class="info-card">
         <strong>📅 AGENDA MARZO 2026</strong><br>
@@ -382,7 +379,6 @@ const RES = {
         🔗 <b>INSCRIPCIONES Y LINKS:</b><br><a href="https://wa.me/5492241603414" target="_blank" class="wa-btn" style="background-color: #efe8e3ff !important; display: inline-block; padding: 5px 10px; border-radius: 5px; text-decoration: none; color: #25d366; font-weight: bold; border: 1px solid #25d366;">📲 Info por WhatsApp</a><br><br>
         <a href="https://linktr.ee/visitasguiadas.turismoch" target="_blank" style="color: #2c3e50; font-weight: bold;">🔗 Linktree de Inscripciones</a>
     </div>`,
-    
     'error_busqueda': `
     <div class="info-card" style="border-left: 5px solid #ffc107;">
         <div style="font-size: 1.1rem; margin-bottom: 8px;">🤔 <b>¡Ups! No encontré eso</b></div>
@@ -393,8 +389,7 @@ const RES = {
             ☰ Ver Menú Completo
         </button>
     </div>`,
-
-'educacion_info': `
+    'educacion_info': `
     <div class="info-card">
         <strong>🎓 Educación, Infancias y Juventudes</strong><br>
         <i>Subsecretario: Lic. Enrique Inciarte</i><br><br>
@@ -414,7 +409,6 @@ const RES = {
         👥 <i>Sallenave, Ganuza, Esain e Inciarte.</i><br><br>
         📧 <a href="mailto:tribunalmunicipalchascomus@gmail.com" class="wa-btn" style="background-color:#e67e22 !important; display:block; text-align:center;">✉️ Email Tribunal</a>
     </div>`,
-
     'actos_publicos': `
     <div class="info-card" style="border-left: 5px solid #2980b9;">
         <strong>📢 Actos Públicos Presenciales (AP)</strong><br>
@@ -438,8 +432,7 @@ const RES = {
             📍 Ver Ubicación en Mapa
         </a>
     </div>`,
-
-'cartelera_docente': `
+    'cartelera_docente': `
     <div class="info-card" style="border-left: 5px solid #27ae60;">
         <strong>📊 Cartelera en Línea (Actos Públicos)</strong><br>
         <i>Actualización en tiempo real</i><br><br>
@@ -465,7 +458,6 @@ const RES = {
             🔗 Ver carpeta de Listados
         </a>
     </div>`,
-
     'omic_info': `
     <div class="info-card">
         <strong>📢 OMIC (Defensa del Consumidor)</strong><br>
@@ -492,7 +484,7 @@ const RES = {
     <div class="info-card">
         <strong>📍 Ubicaciones CAPS (Toque para ver mapa):</strong><br><br>
         • <a href="https://www.google.com/maps/search/?api=1&query=CIC+30+de+Mayo+Chascomus" target="_blank">CIC 30 de Mayo</a> (Bvd. 5 y Calle 2)<br>
-        • <a href="https://www.google.com/maps/search/?api=1&query=Barrio+Jardin+Chascomus" target="_blank">Barrio Jardín</a> (Tucumán e/ Quintana)<br>
+        • <a href="https://www.google.com/maps/search/?api=1&query=CAPS+Barrio+Jardin+Chascomus" target="_blank">Barrio Jardín</a> (Tucumán e/ Quintana)<br>
         • <a href="https://www.google.com/maps/search/?api=1&query=CAPS+San+Luis+Chascomus" target="_blank">San Luis</a> (Chubut 755)<br>
         • <a href="https://www.google.com/maps/search/?api=1&query=CAPS+El+Porteño+Chascomus" target="_blank">El Porteño</a> (Lucio Mansilla)<br>
         • <a href="https://www.google.com/maps/search/?api=1&query=CAPS+Gallo+Blanco+Chascomus" target="_blank">Gallo Blanco</a> (Estados Unidos)<br>
@@ -707,8 +699,7 @@ const RES = {
     <div class="info-card">
         <strong>🎥 La muni Invierte</strong><br><br>
         <video width="100%" height="auto" controls style="border-radius: 8px; border: 1px solid #ddd;">
-            <source src="videos/" type="video/mp4">
-            Tu navegador no soporta el video.
+            <source src="videos/la_muni_invierte.mp4" type="video/mp4"> Tu navegador no soporta el video.
         </video>
         <br><br>
         <p style="font-size: 0.85rem; color: #555;">
@@ -951,29 +942,47 @@ const RES = {
     Cr. Cramer 270.</div>`
 };
 
-/* --- 3. LÓGICA DEL CHAT --- */
+/* --- CONEXIÓN CON GOOGLE SHEETS (LOGS) CORREGIDA --- */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4OwdnxlW5ux5CDKvrsoFjy9yDiTT1o1KQ0QOtghtBFjPX1dTTcpL20hV2dsPjJU0p/exec';
+
+function registrarEnPlanilla(detalle) {
+    if (!SCRIPT_URL || SCRIPT_URL.includes('TU_ID_DEL_SCRIPT_AQUI')) return;
+
+    const payload = {
+        fecha: new Date().toLocaleString('es-AR'), 
+        usuario: userName || "Anónimo",
+        barrio: userNeighborhood || "No especificado",
+        edad: userAge || "No especificada",
+        detalle: detalle 
+    };
+
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', 
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    }).then(() => {
+        console.log("✅ Solicitud enviada a Google Sheets:", detalle);
+    }).catch(error => {
+        console.error("❌ Error de red al intentar guardar en Sheets:", error);
+    });
+}
+
+/* --- 3. LÓGICA DEL CHAT Y FUNCIONES ÚTILES --- */
 function normalizar(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim(); } 
 
 function validarTexto(texto) {
     const t = normalizar(texto);
     for (let i = 0; i < PALABRAS_OFENSIVAS.length; i++) {
-        if (t.includes(PALABRAS_OFENSIVAS[i])) {
+        const regexOfensiva = new RegExp(`\\b${PALABRAS_OFENSIVAS[i]}\\b`, 'i');
+        if (regexOfensiva.test(t)) {
             return { v: false, m: "Por favor, mantengamos el respeto en el chat. 😇" };
         }
     }
     return { v: true, m: "" };
 }
-
-function registrarEvento(categoria, accion_detalle) {
-    const datos = {
-        usuario: userName || 'Anónimo',
-        barrio: userNeighborhood || 'No especificado',
-        edad: userAge || 'No especificada',
-        accion: categoria,
-        detalle: accion_detalle
-    };
-    console.log("Evento registrado:", datos);
-} 
 
 function showTyping() {
     isBotThinking = true;
@@ -993,14 +1002,12 @@ function showTyping() {
     container.scrollTop = container.scrollHeight; 
 }
 
-
 function addMessage(content, side = 'bot', options = null) {
     if(side === 'bot') { 
         isBotThinking = false; 
         const t = document.getElementById('typingWrapper'); 
         if(t) t.remove(); 
         
-        // RESETEAMOS EL AVATAR DEL HEADER
         setMuniBotState('normal'); 
 
         document.querySelectorAll('.avatar-chat.speaking').forEach(img => {
@@ -1042,7 +1049,6 @@ function addMessage(content, side = 'bot', options = null) {
     container.scrollTop = container.scrollHeight;
 }
 
-
 function showNavControls() {
     const container = document.getElementById('chatMessages');
     const navDiv = document.createElement('div'); navDiv.className = 'options-container'; 
@@ -1052,20 +1058,33 @@ function showNavControls() {
 
 function handleAction(opt) {
     if(opt.id === 'back') { if(currentPath.length > 1) currentPath.pop(); showMenu(currentPath[currentPath.length-1]); return; } 
-    if(opt.type === 'age_select') { userAge = opt.label; localStorage.setItem('muni_user_age', userAge); registrarEvento("Registro", "Perfil Completo"); resetToMain(); return; } 
-    if(opt.type === 'barrio_select') { selectBarrio(opt.label); return; }
+    
+    // Captura Botones de Edad
+    if(opt.type === 'age_select') { 
+        userAge = opt.label; 
+        localStorage.setItem('muni_user_age', userAge); 
+        resetToMain(); 
+        return; 
+    } 
+    
+    // Captura Botones de Barrio similares
+    if(opt.type === 'barrio_select') { 
+        selectBarrio(opt.label); 
+        return; 
+    }
 
     addMessage(opt.label, 'user');
     
     if(opt.apiKey) {
         showTyping(); 
         setTimeout(() => { addMessage(RES[opt.apiKey]); showNavControls(); }, 800); 
-        registrarEvento("Consulta", opt.label);
+        registrarEnPlanilla(opt.label); // ENVIADO LIMPIO A ESTADÍSTICAS
     } else if(opt.link) { 
         showTyping();
         setTimeout(() => { 
             addMessage(`Te dejo el acceso directo acá: <br><br><a href="${opt.link}" target="_blank" class="wa-btn">${opt.label}</a>`, 'bot'); 
             showNavControls(); 
+            registrarEnPlanilla(opt.label); // ENVIADO LIMPIO A ESTADÍSTICAS
         }, 800);
     } else if(MENUS[opt.id]) {
         currentPath.push(opt.id); showMenu(opt.id); 
@@ -1075,7 +1094,6 @@ function handleAction(opt) {
 function showMenu(key) {
     const m = MENUS[key];
     
-    // Si el menú en sí es una tarjeta (como el_digital)
     if (m.type === 'card') {
         const cardHtml = `
             <div class="info-card card-visual">
@@ -1087,16 +1105,12 @@ function showMenu(key) {
                 <small><i>${m.footer}</i></small>
             </div>
         `;
-        
-        // --- CORRECCIÓN CRÍTICA PARA QUE SIEMPRE HAYA BOTÓN VOLVER ---
-        let opts = [...(m.options || [])]; // Copiamos las opciones si existen
+        let opts = [...(m.options || [])]; 
         if(currentPath.length > 1) opts.push({ id: 'back', label: '⬅️ Volver' }); 
-        
         addMessage(cardHtml, 'bot', opts);
         return;
     }
 
-    // Si es un menú normal de botones
     let opts = [...m.options];
     if(currentPath.length > 1) opts.push({ id: 'back', label: '⬅️ Volver' }); 
     addMessage(typeof m.title === 'function' ? m.title(userName) : m.title, 'bot', opts);
@@ -1113,7 +1127,7 @@ const PALABRAS_CLAVE = {
     'hospital': { id: 'hospital_menu', label: '🏥 Hospital' },
     '147': { id: 'info_147', label: '📝 Iniciar Reclamo 147', type: 'leaf', apiKey: 'link_147' },
     'poda': { id: 'poda', label: '🌿 Poda', type: 'leaf', apiKey: 'poda' },
-    'agenda': { id: 'ag_actual', label: '📅 Agenda del Mes', type: 'leaf', apiKey: 'agenda_dinamica' }, // Actualizado a dinámica
+    'agenda': { id: 'ag_actual', label: '📅 Agenda del Mes', type: 'leaf', apiKey: 'agenda_dinamica' }, 
     'cultura': { id: 'cultura', label: '🎭 Cultura y Agenda' },
     'deuda': { id: 'deuda', label: '🔍 Ver Deuda / Pagar', type: 'leaf', apiKey: 'deuda' },
     'salud': { id: 'salud', label: '🏥 Salud' },
@@ -1191,16 +1205,13 @@ const PALABRAS_CLAVE = {
 function buscarOpcionProfunda(texto) {
     let t = normalizar(texto);
     
-    // 1. Coincidencia exacta
     if (PALABRAS_CLAVE[t]) return PALABRAS_CLAVE[t];
-
-    // 2. Plurales
+    
     if (t.endsWith('s') && t.length > 4) {
         let singular = t.slice(0, -1);
         if (PALABRAS_CLAVE[singular]) return PALABRAS_CLAVE[singular];
     }
 
-    // 3. Búsqueda en los labels de los MENUS
     const palabrasBuscadas = t.split(' ').filter(p => p.length > 3);
     for (let menuId in MENUS) {
         const opciones = MENUS[menuId].options;
@@ -1231,7 +1242,6 @@ function ejecutarBusquedaInteligente(texto) {
                     setTimeout(() => {
                         addMessage(RES[opcionEncontrada.apiKey]);
                         showNavControls();
-                        registrarEvento("Búsqueda Profunda", opcionEncontrada.label);
                     }, 600);
                 } else if (opcionEncontrada.link) {
                     showTyping();
@@ -1246,25 +1256,60 @@ function ejecutarBusquedaInteligente(texto) {
             }, 500);
         } else {
             setMuniBotState('looking');
-
-            // 2. Mostramos la tarjeta del objeto RES
             addMessage(RES['error_busqueda'], "bot");
-
-            // 3. Opcional: Volvemos a 'normal' después de 3 segundos
             setTimeout(() => setMuniBotState('normal'), 3000);
         }
     });
 }
 
-/* --- 5. REGISTRO Y PROCESAMIENTO --- */
+/* --- 5. REGISTRO (FLUJO LINEAL ESTRICTO) --- */
 function selectBarrio(b) {
-    userNeighborhood = b; localStorage.setItem('muni_user_neighborhood', b); 
-    registrarEvento("Registro", "Barrio: " + b);
-   
+    userNeighborhood = b; 
+    localStorage.setItem('muni_user_neighborhood', b); 
+    
     setTimeout(() => {
         const edades = [{label:'-20', type:'age_select'}, {label:'20-40', type:'age_select'}, {label:'40-60', type:'age_select'}, {label:'+60', type:'age_select'}];
-        addMessage(`¡Excelente barrio <b>${userName}</b>! Ahora me decís tu edad para ayudarte:`, 'bot', edades);
+        addMessage(`¡Excelente barrio <b>${userName}</b>! Por último, decime tu edad para ayudarte mejor:`, 'bot', edades);
     }, 800);
+}
+
+function procesarEdadTexto(val) {
+    let numeros = val.match(/\d+/);
+    let edadNum = null;
+
+    if (numeros) {
+        edadNum = parseInt(numeros[0]);
+    } else {
+        const txt = normalizar(val);
+        const numMap = { 'uno':1, 'dos':2, 'tres':3, 'cuatro':4, 'cinco':5, 'seis':6, 'siete':7, 'ocho':8, 'nueve':9, 'diez':10, 'once':11, 'doce':12, 'trece':13, 'catorce':14, 'quince':15, 'dieciseis':16, 'diecisiete':17, 'dieciocho':18, 'diecinueve':19, 'veinte':20 };
+        for (let key in numMap) {
+            if (txt.includes(key) || txt === key) {
+                edadNum = numMap[key];
+                break;
+            }
+        }
+    }
+
+    if (edadNum !== null) {
+        if (edadNum < 20) userAge = '-20';
+        else if (edadNum <= 40) userAge = '20-40';
+        else if (edadNum <= 60) userAge = '40-60';
+        else userAge = '+60';
+
+        localStorage.setItem('muni_user_age', userAge); 
+        
+        showTyping();
+        setTimeout(() => {
+            resetToMain();
+        }, 800);
+    } else {
+        addMessage(`Mmm, mi oído falló ahí. 🤔 Escribí tu edad con números (ej: 35) o elegí un botón:`, 'bot', [
+            {label:'-20', type:'age_select'}, 
+            {label:'20-40', type:'age_select'}, 
+            {label:'40-60', type:'age_select'}, 
+            {label:'+60', type:'age_select'}
+        ]);
+    }
 }
 
 function processInput() {
@@ -1274,88 +1319,58 @@ function processInput() {
     const validacion = validarTexto(val); 
     if(!validacion.v) { addMessage(val, 'user'); input.value = ""; showTyping(); setTimeout(() => addMessage(validacion.m, 'bot'), 600); return; } 
 
-    if(!userName) {
-        userName = val; localStorage.setItem('muni_user_name', userName); 
-        addMessage(val, 'user'); input.value = ""; showTyping();
-        setTimeout(() => addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 ¿De qué barrio eres?`, 'bot'), 800);
-        return;
+    addMessage(val, 'user');
+    input.value = "";
+
+    if (!userName) {
+        userName = val;
+        localStorage.setItem('muni_user_name', userName);
+        showTyping();
+        setTimeout(() => addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 ¿De qué barrio sos?`, 'bot'), 800);
+        return; 
     }
 
-    if(!userNeighborhood) {
-        addMessage(val, 'user'); input.value = "";
+    if (!userNeighborhood) {
         const exacto = BARRIOS.find(x => normalizar(x) === normalizar(val));
         const similares = BARRIOS.filter(x => normalizar(x).includes(normalizar(val))); 
         
-        if(exacto) selectBarrio(exacto);
-        else if(similares.length > 0 && normalizar(val).length > 2) {
-            addMessage("No lo encontré exacto. ¿Es alguno de estos?, ¿toca el botón correspondiente?", "bot", similares.map(s => ({label: s, type: 'barrio_select'})));
+        if(exacto) {
+            selectBarrio(exacto);
+        } else if(similares.length > 0 && normalizar(val).length > 2) {
+            addMessage("No lo encontré exacto. ¿Es alguno de estos?, tocá el botón correspondiente:", "bot", similares.map(s => ({label: s, type: 'barrio_select'})));
         } else {
             addMessage(`⚠️ No reconozco ese barrio. Por favor, escribilo de nuevo (Ej: Iporá, Centro, San Luis, El Algarrobo, etc.).`, 'bot'); 
         }
-        return;
+        return; 
     }
 
-    if(!userAge) {
-        addMessage(val, 'user'); input.value = "";
-        
-        let numeros = val.match(/\d+/); 
-        
-        if (numeros) {
-            let edadNum = parseInt(numeros[0]);
-            
-            if (edadNum < 20) userAge = '-20';
-            else if (edadNum <= 40) userAge = '20-40';
-            else userAge = '+40';
-            
-            localStorage.setItem('muni_user_age', userAge); 
-            registrarEvento("Registro", "Perfil Completo (Edad: " + edadNum + ")");
-            
-            showTyping();
-            setTimeout(() => {
-                resetToMain();
-            }, 800);
-        } else {
-            addMessage(`Mmm, mi oído falló ahí. 🤔 Escribí tu edad con números (ej: 35) o elegí un botón:`, 'bot', [
-                {label:'-20', type:'age_select'}, 
-                {label:'20-40', type:'age_select'}, 
-                {label:'40-60', type:'age_select'}, 
-                {label:'+60', type:'age_select'}
-            ]);
-        }
-        return;
+    if (!userAge) {
+        procesarEdadTexto(val);
+        return; 
     }
 
-    addMessage(val, 'user'); input.value = "";
+    // ENVIADO LIMPIO A ESTADÍSTICAS CUANDO ESCRIBEN EN TEXTO
+    registrarEnPlanilla(val); 
     ejecutarBusquedaInteligente(val); 
 }
 
 /* --- GESTOR DE AGENDA DINÁMICA (GOOGLE SHEETS) --- */
 async function cargarAgendaDinamica() {
-    // 1. TU LINK ORIGINAL (Sin cambios acá)
     const BASE_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTl9D6xP_nenB_S-xlnMgAd9rBjY17-fGNiGrVnKgOvlQ3I23giB2VgCnN62JYRB6qX_cVEfpdx6g6k/pub?output=csv'; 
-    
-    // 2. EL TRUCO: Le agregamos una "marca de tiempo" única al final
-    // Esto obliga al celular a descargar la lista fresca SIEMPRE.
     const SHEET_URL = `${BASE_URL}&t=${Date.now()}`;
 
-    // Inicializamos con el mensaje de carga
     RES['agenda_dinamica'] = `<div class="info-card">⚠️ <b>Cargando agenda...</b><br>Si esto no cambia en unos segundos, revisá tu conexión.</div>`;
 
     try {
         const response = await fetch(SHEET_URL);
-        
         if (!response.ok) throw new Error("Error de conexión");
-        
         const data = await response.text();
         const filas = data.split('\n').slice(1); 
-        
         if (filas.length < 1 || !data.includes(',')) throw new Error("Archivo vacío o formato incorrecto");
 
         let htmlAgenda = '<div class="info-card"><strong>📅 AGENDA ACTUALIZADA</strong><br><i>En tiempo real</i><br><br>';
-        
         filas.forEach(fila => {
             const cols = fila.split(','); 
-            
             if (cols.length >= 5) { 
                 const fecha = cols[0] ? cols[0].trim() : '';
                 const titulo = cols[1] ? cols[1].trim() : '';
@@ -1377,15 +1392,11 @@ async function cargarAgendaDinamica() {
                 }
             }
         });
-
         htmlAgenda += `<br><small><i>⚠️ Información sujeta a cambios.</i></small></div>`;
-        
         RES['agenda_dinamica'] = htmlAgenda;
         return true; 
-
     } catch (error) {
         console.warn('⚠️ No se pudo cargar Google Sheets, usando Agenda Estática de respaldo.', error);
-        
         if (RES['agenda_actual']) {
             RES['agenda_dinamica'] = RES['agenda_actual'];
         } else {
@@ -1397,10 +1408,8 @@ async function cargarAgendaDinamica() {
 
 // INICIALIZACIÓN
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Cargamos agenda
     await cargarAgendaDinamica();
 
-    // 2. Flujo normal
     if (!userName) {
         showTyping();
         setTimeout(() => {
@@ -1431,66 +1440,40 @@ function clearSession() {
     } 
 }
 
-// Función para entrar a la tarjeta
 function abrirTarjeta() {
-    // 1. Ocultamos el menú y mostramos la tarjeta
     document.getElementById('menu-principal').style.display = 'none';
     document.getElementById('vista-tarjeta').style.display = 'block';
-    
-    // 2. Truco PWA: Creamos un "falso" historial en el navegador.
-    // Así el celular sabe que hay un paso anterior al cual volver.
     history.pushState({ vista: 'tarjeta' }, "Tarjeta", "#tarjeta");
 }
 
-// Función para salir de la tarjeta (se llama desde el botón en pantalla)
 function cerrarTarjeta() {
-    // 1. Ocultamos la tarjeta y mostramos el menú principal
     document.getElementById('vista-tarjeta').style.display = 'none';
     document.getElementById('menu-principal').style.display = 'block';
 }
 
-// Evento clave PWA: Ataja el botón físico "Atrás" del celular
 window.onpopstate = function(event) {
-    // Si el usuario presiona "Atrás" en su Android/iOS, ejecutamos la función de cerrado
     cerrarTarjeta();
 };
+
 let eventoInstalacion;
 const botonInstalar = document.getElementById('installBtn');
 
-// 1. Escuchamos si el navegador dice "Esta app se puede instalar"
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevenimos que el navegador muestre su propio cartel automático
     e.preventDefault();
-    // Guardamos el evento para usarlo cuando el vecino toque tu botón
     eventoInstalacion = e;
-    
-    // Mostramos tu botón (le sacamos la clase oculta)
     if (botonInstalar) {
         botonInstalar.classList.remove('hidden');
-        // Si tu CSS no usa la clase 'hidden', probá con esta línea en su lugar:
-        // botonInstalar.style.display = 'inline-block';
     }
 });
 
-// 2. Le damos la acción al botón cuando lo tocan
 if (botonInstalar) {
     botonInstalar.addEventListener('click', async () => {
-        if (!eventoInstalacion) {
-            return;
-        }
-        
-        // Disparamos el cartel nativo del celular para instalar
+        if (!eventoInstalacion) return;
         eventoInstalacion.prompt();
-        
-        // Esperamos a ver qué elige el usuario (Instalar o Cancelar)
         const { outcome } = await eventoInstalacion.userChoice;
         if (outcome === 'accepted') {
-            console.log('El vecino aceptó instalar MuniBot');
-            // Ocultamos el botón porque ya se instaló
             botonInstalar.classList.add('hidden');
         }
-        
-        // Limpiamos el evento
         eventoInstalacion = null;
     });
 }
