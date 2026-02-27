@@ -943,7 +943,7 @@ const RES = {
 };
 
 /* --- CONEXIÓN CON GOOGLE SHEETS (LOGS) CORREGIDA --- */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4OwdnxlW5ux5CDKvrsoFjy9yDiTT1o1KQ0QOtghtBFjPX1dTTcpL20hV2dsPjJU0p/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSI3R6KM5WJSE6UgAPd9CsdVGSmnrWr1xUxTQPZrosCfKz_XuLJZfQSBAsJEqNT_z9/exec';
 
 function registrarEnPlanilla(detalle) {
     if (!SCRIPT_URL || SCRIPT_URL.includes('TU_ID_DEL_SCRIPT_AQUI')) return;
