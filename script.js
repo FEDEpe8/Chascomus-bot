@@ -105,7 +105,7 @@ const IMG_BOT_MIRANDO = 'img-bot-mirando.png';
 
 const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo", "pelotuda", "idiota", "tarado", "tarada"]; 
 
-const BARRIOS = ["SAN CAYETANO","COMI PINI","ACCESO NORTE","EL OBISPADO","BARRIO JARDIN","VILLA LUJAN","EL ALGARROBO","LA NORIA CHICA","LA ESMERALDA","SAN LUIS","LA CONCORDIA","ESCRIBANO","SAN JOSE","CENTRO","EL HUECO","FATIMA","SAN JUAN BAUTISTA","LAS VIOLETAS","BALDOMERO FERNANDEZ MORENO GALLO BLANCO","EL IPORA","LA PAMPITA","ANAHI","EL PORTEÑO","ESTEBAN ECHEVERRIA","LOS AROMOS","BARRIO PARQUE GIRADO CHASCOMUS","CABALLO BLANCO","30 DE MAYO","LOS SAUCES","SAN NICOLAS"]; 
+const BARRIOS = ["SAN CAYETANo","COMI PINI","ACCESO NORTE","EL OBISPADO","BARRIO JARDIN","VILLA LUJAN","EL ALGARROBO","LA NORIA CHICA","LA ESMERALDA","SAN LUIS","LA CONCORDIA","ESCRIBANO","SAN JOSE","CENTRO","EL HUECO","FATIMA","SAN JUAN BAUTISTA","LAS VIOLETAS","BALDOMERO FERNANDEZ MORENO GALLO BLANCO","EL IPORA","LA PAMPITA","ANAHI","EL PORTEÑO","ESTEBAN ECHEVERRIA","LOS AROMOS","BARRIO PARQUE GIRADO CHASCOMUS","CABALLO BLANCO","30 DE MAYO","LOS SAUCES","SAN NICOLAS"]; 
 
 /* --- FUNCIÓN CONTROL DE ESTADOS DEL AVATAR --- */
 function setMuniBotState(state) {
@@ -641,7 +641,7 @@ const RES = {
      target="_blank">VER MIS MULTAS</a></div>`,
     'seg_academia': `<div class="info-card"><strong>🚗 Academia de Conductores</strong><br>Turnos para cursos y exámenes teóricos.<br>🔗 <a href="https://apps.chascomus.gob.ar/academia/" target="_blank">INGRESAR A LA WEB</a></div>`,
     'seg_medido': `<div class="info-card"><strong>🅿️ Estacionamiento Medido</strong><br>Gestioná tu estacionamiento desde el celular.<br><br>📲 <b>Descargar App:</b><br>🤖 <a href="https://play.google.com/store/apps/details?id=ar.edu.unlp.sem.mobile.chascomus" target="_blank">Android (Google Play)</a><br>🍎 <a href="https://apps.apple.com/ar/app/sem-mobile/id1387705895" target="_blank">iPhone (App Store)</a><br><br>💻 <a href="https://chascomus.gob.ar/estacionamientomedido/" target="_blank">Gestión vía Web</a></div>`,
-    'lic_turno': `<b>📅 Turno Licencia:</b><br>🔗 <a href="https://apps.chascomus.gob.ar/academia/">SOLICITAR TURNO</a>`, 
+    'lic_turno': `<b>📅 Turno Licencia:</b><br>🔗 <a href="https://apps.chascomus.gob.ar/conducir/" target="_blank">SOLICITAR TURNO</a>`, 
     'poli': `
     <div class="info-card">
         <strong>🎥 (MONITOREO)</strong><br><br>
@@ -943,7 +943,7 @@ const RES = {
 };
 
 /* --- CONEXIÓN CON GOOGLE SHEETS (LOGS) CORREGIDA --- */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSI3R6KM5WJSE6UgAPd9CsdVGSmnrWr1xUxTQPZrosCfKz_XuLJZfQSBAsJEqNT_z9/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4OwdnxlW5ux5CDKvrsoFjy9yDiTT1o1KQ0QOtghtBFjPX1dTTcpL20hV2dsPjJU0p/exec';
 
 function registrarEnPlanilla(detalle) {
     if (!SCRIPT_URL || SCRIPT_URL.includes('TU_ID_DEL_SCRIPT_AQUI')) return;
@@ -1281,7 +1281,11 @@ function procesarEdadTexto(val) {
         edadNum = parseInt(numeros[0]);
     } else {
         const txt = normalizar(val);
-        const numMap = { 'uno':1, 'dos':2, 'tres':3, 'cuatro':4, 'cinco':5, 'seis':6, 'siete':7, 'ocho':8, 'nueve':9, 'diez':10, 'once':11, 'doce':12, 'trece':13, 'catorce':14, 'quince':15, 'dieciseis':16, 'diecisiete':17, 'dieciocho':18, 'diecinueve':19, 'veinte':20 };
+        const numMap = { 'uno':1, 'dos':2, 'tres':3, 'cuatro':4,
+             'cinco':5, 'seis':6, 'siete':7, 'ocho':8, 'nueve':9,
+             'diez':10, 'once':11, 'doce':12, 'trece':13, 
+             'catorce':14, 'quince':15, 'dieciseis':16,
+             'diecisiete':17, 'dieciocho':18, 'diecinueve':19, 'veinte':20 };
         for (let key in numMap) {
             if (txt.includes(key) || txt === key) {
                 edadNum = numMap[key];
