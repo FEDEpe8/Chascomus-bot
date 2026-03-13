@@ -14,7 +14,7 @@ function toggleVoz() {
     vozActivada = !vozActivada;
     document.getElementById('voiceToggle').innerText = vozActivada ? '🔊' : '🔇';
     if (vozActivada) {
-        hablar("Voz de ChasBot activada.");
+        hablar("Voz de MuniBot activada.");
     } else {
         window.speechSynthesis.cancel();
     }
@@ -108,7 +108,7 @@ const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha",
 const BARRIOS = ["SAN CAYETANo","COMI PINI","ACCESO NORTE","EL OBISPADO","BARRIO JARDIN","VILLA LUJAN","EL ALGARROBO","LA NORIA CHICA","LA ESMERALDA","SAN LUIS","LA CONCORDIA","ESCRIBANO","SAN JOSE","CENTRO","EL HUECO","FATIMA","SAN JUAN BAUTISTA","LAS VIOLETAS","BALDOMERO FERNANDEZ MORENO GALLO BLANCO","EL IPORA","LA PAMPITA","ANAHI","EL PORTEÑO","ESTEBAN ECHEVERRIA","LOS AROMOS","BARRIO PARQUE GIRADO CHASCOMUS","CABALLO BLANCO","30 DE MAYO","LOS SAUCES","SAN NICOLAS"]; 
 
 /* --- FUNCIÓN CONTROL DE ESTADOS DEL AVATAR --- */
-function setChasBotState(state) {
+function setMuniBotState(state) {
     const avatar = document.getElementById('avatar-bot');
     if (!avatar) return;
 
@@ -986,7 +986,7 @@ function validarTexto(texto) {
 
 function showTyping() {
     isBotThinking = true;
-    setChasBotState('thinking'); 
+    setMuniBotState('thinking'); 
 
     const container = document.getElementById('chatMessages');
     const wrapper = document.createElement('div'); 
@@ -1008,7 +1008,7 @@ function addMessage(content, side = 'bot', options = null) {
         const t = document.getElementById('typingWrapper'); 
         if(t) t.remove(); 
         
-        setChasBotState('normal'); 
+        setMuniBotState('normal'); 
 
         document.querySelectorAll('.avatar-chat.speaking').forEach(img => {
             img.src = IMG_BOT_NORMAL;
@@ -1255,9 +1255,9 @@ function ejecutarBusquedaInteligente(texto) {
                 }
             }, 500);
         } else {
-            setChasBotState('looking');
+            setMuniBotState('looking');
             addMessage(RES['error_busqueda'], "bot");
-            setTimeout(() => setChasBotState('normal'), 3000);
+            setTimeout(() => setMuniBotState('normal'), 3000);
         }
     });
 }
@@ -1417,18 +1417,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!userName) {
         showTyping();
         setTimeout(() => {
-            setChasBotState('speaking');
+            setMuniBotState('speaking');
             addMessage("👋 ¡Hola! Soy <b>MuniBot</b>, el asistente virtual de la Municipalidad de Chascomús. ¿Cómo te llamás?", "bot");
         }, 500); 
     } else {
-        setChasBotState('celebration');
+        setMuniBotState('celebration');
         showTyping();
         setTimeout(() => {
-            setChasBotState('speaking');
+            setMuniBotState('speaking');
             addMessage(`¡Hola de nuevo, <b>${userName}</b>! 👋 ¿En qué puedo ayudarte hoy?`, 'bot');
             setTimeout(() => {
                 resetToMain();
-                setChasBotState('normal');
+                setMuniBotState('normal');
             }, 1000);
         }, 1000);
     }
@@ -1481,32 +1481,3 @@ if (botonInstalar) {
         eventoInstalacion = null;
     });
 }
-
-// --- DETECCIÓN E INSTALACIÓN EN IOS (APPLE) ---
-
-// 1. Detectar si es un dispositivo iOS
-const esIos = () => {
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    return /iphone|ipad|ipod/.test(userAgent);
-};
-
-// 2. Detectar si ya está instalada (Safari usa 'standalone')
-const estaEnModoStandalone = () => ('standalone' in window.navigator) && (window.navigator.standalone);
-
-// 3. Mostrar el cartel si es iOS y no está instalada
-document.addEventListener('DOMContentLoaded', () => {
-    if (esIos() && !estaEnModoStandalone()) {
-        const iosPrompt = document.createElement('div');
-        iosPrompt.className = 'ios-install-prompt';
-        
-        // Usamos el nombre actualizado para identificar a Chascomús
-        iosPrompt.innerHTML = `
-            <p>Para instalar <b>ChasBot</b> en tu iPhone o iPad:</p>
-            <p>1. Tocá Compartir <span class="ios-icon">⎋</span></p>
-            <p>2. Seleccioná <b>"Agregar a inicio"</b> <span class="ios-icon">➕</span></p>
-            <button onclick="this.parentElement.style.display='none'">Entendido</button>
-        `;
-        
-        document.body.appendChild(iosPrompt);
-    }
-});
