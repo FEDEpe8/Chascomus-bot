@@ -265,7 +265,46 @@ animation: palpito 1s infinite;
     50% { transform: translateX(-50%) scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.6); }
     100% { transform: translateX(-50%) scale(1); box-shadow: 0 6px 15px rgba(0,0,0,0.4); }
 }
+/* Cartel flotante de instalación exclusivo para iOS */
+.ios-install-prompt {
+    position: fixed;
+    bottom: 85px; /* Misma altura que el botón flotante general */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f8f9fa;
+    color: #333;
+    padding: 15px 20px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    z-index: 10000;
+    width: 90%;
+    max-width: 320px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-family: sans-serif;
+}
 
+.ios-install-prompt p {
+    margin: 8px 0;
+    font-size: 0.95rem;
+}
+
+.ios-install-prompt .ios-icon {
+    font-size: 1.2rem;
+    vertical-align: middle;
+}
+
+.ios-install-prompt button {
+    margin-top: 12px;
+    padding: 8px 25px;
+    background-color: var(--primary, #004a7c);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
 @keyframes palpito {
 0% { transform: scale(1); }
 50% { transform: scale(1.1); }
