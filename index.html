@@ -25,6 +25,7 @@
             <button id="voiceToggle" onclick="toggleVoz()" title="Activar/Desactivar Voz">🔇</button>
             <button onclick="showInfo()" title="Información">ℹ️</button>
             <button id="closeSessionBtn" onclick="clearSession()" title="Cerrar Sesión">🔄</button>
+            
         </div>
     </div>
 
@@ -84,8 +85,9 @@
         window.onpopstate = function(event) {
             cerrarTarjeta();
         };
-         <button id="installBtn" class="hidden install-btn" title="Instalar App">📲 Descargar App</button>
-    </script>
+  <button id="installBtn" class="floating-install-btn hidden">📲 Descargar App</button>
+
+    <script src="script.js"></script>
 </body>
 </html>
  
