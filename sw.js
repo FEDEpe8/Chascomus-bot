@@ -1,4 +1,4 @@
-const CACHE_NAME = 'muni-chascomus-v17';
+const CACHE_NAME = 'muni-chascomus-v18';
 // Solo lo vital para que arranque el motor
 const assets = [ 
   './index.html', 
