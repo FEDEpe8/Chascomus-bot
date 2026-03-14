@@ -219,7 +219,10 @@ const MENUS = {
         title: () => 'Deportes:',
         options: [
             { id: 'd_info', label: '📍 Dirección de Deportes', type: 'leaf', apiKey: 'deportes_info' },
-            { id: 'd_calle', label: '🏃 Circuito de Calle', type: 'leaf', apiKey: 'deportes_circuito' }
+            { id: 'd_calle', label: '🏃 Circuito de Calle', type: 'leaf', apiKey: 'deportes_circuito' },
+            { id: 'trail_info', label: '🚴 Trail', type: 'leaf', apiKey: 'deportes_trail' },
+            { id: 'aguas_abiertas', label: '🏊 Aguas Abiertas', type: 'leaf', apiKey: 'info_deportes_aguas' },
+            { id: 'back', label: '⬅️ Volver' }
         ]
     },
     desarrollo_menu: {
@@ -652,8 +655,28 @@ const RES = {
          🚔 <b>POLICIA:</b><br>
         Solicitalo a <a href="tel:422222"class="wa-btn" style="background-color:#25D366 !important; text-align:center;">📞 42-2222</a><br><br>`,
     'turismo_info': `<div class="info-card"><strong>🏖️ Subsecretaría de Turismo</strong><br>📍 Av. Costanera España 25<br>📞 <a href="tel:02241615542">02241 61-5542</a><br>📧 <a href="mailto:turismo@chascomus.gob.ar">Enviar Email</a><br>🔗 <a href="https://linktr.ee/turismoch" target="_blank">Más info en Linktree</a></div>`,
-    'deportes_info': `<div class="info-card"><strong>⚽ Dirección de Deportes</strong><br>📍 Av. Costanera España y Av. Lastra<br>📞 <a href="tel:02241424649">(02241) 42 4649</a></div>`,
-    'deportes_circuito': `<div class="info-card"><strong>🏃 Circuito de Calle</strong><br>Inscripciones, cronograma y resultados oficiales.<br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/circuitodecalle/" target="_blank">IR A LA WEB</a></div>`,
+    'deportes_info': `<div class="info-card"><strong>⚽ Dirección de Deportes</strong><br>
+    📍 Av. Costanera España y Av. Lastra<br>📞 <a href="tel:02241424649">(02241) 42-4649</a></div>`,
+    
+    'deportes_circuito': `
+    <div class="info-card"><strong>🏃 Circuito de Calle</strong><br>Inscripciones y resultados oficiales.
+    <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/circuitodecalle/" 
+    target="_blank"</a><brIR A LA WEB</a><br>INCRIPCIONES CIRCUITO DE CALLE
+    </div>`,
+    
+    'deportes_trail': `
+    <div class="info-card"><strong>🚴 Trail Bike</strong><br>Inscripciones y resultados oficiales.
+    <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/trail/inscripcion.php" 
+    target="_blank"</a><brIR A LA WEB</a><br>INCRIPCIONES TRAIL BIKE
+    </div>`,
+    
+'info_deportes_aguas': `
+     <div class="info-card"><strong>🏊 Aguas Abiertas</strong><br>Inscripciones y resultados oficiales
+     <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/aguasabiertas/inscripcion.php"
+     target="_blank"</a><IR A LA WEB</a><br>
+    INSCRIPCIONES AGUAS ABIERTAS.
+    <br>🔗 <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdlmaYq_wSB0aZj-GNNOWRtzBK8OwZ86_eu2McGhPfcfwrelp8I1IMWWT7v9bv3QBh86sdGPVOWDKy/pubhtml" target="_blank"</a><IR A LA WEB</a><br>RESULTADOS OFICIALES
+     </div>`,
     'politicas_gen': `<div class="info-card" style="border-left: 5px solid #9b59b6;"><strong style="color: #8e44ad; font-size: 1rem;">
     💜 Género y Diversidad</strong><br><br><div style="font-size: 0.85rem; margin-bottom: 12px;">
     🚨 <b>Guardia 24/7:</b> Orientación y acompañamiento en casos de violencia.<br>
