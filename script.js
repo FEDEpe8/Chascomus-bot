@@ -14,7 +14,7 @@ function toggleVoz() {
     vozActivada = !vozActivada;
     document.getElementById('voiceToggle').innerText = vozActivada ? '🔊' : '🔇';
     if (vozActivada) {
-        hablar("Voz de MuniBot activada.");
+        hablar("Voz de ChasBot activada.");
     } else {
         window.speechSynthesis.cancel();
     }
@@ -89,18 +89,19 @@ window.onclick = function(event) {
 }
 
 /* --- 1. CONFIGURACIÓN Y ESTADO --- */
-let userName = localStorage.getItem('muni_user_name') || ""; 
-let userNeighborhood = localStorage.getItem('muni_user_neighborhood') || ""; 
-let userAge = localStorage.getItem('muni_user_age') || ""; 
+let userName = localStorage.getItem('chas_user_name') || ""; 
+let userNeighborhood = localStorage.getItem('chas_user_neighborhood') || ""; 
+let userAge = localStorage.getItem('chas_user_age') || ""; 
 let currentPath = ['main']; 
 let isBotThinking = false; 
+let interaccionIniciada = false; 
 
 /* --- CONFIGURACIÓN DE LA MASCOTA ANIMADA --- */
 const IMG_BOT_NORMAL = 'img-bot-normal.png';   
 const IMG_BOT_PENSANDO = 'img-bot-pensando.png'; 
 const IMG_BOT_HABLANDO = 'img-bot-hablando.png'; 
 const IMG_BOT_FESTEJO = 'img-bot-festejo.png'; 
-const IMG_BOT_SENALANDO = 'img-bot-senalando.png'; 
+const IMG_BOT_SEÑALANDO = 'img-bot-señalando.png'; 
 const IMG_BOT_MIRANDO = 'img-bot-mirando.png'; 
 
 const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha", "chota", "culo", "boludo", "boluda", "pelotudo", "pelotuda", "idiota", "tarado", "tarada"]; 
@@ -108,9 +109,13 @@ const PALABRAS_OFENSIVAS = ["puto", "puta", "mierda", "verga", "pija", "concha",
 const BARRIOS = ["SAN CAYETANo","COMI PINI","ACCESO NORTE","EL OBISPADO","BARRIO JARDIN","VILLA LUJAN","EL ALGARROBO","LA NORIA CHICA","LA ESMERALDA","SAN LUIS","LA CONCORDIA","ESCRIBANO","SAN JOSE","CENTRO","EL HUECO","FATIMA","SAN JUAN BAUTISTA","LAS VIOLETAS","BALDOMERO FERNANDEZ MORENO GALLO BLANCO","EL IPORA","LA PAMPITA","ANAHI","EL PORTEÑO","ESTEBAN ECHEVERRIA","LOS AROMOS","BARRIO PARQUE GIRADO CHASCOMUS","CABALLO BLANCO","30 DE MAYO","LOS SAUCES","SAN NICOLAS"]; 
 
 /* --- FUNCIÓN CONTROL DE ESTADOS DEL AVATAR --- */
-function setMuniBotState(state) {
+function setChasBotState(state) {
     const avatar = document.getElementById('avatar-bot');
     if (!avatar) return;
+
+    if (!interaccionIniciada) {
+        state = 'normal';
+    }
 
     const states = ['speaking', 'thinking', 'celebration', 'pointing', 'looking', 'normal'];
     avatar.classList.remove(...states);
@@ -121,7 +126,7 @@ function setMuniBotState(state) {
         'thinking': IMG_BOT_PENSANDO,
         'speaking': IMG_BOT_HABLANDO,
         'celebration': IMG_BOT_FESTEJO,
-        'pointing': IMG_BOT_SENALANDO,
+        'pointing': IMG_BOT_SEÑALANDO,
         'looking': IMG_BOT_MIRANDO
     };
 
@@ -221,8 +226,7 @@ const MENUS = {
             { id: 'd_info', label: '📍 Dirección de Deportes', type: 'leaf', apiKey: 'deportes_info' },
             { id: 'd_calle', label: '🏃 Circuito de Calle', type: 'leaf', apiKey: 'deportes_circuito' },
             { id: 'trail_info', label: '🚴 Trail', type: 'leaf', apiKey: 'deportes_trail' },
-            { id: 'aguas_abiertas', label: '🏊 Aguas Abiertas', type: 'leaf', apiKey: 'info_deportes_aguas' },
-            { id: 'back', label: '⬅️ Volver' }
+            { id: 'aguas_abiertas', label: '🏊 Aguas Abiertas', type: 'leaf', apiKey: 'info_deportes_aguas' }
         ]
     },
     desarrollo_menu: {
@@ -388,7 +392,7 @@ const RES = {
         <p style="font-size: 0.9rem; margin-bottom: 15px; color: #333;">
             Todavía estoy aprendiendo. ¿Probamos con otra palabra o querés ver el menú completo?
         </p>
-        <button onclick="resetToMain()" class="menu-btn" style="width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <button onclick="interaccionIniciada=true; resetToMain()" class="menu-btn" style="width: 100%; padding: 12px; background-color: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
             ☰ Ver Menú Completo
         </button>
     </div>`,
@@ -507,7 +511,7 @@ const RES = {
         Lun a Vie de 8 a 15 horas.<br><br>
     </div>`,
     'poda': `<div class="info-card"><strong>🌿 Ingresa en este link 👇🏼</strong><br>🔗 <a href="https://apps.chascomus.gob.ar/podaresponsable/solicitud.php">🌳 Solicitud Poda</a></div>`,
-    'obras_basura': `<div class="info-card"><strong>♻️ Recolección de residuos</strong><br>Lun a Sáb 20hs (Húmedos)</strong><br>Jueves 14hs (Reciclables)`,
+    'obras_basura': `<div class="info-card"><strong>♻️ Recolección de residuos</strong><br>Lun a Sáb 20hs (Húmedos)</strong><br>Jueves 14hs (Reciclables)</div>`,
     'farmacias_lista': `
     <div class="info-card">
         <strong>📍 Farmacias en Chascomús:</strong><br><br>
@@ -584,11 +588,11 @@ const RES = {
     </div>`,
      'ojos_en_alerta': `
     <div class="info-card">
-        <strong>👀 OJOS(En alerta)</strong><br>
+        <strong>👀 OJOS (En alerta)</strong><br>
         Programa de seguridad ciudadana.<br><br>
-        ⚖️ <b>Denuncias, Robo, Accidentes, Actitudes sospechosas, etc;.:</b><br>
+        ⚖️ <b>Denuncias, Robo, Accidentes, Actitudes sospechosas, etc.:</b><br>
         Protección de derechos del ciudadano.<br><br>
-        📍 <b>Dirección:</b> Arenales y Julian quintana).<br>
+        📍 <b>Dirección:</b> Arenales y Julian quintana.<br>
         ⏰ <b>Horario:</b> Lunes a Lunes 24hs.<br>
         <a href="https://wa.me/5492241557444" target="_blank" class="wa-btn" style="background-color: #efe8e3ff !important;">
         📲 Por cualquier info (WhatsApp)
@@ -640,8 +644,7 @@ const RES = {
     'seg_infracciones': 
     `<div class="info-card">
     <strong>⚖️ Infracciones:</strong><br>
-    🔗 <a href="https://chascomus.gob.ar/municipio/estaticas/consultaInfracciones"style="background-color:#25D366 
-     target="_blank">VER MIS MULTAS</a></div>`,
+    🔗 <a href="https://chascomus.gob.ar/municipio/estaticas/consultaInfracciones" style="background-color:#25D366" target="_blank">VER MIS MULTAS</a></div>`,
     'seg_academia': `<div class="info-card"><strong>🚗 Academia de Conductores</strong><br>Turnos para cursos y exámenes teóricos.<br>🔗 <a href="https://apps.chascomus.gob.ar/academia/" target="_blank">INGRESAR A LA WEB</a></div>`,
     'seg_medido': `<div class="info-card"><strong>🅿️ Estacionamiento Medido</strong><br>Gestioná tu estacionamiento desde el celular.<br><br>📲 <b>Descargar App:</b><br>🤖 <a href="https://play.google.com/store/apps/details?id=ar.edu.unlp.sem.mobile.chascomus" target="_blank">Android (Google Play)</a><br>🍎 <a href="https://apps.apple.com/ar/app/sem-mobile/id1387705895" target="_blank">iPhone (App Store)</a><br><br>💻 <a href="https://chascomus.gob.ar/estacionamientomedido/" target="_blank">Gestión vía Web</a></div>`,
     'lic_turno': `<b>📅 Turno Licencia:</b><br>🔗 <a href="https://apps.chascomus.gob.ar/conducir/" target="_blank">SOLICITAR TURNO</a>`, 
@@ -649,33 +652,29 @@ const RES = {
     <div class="info-card">
         <strong>🎥 (MONITOREO)</strong><br><br>
         Secretaría de Seguridad Ciudadana y el Centro de Monitoreo.<br><br>
-        ☎️ <b>:Para comunicarte</b><br>
+        ☎️ <b>Para comunicarte:</b><br>
         <a href="tel:43-1333" class="wa-btn" style="background-color:#25D366 !important; text-align:center;">📞 43-1333</a><br>
         <small><i>⚠️ Solo emergencias.</i></small><br><br>
          🚔 <b>POLICIA:</b><br>
-        Solicitalo a <a href="tel:422222"class="wa-btn" style="background-color:#25D366 !important; text-align:center;">📞 42-2222</a><br><br>`,
+        Solicitalo a <a href="tel:422222" class="wa-btn" style="background-color:#25D366 !important; text-align:center;">📞 42-2222</a><br><br></div>`,
     'turismo_info': `<div class="info-card"><strong>🏖️ Subsecretaría de Turismo</strong><br>📍 Av. Costanera España 25<br>📞 <a href="tel:02241615542">02241 61-5542</a><br>📧 <a href="mailto:turismo@chascomus.gob.ar">Enviar Email</a><br>🔗 <a href="https://linktr.ee/turismoch" target="_blank">Más info en Linktree</a></div>`,
     'deportes_info': `<div class="info-card"><strong>⚽ Dirección de Deportes</strong><br>
     📍 Av. Costanera España y Av. Lastra<br>📞 <a href="tel:02241424649">(02241) 42-4649</a></div>`,
     
     'deportes_circuito': `
     <div class="info-card"><strong>🏃 Circuito de Calle</strong><br>Inscripciones y resultados oficiales.
-    <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/circuitodecalle/" 
-    target="_blank"</a><brIR A LA WEB</a><br>INCRIPCIONES CIRCUITO DE CALLE
+    <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/circuitodecalle/" target="_blank" style="color: #349be0ff; font-weight: bold; text-decoration: underline;">INSCRIPCIONES CIRCUITO DE CALLE</a><br>
     </div>`,
     
     'deportes_trail': `
     <div class="info-card"><strong>🚴 Trail Bike</strong><br>Inscripciones y resultados oficiales.
-    <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/trail/inscripcion.php" 
-    target="_blank"</a><brIR A LA WEB</a><br>INCRIPCIONES TRAIL BIKE
+    <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/trail/inscripcion.php" target="_blank" style="color: #2980b9; font-weight: bold; text-decoration: underline;">INSCRIPCIONES TRAIL BIKE</a><br>
     </div>`,
     
 'info_deportes_aguas': `
      <div class="info-card"><strong>🏊 Aguas Abiertas</strong><br>Inscripciones y resultados oficiales
-     <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/aguasabiertas/inscripcion.php"
-     target="_blank"</a><IR A LA WEB</a><br>
-    INSCRIPCIONES AGUAS ABIERTAS.
-    <br>🔗 <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdlmaYq_wSB0aZj-GNNOWRtzBK8OwZ86_eu2McGhPfcfwrelp8I1IMWWT7v9bv3QBh86sdGPVOWDKy/pubhtml" target="_blank"</a><IR A LA WEB</a><br>RESULTADOS OFICIALES
+     <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/aguasabiertas/inscripcion.php" target="_blank" style="color: #2aa2baff; font-weight: bold; text-decoration: underline;">INSCRIPCIONES AGUAS ABIERTAS</a><br>
+    <br>🔗 <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdlmaYq_wSB0aZj-GNNOWRtzBK8OwZ86_eu2McGhPfcfwrelp8I1IMWWT7v9bv3QBh86sdGPVOWDKy/pubhtml" target="_blank" style="color: #108ea7ff; font-weight: bold; text-decoration: underline;">RESULTADOS OFICIALES</a><br>
      </div>`,
     'politicas_gen': `<div class="info-card" style="border-left: 5px solid #9b59b6;"><strong style="color: #8e44ad; font-size: 1rem;">
     💜 Género y Diversidad</strong><br><br><div style="font-size: 0.85rem; margin-bottom: 12px;">
@@ -717,7 +716,7 @@ const RES = {
     'ninez': `<div class="info-card"><strong>👶 Niñez:</strong> Mendoza Nº 95. 📞 43-1146.</div>`,
     'mediacion_info': `<div class="info-card"><strong>⚖️ Mediación Comunitaria</strong><br>Resolución pacífica y gratuita de conflictos vecinales (ruidos, mascotas, edilicios).<br>📍 <b>Acercate a:</b> Moreno 259.</div>`,
     'uda_info': `<div class="info-card"><strong>📍 Puntos UDA (Atención en Barrios)</strong><br><i>Acercate a tu punto más cercano:</i><br><br>🔹 <b>UDA 1 (San Luis):</b> Chubut 755 (Mar/Vie 9-12).<br>🔹 <b>UDA 2 (San José Obrero):</b> F. Chapa 625 (Mar/Vie 9-12).<br>🔹 <b>UDA 3 (El Porteño):</b> Mansilla y Calle 3 (Vie 9-12).<br>🔹 <b>UDA 4 (30 de Mayo):</b> Bvd. 5 y Calle 2 (Vie 9-12).<br>🔹 <b>UDA 5 (B. Jardín):</b> J. Quintana e/ Misiones (Mar/Mié 9-12).<br>🔹 <b>UDA 6 (Gallo Blanco):</b> EE.UU. y Las Flores (Lun 9-12).<br>🔹 <b>UDA 7 (San Cayetano):</b> Comedor (Mar 9-12).<br>🔹 <b>UDA 8 (Políticas Com.):</b> Sarmiento 42 (Lun-Vie 8-12).<br>🔹 <b>UDA 9 (Iporá):</b> Perú y S. Cabral (Jue 9-12).<br><br>🚨 <b>Guardia 24hs:</b> <a href="https://wa.me/5492241559397">2241-559397</a></div>`,
-    'hac_tomasa': `<div class="info-card"><strong>🌾 TOMASA:</b><br>ℹ️ Portal de autogestión.<br>🔗 <a href="https://tomasa.chascomus.gob.ar/">INGRESAR</a>`,
+    'hac_tomasa': `<div class="info-card"><strong>🌾 TOMASA:</b><br>ℹ️ Portal de autogestión.<br>🔗 <a href="https://tomasa.chascomus.gob.ar/">INGRESAR</a></div>`,
     'deuda_video_info': `
     <div class="info-card">
         <strong>🎥 La muni Invierte</strong><br><br>
@@ -729,10 +728,10 @@ const RES = {
             Mirá este breve tutorial sobre cómo iniciar tu trámite de habilitación comercial 100% online.
         </p>
     </div>`,
-    'boleta': `<div class="info-card"><strong>📧 BOLETA DIGITAL</strong><br>🟢 <i>Para inscribirse comomunicarce por estas vias<br> 
+    'boleta': `<div class="info-card"><strong>📧 BOLETA DIGITAL</strong><br>🟢 <i>Para inscribirse comunicarse por estas vias<br> 
     📲: <a href="https://wa.me/5492241557616">2241-557616</a><br>📧 <a href="mailto:ingresospublicos@chascomus.gob.ar">Email</a></div>`,
-    'agua': `<div class="info-card"><strong>💧 CONSUMO DE AGUA</strong><br> ℹ️ Para conocer y pagar su consumo ingrese a este Link</b><br>
-    🔗 <a href="https://apps.chascomus.gob.ar/caudalimetros/consulta.php">VER MI CONSUMO</a>`, 
+    'agua': `<div class="info-card"><strong>💧 CONSUMO DE AGUA</strong><br> ℹ️ Para conocer y pagar su consumo ingrese a este Link<br>
+    🔗 <a href="https://apps.chascomus.gob.ar/caudalimetros/consulta.php">VER MI CONSUMO</a></div>`, 
     'consulta_tributaria': `
     <div class="info-card">
         <strong>💸 CONSULTA TRIBUTARIA</strong><br><br>
@@ -748,11 +747,11 @@ const RES = {
         Seleccione <b>CUOTAS DE CONVENIO</b> para listar las cuotas de convenio de pago vigentes.<br><br>
         🔗 <a href="https://deuda.chascomus.gob.ar/consulta.php">CONSULTAR AQUÍ</a>
     </div>`,
-    'deuda': `<div class="info-card"><strong>🔍 CONSULTA DEUDA</strong><br>💸 Para ver sus inpuesto.<br>
+    'deuda': `<div class="info-card"><strong>🔍 CONSULTA DEUDA</strong><br>💸 Para ver sus impuestos.<br>
     🏠<b>INMOBILIARIO</b><br>
     👤<b>CONTRIBUYENTE</b><br>
     ⚰️<b>CEMENTERIO</b><br>
-    🔗 <a href="https://pagos.chascomus.gob.ar/#destino=imponible">CONSULTAR AQUÍ</a>`,
+    🔗 <a href="https://pagos.chascomus.gob.ar/#destino=imponible">CONSULTAR AQUÍ</a></div>`,
     'hab_gral': `
     <div class="info-card">
         <strong>🏢 Habilitación Comercial / Industrial</strong><br><br>
@@ -965,7 +964,7 @@ const RES = {
     Cr. Cramer 270.</div>`
 };
 
-/* --- CONEXIÓN CON GOOGLE SHEETS (LOGS) CORREGIDA --- */
+/* --- CONEXIÓN CON GOOGLE SHEETS (LOGS) --- */
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4OwdnxlW5ux5CDKvrsoFjy9yDiTT1o1KQ0QOtghtBFjPX1dTTcpL20hV2dsPjJU0p/exec';
 
 function registrarEnPlanilla(detalle) {
@@ -1009,7 +1008,7 @@ function validarTexto(texto) {
 
 function showTyping() {
     isBotThinking = true;
-    setMuniBotState('thinking'); 
+    setChasBotState('thinking'); 
 
     const container = document.getElementById('chatMessages');
     const wrapper = document.createElement('div'); 
@@ -1031,7 +1030,7 @@ function addMessage(content, side = 'bot', options = null) {
         const t = document.getElementById('typingWrapper'); 
         if(t) t.remove(); 
         
-        setMuniBotState('normal'); 
+        setChasBotState('speaking'); 
 
         document.querySelectorAll('.avatar-chat.speaking').forEach(img => {
             img.src = IMG_BOT_NORMAL;
@@ -1057,6 +1056,7 @@ function addMessage(content, side = 'bot', options = null) {
                 imgActual.src = IMG_BOT_NORMAL;
                 imgActual.classList.remove('speaking');
             }
+            setChasBotState('normal');
         }, tiempoLectura);
     }
 
@@ -1075,22 +1075,22 @@ function addMessage(content, side = 'bot', options = null) {
 function showNavControls() {
     const container = document.getElementById('chatMessages');
     const navDiv = document.createElement('div'); navDiv.className = 'options-container'; 
-    navDiv.innerHTML = `<button class="option-button back" onclick="showMenu(currentPath[currentPath.length-1])">⬅️ Volver</button><button class="option-button" onclick="resetToMain()">🏠 Inicio</button>`;
+    navDiv.innerHTML = `<button class="option-button back" onclick="interaccionIniciada=true; showMenu(currentPath[currentPath.length-1])">⬅️ Volver</button><button class="option-button" onclick="interaccionIniciada=true; resetToMain()">🏠 Inicio</button>`;
     container.appendChild(navDiv); container.scrollTop = container.scrollHeight;
 }
 
 function handleAction(opt) {
+    interaccionIniciada = true;
+
     if(opt.id === 'back') { if(currentPath.length > 1) currentPath.pop(); showMenu(currentPath[currentPath.length-1]); return; } 
     
-    // Captura Botones de Edad
     if(opt.type === 'age_select') { 
         userAge = opt.label; 
-        localStorage.setItem('muni_user_age', userAge); 
+        localStorage.setItem('chas_user_age', userAge); 
         resetToMain(); 
         return; 
     } 
     
-    // Captura Botones de Barrio similares
     if(opt.type === 'barrio_select') { 
         selectBarrio(opt.label); 
         return; 
@@ -1101,13 +1101,13 @@ function handleAction(opt) {
     if(opt.apiKey) {
         showTyping(); 
         setTimeout(() => { addMessage(RES[opt.apiKey]); showNavControls(); }, 800); 
-        registrarEnPlanilla(opt.label); // ENVIADO LIMPIO A ESTADÍSTICAS
+        registrarEnPlanilla(opt.label); 
     } else if(opt.link) { 
         showTyping();
         setTimeout(() => { 
             addMessage(`Te dejo el acceso directo acá: <br><br><a href="${opt.link}" target="_blank" class="wa-btn">${opt.label}</a>`, 'bot'); 
             showNavControls(); 
-            registrarEnPlanilla(opt.label); // ENVIADO LIMPIO A ESTADÍSTICAS
+            registrarEnPlanilla(opt.label); 
         }, 800);
     } else if(MENUS[opt.id]) {
         currentPath.push(opt.id); showMenu(opt.id); 
@@ -1278,9 +1278,9 @@ function ejecutarBusquedaInteligente(texto) {
                 }
             }, 500);
         } else {
-            setMuniBotState('looking');
+            setChasBotState('looking');
             addMessage(RES['error_busqueda'], "bot");
-            setTimeout(() => setMuniBotState('normal'), 3000);
+            setTimeout(() => setChasBotState('normal'), 3000);
         }
     });
 }
@@ -1288,7 +1288,7 @@ function ejecutarBusquedaInteligente(texto) {
 /* --- 5. REGISTRO (FLUJO LINEAL ESTRICTO) --- */
 function selectBarrio(b) {
     userNeighborhood = b; 
-    localStorage.setItem('muni_user_neighborhood', b); 
+    localStorage.setItem('chas_user_neighborhood', b); 
     
     setTimeout(() => {
         const edades = [{label:'-20', type:'age_select'}, {label:'20-40', type:'age_select'}, {label:'40-60', type:'age_select'}, {label:'+60', type:'age_select'}];
@@ -1323,7 +1323,7 @@ function procesarEdadTexto(val) {
         else if (edadNum <= 60) userAge = '40-60';
         else userAge = '+60';
 
-        localStorage.setItem('muni_user_age', userAge); 
+        localStorage.setItem('chas_user_age', userAge); 
         
         showTyping();
         setTimeout(() => {
@@ -1343,6 +1343,8 @@ function processInput() {
     const input = document.getElementById('userInput'); const val = input.value.trim();
     if(!val || isBotThinking) return; 
 
+    interaccionIniciada = true;
+
     const validacion = validarTexto(val); 
     if(!validacion.v) { addMessage(val, 'user'); input.value = ""; showTyping(); setTimeout(() => addMessage(validacion.m, 'bot'), 600); return; } 
 
@@ -1351,7 +1353,7 @@ function processInput() {
 
     if (!userName) {
         userName = val;
-        localStorage.setItem('muni_user_name', userName);
+        localStorage.setItem('chas_user_name', userName);
         showTyping();
         setTimeout(() => addMessage(`¡Gusto conocerte <b>${userName}</b>! 👋 ¿De qué barrio sos?`, 'bot'), 800);
         return; 
@@ -1376,7 +1378,6 @@ function processInput() {
         return; 
     }
 
-    // ENVIADO LIMPIO A ESTADÍSTICAS CUANDO ESCRIBEN EN TEXTO
     registrarEnPlanilla(val); 
     ejecutarBusquedaInteligente(val); 
 }
@@ -1440,18 +1441,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!userName) {
         showTyping();
         setTimeout(() => {
-            setMuniBotState('speaking');
-            addMessage("👋 ¡Hola! Soy <b>MuniBot</b>, el asistente virtual de la Municipalidad de Chascomús. ¿Cómo te llamás?", "bot");
+            setChasBotState('speaking');
+            addMessage("👋 ¡Hola! Soy <b>ChasBot</b>, el asistente virtual de la Municipalidad de Chascomús. ¿Cómo te llamás?", "bot");
         }, 500); 
     } else {
-        setMuniBotState('celebration');
+        setChasBotState('celebration');
         showTyping();
         setTimeout(() => {
-            setMuniBotState('speaking');
+            setChasBotState('speaking');
             addMessage(`¡Hola de nuevo, <b>${userName}</b>! 👋 ¿En qué puedo ayudarte hoy?`, 'bot');
             setTimeout(() => {
                 resetToMain();
-                setMuniBotState('normal');
+                setChasBotState('normal');
             }, 1000);
         }, 1000);
     }
