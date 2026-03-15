@@ -142,7 +142,7 @@ const MENUS = {
         options: [
             { id: 'oea_shortcut', label: '👀 Ojos en Alerta', type: 'leaf', apiKey: 'ojos_en_alerta' },
             { id: 'ag_shortcut', label: '🎭 Agenda Cultural', type: 'leaf', apiKey: 'agenda_dinamica' }, 
-            { id: 'f_shortcut', label: '📚 Educación cartelera docente', type: 'leaf', apiKey: 'cartelera_docente' },
+            { id: 'f_shortcut', label: '📚 Cartelera Docente "MUNICIPAL"', type: 'leaf', apiKey: 'cartelera_docente' },
             { id: 'h_shortcut', label: '📅 Turnos Hospital', type: 'leaf', apiKey: 'h_turnos' },
             { id: 'politicas_gen_shortcut', label: '💜 GÉNERO (Urgencias)', type: 'leaf', apiKey: 'politicas_gen' },
             { id: 'full_menu', label: '☰ VER MENÚ COMPLETO' }
@@ -156,7 +156,7 @@ const MENUS = {
             { id: 'desarrollo_menu', label: '🤝 Desarrollo Social' },
             { id: 'ojos_en_alerta', label: '👁️ Ojos en Alerta (Seguridad)', type: 'leaf', apiKey: 'ojos_en_alerta' },
             { id: 'el_digital', label: '📰 Kiosco Digital' },
-            { id: 'educacion', label: '📚 Educación', type: 'submenu'},
+            { id: 'educacion', label: '📚 Educación Municipal', type: 'submenu'},
             { id: 'turismo', label: '🏖️ Turismo' },
             { id: 'deportes', label: '⚽ Deportes' },
             { id: 'salud', label: '🏥 Salud' },
@@ -663,18 +663,18 @@ const RES = {
     
     'deportes_circuito': `
     <div class="info-card"><strong>🏃 Circuito de Calle</strong><br>Inscripciones y resultados oficiales.
-    <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/circuitodecalle/" target="_blank" style="color: #349be0ff; font-weight: bold; text-decoration: underline;">INSCRIPCIONES CIRCUITO DE CALLE</a><br>
+    <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/circuitodecalle/" target="_blank" class="wa-btn">INSCRIPCIONES CIRCUITO DE CALLE</a><br>
     </div>`,
     
     'deportes_trail': `
     <div class="info-card"><strong>🚴 Trail Bike</strong><br>Inscripciones y resultados oficiales.
-    <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/trail/inscripcion.php" target="_blank" style="color: #2980b9; font-weight: bold; text-decoration: underline;">INSCRIPCIONES TRAIL BIKE</a><br>
+    <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/trail/inscripcion.php" target="_blank" class="wa-btn">INSCRIPCIONES TRAIL BIKE</a><br>
     </div>`,
     
 'info_deportes_aguas': `
      <div class="info-card"><strong>🏊 Aguas Abiertas</strong><br>Inscripciones y resultados oficiales
-     <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/aguasabiertas/inscripcion.php" target="_blank" style="color: #2aa2baff; font-weight: bold; text-decoration: underline;">INSCRIPCIONES AGUAS ABIERTAS</a><br>
-    <br>🔗 <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdlmaYq_wSB0aZj-GNNOWRtzBK8OwZ86_eu2McGhPfcfwrelp8I1IMWWT7v9bv3QBh86sdGPVOWDKy/pubhtml" target="_blank" style="color: #108ea7ff; font-weight: bold; text-decoration: underline;">RESULTADOS OFICIALES</a><br>
+     <br>🔗 <a href="https://apps.chascomus.gob.ar/deportes/aguasabiertas/inscripcion.php" target="_blank" class="wa-btn">INSCRIPCIONES AGUAS ABIERTAS</a><br>
+    <br>🔗 <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTdlmaYq_wSB0aZj-GNNOWRtzBK8OwZ86_eu2McGhPfcfwrelp8I1IMWWT7v9bv3QBh86sdGPVOWDKy/pubhtml" target="_blank" class="wa-btn">RESULTADOS OFICIALES</a><br>
      </div>`,
     'politicas_gen': `<div class="info-card" style="border-left: 5px solid #9b59b6;"><strong style="color: #8e44ad; font-size: 1rem;">
     💜 Género y Diversidad</strong><br><br><div style="font-size: 0.85rem; margin-bottom: 12px;">
@@ -716,7 +716,7 @@ const RES = {
     'ninez': `<div class="info-card"><strong>👶 Niñez:</strong> Mendoza Nº 95. 📞 43-1146.</div>`,
     'mediacion_info': `<div class="info-card"><strong>⚖️ Mediación Comunitaria</strong><br>Resolución pacífica y gratuita de conflictos vecinales (ruidos, mascotas, edilicios).<br>📍 <b>Acercate a:</b> Moreno 259.</div>`,
     'uda_info': `<div class="info-card"><strong>📍 Puntos UDA (Atención en Barrios)</strong><br><i>Acercate a tu punto más cercano:</i><br><br>🔹 <b>UDA 1 (San Luis):</b> Chubut 755 (Mar/Vie 9-12).<br>🔹 <b>UDA 2 (San José Obrero):</b> F. Chapa 625 (Mar/Vie 9-12).<br>🔹 <b>UDA 3 (El Porteño):</b> Mansilla y Calle 3 (Vie 9-12).<br>🔹 <b>UDA 4 (30 de Mayo):</b> Bvd. 5 y Calle 2 (Vie 9-12).<br>🔹 <b>UDA 5 (B. Jardín):</b> J. Quintana e/ Misiones (Mar/Mié 9-12).<br>🔹 <b>UDA 6 (Gallo Blanco):</b> EE.UU. y Las Flores (Lun 9-12).<br>🔹 <b>UDA 7 (San Cayetano):</b> Comedor (Mar 9-12).<br>🔹 <b>UDA 8 (Políticas Com.):</b> Sarmiento 42 (Lun-Vie 8-12).<br>🔹 <b>UDA 9 (Iporá):</b> Perú y S. Cabral (Jue 9-12).<br><br>🚨 <b>Guardia 24hs:</b> <a href="https://wa.me/5492241559397">2241-559397</a></div>`,
-    'hac_tomasa': `<div class="info-card"><strong>🌾 TOMASA:</b><br>ℹ️ Portal de autogestión.<br>🔗 <a href="https://tomasa.chascomus.gob.ar/">INGRESAR</a></div>`,
+    'hac_tomasa': `<div class="info-card"><strong>🌾 TOMASA:</b><br>ℹ️ Portal de autogestión.<br>🔗 <a href="https://tomasa.chascomus.gob.ar/"target="_blank" class="wa-btn">INGRESAR</a></div>`,
     'deuda_video_info': `
     <div class="info-card">
         <strong>🎥 La muni Invierte</strong><br><br>
@@ -731,7 +731,7 @@ const RES = {
     'boleta': `<div class="info-card"><strong>📧 BOLETA DIGITAL</strong><br>🟢 <i>Para inscribirse comunicarse por estas vias<br> 
     📲: <a href="https://wa.me/5492241557616">2241-557616</a><br>📧 <a href="mailto:ingresospublicos@chascomus.gob.ar">Email</a></div>`,
     'agua': `<div class="info-card"><strong>💧 CONSUMO DE AGUA</strong><br> ℹ️ Para conocer y pagar su consumo ingrese a este Link<br>
-    🔗 <a href="https://apps.chascomus.gob.ar/caudalimetros/consulta.php">VER MI CONSUMO</a></div>`, 
+    🔗 <a href="https://apps.chascomus.gob.ar/caudalimetros/consulta.php" target="_blank" class="wa-btn">VER MI CONSUMO</a></div>`, 
     'consulta_tributaria': `
     <div class="info-card">
         <strong>💸 CONSULTA TRIBUTARIA</strong><br><br>
@@ -745,13 +745,13 @@ const RES = {
         Seleccione tipo de cuenta 👤<b>CONTRIBUYENTE</b> para deudas de Marcas y señales (Guías) y 16 Viviendas.<br>
         Seleccione <b>PERÍODOS ADEUDADOS</b> para listar los períodos impagos de tasas.<br>
         Seleccione <b>CUOTAS DE CONVENIO</b> para listar las cuotas de convenio de pago vigentes.<br><br>
-        🔗 <a href="https://deuda.chascomus.gob.ar/consulta.php">CONSULTAR AQUÍ</a>
+        🔗 <a href="https://deuda.chascomus.gob.ar/consulta.php" target="_blank" class="wa-btn">CONSULTAR AQUÍ</a>
     </div>`,
     'deuda': `<div class="info-card"><strong>🔍 CONSULTA DEUDA</strong><br>💸 Para ver sus impuestos.<br>
     🏠<b>INMOBILIARIO</b><br>
     👤<b>CONTRIBUYENTE</b><br>
     ⚰️<b>CEMENTERIO</b><br>
-    🔗 <a href="https://pagos.chascomus.gob.ar/#destino=imponible">CONSULTAR AQUÍ</a></div>`,
+    🔗 <a href="https://pagos.chascomus.gob.ar/#destino=imponible" target="_blank" class="wa-btn">CONSULTAR AQUÍ</a></div>`,
     'hab_gral': `
     <div class="info-card">
         <strong>🏢 Habilitación Comercial / Industrial</strong><br><br>
@@ -775,7 +775,7 @@ const RES = {
         Se exige certificado final de obra (Bomberos Dolores).<br>
         📧 tecnica_dolores@hotmail.com<br>
         📞 (02245) 44-6107<br><br>
-        📝 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionEventoPrivado2.0.php" target="_blank">IR AL FORMULARIO</a>
+        📝 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionEventoPrivado2.0.php" target="_blank" class="wa-btn">IR AL FORMULARIO</a>
     </div>`,
     'hab_espacio': `
     <div class="info-card">
@@ -787,7 +787,7 @@ const RES = {
         • Título del vehículo/carro.<br>
         • Seguros (Vehículo + Responsabilidad Civil).<br>
         • Domicilio en Chascomús.<br><br>
-        📝 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionCarro.php" target="_blank">SOLICITAR PERMISO</a>
+        📝 <a href="https://apps.chascomus.gob.ar/habilitaciones/habilitacionCarro.php" target="_blank" class="wa-btn">INICIAR TRÁMITE ONLINE</a>
     </div>`,
   'hab_reba': `
     <div class="info-card">
@@ -803,7 +803,7 @@ const RES = {
     'h_turnos': `
     <div class="info-card">
         <strong>📍 <b>Hospital Municipal:</b> Av. Alfonsín e Yrigoyen.<br>🚨 Guardia 24 hs.</strong><br>
-        <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn" style="background-color: #efe8e3ff !important;">
+        <a href="https://wa.me/5492241466977" target="_blank" class="wa-btn" style="background-color: #14df10ff !important;">
             📲 Consultar por turnos (WhatsApp)
         </a>
     </div>`, 
